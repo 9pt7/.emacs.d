@@ -1,0 +1,9 @@
+.emacs.d/auto-save-list
+auto-save-list/*
+*.elc
+*~
+eshell/history
+eshell/lastdir
+recentf
+tramp
+bookmarks
