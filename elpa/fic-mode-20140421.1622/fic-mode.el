@@ -1,5 +1,5 @@
 ;;; fic-mode.el --- Show FIXME/TODO/BUG/KLUDGE in special face only in comments and strings
-;; Version: 20140421.1622
+;; Package-Version: 20140421.1622
 ;;--------------------------------------------------------------------
 ;;
 ;; Copyright (C) 2010, Trey Jackson <bigfaceworm(at)gmail(dot)com>

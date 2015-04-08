@@ -1,0 +1,45 @@
+;; Object bits/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "bits/"
+  :tables
+  (list
+    (semanticdb-table "byteswap.h"
+      :major-mode 'c-mode
+      :tags 
+        '( ("_BITS_BYTESWAP_H_" variable (:constant-flag t) nil [1712 1729])
+            ("stdint.h" include (:system-flag t) nil [1731 1750])
+            ("__bswap_64" function
+               (:type ("uint64_t" type (:type "class") nil nil)
+                :arguments 
+                  ( ("v" variable (:type ("uint64_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2193 2204]))                  
+                :typemodifiers ("extern" "\"C\"" "extern")
+                :prototype-flag t)
+                (reparse-symbol extern-c-contents) [2165 2232])
+            ("__bswap_32" function
+               (:type ("uint32_t" type (:type "class") nil nil)
+                :arguments 
+                  ( ("v" variable (:type ("uint32_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2125 2136]))                  
+                :typemodifiers ("extern" "\"C\"" "extern")
+                :prototype-flag t)
+                (reparse-symbol extern-c-contents) [2097 2164])
+            ("__bswap_16" variable
+               (:typemodifiers ("extern" "\"C\"")
+                :constant-flag t)
+                (reparse-symbol extern-c-contents) [1818 1828]))          
+      :file "byteswap.h"
+      :pointmax 2312
+      :fsize 2311
+      :lastmodtime '(20407 22323 0 0)
+      :unmatched-syntax nil
+      :lexical-table 
+        '(("__bswap_16" (spp-arg-list ("x") 1828 . 1831) . ((semantic-list "(__extension__ \\
+  ({ \\
+    register uint16_t __v, __x  = (x);         \\
+    __asm__(\"swpb %0\" : \"=r\"(__v) : \"0\"(__x));     \\
+    __v; }))" 1832 . 1970)))
+          ("_BITS_BYTESWAP_H_")
+          )
+))
+  :file "!usr!msp430!include!bits!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

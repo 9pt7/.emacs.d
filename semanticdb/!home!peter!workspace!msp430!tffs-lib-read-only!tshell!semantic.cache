@@ -1,0 +1,357 @@
+;; Object tshell/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "tshell/"
+  :tables
+  (list
+    (semanticdb-table "tsh.c"
+      :major-mode 'c-mode
+      :tags 
+        '( ("stdio.h" include (:system-flag t) nil [1 19])
+            ("string.h" include (:system-flag t) nil [20 39])
+            ("stdlib.h" include (:system-flag t) nil [40 59])
+            ("curses.h" include (:system-flag t) nil [60 79])
+            ("tffs.h" include nil nil [80 97])
+            ("do_cmd" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("htffs" variable (:type ("tffs_handle_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [111 131]))                  
+                :type "void")
+                nil [99 132])
+            ("min" variable (:constant-flag t) nil [141 144])
+            ("MAX_PATH" variable (:constant-flag t) nil [176 184])
+            ("errmsg" variable
+               (:pointer 1
+                :dereference 1
+                :default-value "{
+	\"Invalid parameters.\",					//ERR_TFFS_INVALID_PARAM
+	\"Device access failed.\",				//ERR_TFFS_DEVICE_FAIL
+	\"Bad boot sector.\",						//ERR_TFFS_BAD_BOOTSECTOR
+	\"Bad fat table.\",						//ERR_TFFS_BAD_FAT
+	\"Invalid path.\",						//ERR_TFFS_INVALID_PATH
+	\"Got the last directory entry.\",		//ERR_TFFS_LAST_DIRENTRY
+	\"Invalid open mode.\",					//ERR_TFFS_INVALID_OPENMODE
+	\"File is not exist.\",					//ERR_TFFS_FILE_NOT_EXIST
+	\"Open file failed.\",					//ERR_TFFS_FILE_OPEN_FAIL
+	\"No free disk space.\",					//ERR_TFFS_NO_FREE_SPACE 
+	\"Try to write a readonly file.\",		//ERR_TFFS_READONLY
+	\"Reached the end of the file.\", 		//ERR_TFFS_FILE_EOF
+	\"Access fat table error.\",				//ERR_TFFS_FAT
+	\"Directory is already exist.\",			//ERR_TFFS_DIR_ALREADY_EXIST
+	\"Initialize directory failed.\",			//ERR_TFFS_INITIAL_DIR_FAIL
+	\"No such a file or directory.\",			//ERR_TFFS_NO_SUCH_FILE
+	\"This is not a file.\",					//ERR_TFFS_IS_NOT_A_FILE
+	\"Remove file failed.\",					//ERR_TFFS_REMOVE_FILE_FAIL
+	\"This is not a directory.\",				//ERR_TFFS_IS_NOT_A_DIRECTORY
+	\"This is not a empty directory.\",		//ERR_TFFS_NOT_EMPTY_DIR
+	\"Remove directory failed.\"				//ERR_TFFS_REMOVE_DIR_FAIL
+}"
+                :type "char")
+                nil [190 1364])
+            ("print_error" function
+               (:arguments 
+                  ( ("tffs_func" variable
+                       (:pointer 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [1385 1402])
+                    ("ret" variable (:type ("int32" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1404 1414]))                  
+                :type "void")
+                nil [1366 1504])
+            ("main" function
+               (:arguments 
+                  ( ("argc" variable (:type "int") (reparse-symbol arg-sub-list) [1517 1526])
+                    ("argv" variable
+                       (:pointer 1
+                        :dereference 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [1528 1541]))                  
+                :type "int")
+                nil [1506 1884])
+            ("MAX_CMD_LEN" variable (:constant-flag t) nil [1894 1905])
+            ("MAX_ARG_NUM" variable (:constant-flag t) nil [1918 1929])
+            ("_tsh_session" type
+               (:members 
+                  ( ("cur_dir" variable
+                       (:dereference 1
+                        :type "char")
+                        (reparse-symbol classsubparts) [1964 1988])
+                    ("htffs" variable (:type ("tffs_handle_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [1990 2010])
+                    ("argv" variable
+                       (:pointer 1
+                        :dereference 1
+                        :type "char")
+                        (reparse-symbol classsubparts) [2012 2037])
+                    ("argc" variable (:type "char") (reparse-symbol classsubparts) [2039 2049]))                  
+                :type "struct")
+                nil [1934 2065])
+            ("tsh_session_t" type
+               (:typedef ("_tsh_session" type (:type "struct") nil nil)
+                :type "typedef")
+                nil [1934 2065])
+            ("do_cmd_func" function
+               (:prototype-flag t
+                :function-pointer t
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2095 2111]))                  
+                :type "void")
+                nil [2075 2112])
+            ("_cmd_handler" type
+               (:members 
+                  ( ("cmd" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol classsubparts) [2143 2160])
+                    ("usage" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol classsubparts) [2162 2181])
+                    ("description" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol classsubparts) [2183 2208])
+                    ("handler" variable (:type ("do_cmd_func" type (:type "class") nil nil)) (reparse-symbol classsubparts) [2210 2230]))                  
+                :type "struct")
+                nil [2113 2246])
+            ("cmd_handler_t" type
+               (:typedef ("_cmd_handler" type (:type "struct") nil nil)
+                :type "typedef")
+                nil [2113 2246])
+            ("do_ls" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2259 2284]))                  
+                :type "void")
+                nil [2248 2285])
+            ("do_pwd" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2298 2323]))                  
+                :type "void")
+                nil [2286 2324])
+            ("do_cd" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2336 2361]))                  
+                :type "void")
+                nil [2325 2362])
+            ("do_mkdir" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2377 2402]))                  
+                :type "void")
+                nil [2363 2403])
+            ("do_rm" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2415 2440]))                  
+                :type "void")
+                nil [2404 2441])
+            ("do_cat" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2454 2479]))                  
+                :type "void")
+                nil [2442 2480])
+            ("do_write" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2495 2520]))                  
+                :type "void")
+                nil [2481 2521])
+            ("do_help" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2535 2560]))                  
+                :type "void")
+                nil [2522 2561])
+            ("parse_cmd" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("cmd" variable
+                       (:pointer 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [2578 2589])
+                    ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2590 2615]))                  
+                :type "void")
+                nil [2563 2616])
+            ("get_cmd" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("cmd" variable
+                       (:pointer 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [2630 2641]))                  
+                :type "void")
+                nil [2617 2642])
+            ("chs" variable
+               (:dereference 1
+                :default-value "{
+	{\"ls\", \"ls <directory name>\", \"\\tLists the contents of a directory.\", do_ls},
+	{\"pwd\", \"pwd\", \"\\tPrint current directory.\", do_pwd},
+	{\"cd\", \"cd <directory name>\", \"\\tChange the current directory to dir.\", do_cd},
+	{\"mkdir\", \"mkdir <directory name>\", \"Make directories.\", do_mkdir},
+	{\"rm\", \"rm [-r] <directory/file name>\", \"\\tRemove directories or files.\", do_rm},
+	{\"cat\", \"cat <file name>\", \"\\tShow the file contents.\", do_cat},
+	{\"write\", \"write <file name>\", \"Write contents to the file.\", do_write},
+	{\"help\", \"help\", \"\\tShow help.\", do_help},
+	{\"quit\", \"quit\", \"\\tQuit tiny shell.\", NULL}
+}"
+                :type ("cmd_handler_t" type (:type "class") nil nil))
+                nil [2644 3267])
+            ("do_cmd" function
+               (:arguments 
+                  ( ("htffs" variable (:type ("tffs_handle_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [3325 3345]))                  
+                :type "void")
+                nil [3311 4035])
+            ("parse_cmd" function
+               (:arguments 
+                  ( ("cmd" variable
+                       (:pointer 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [4054 4065])
+                    ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [4067 4092]))                  
+                :type "void")
+                nil [4037 4416])
+            ("get_cmd" function
+               (:arguments 
+                  ( ("cmd" variable
+                       (:pointer 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [4433 4443]))                  
+                :type "void")
+                nil [4418 4615])
+            ("do_help" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [4632 4657]))                  
+                :type "void")
+                nil [4617 4797])
+            ("do_pwd" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [4813 4838]))                  
+                :type "void")
+                nil [4799 4895])
+            ("_show_dirent" function
+               (:arguments 
+                  ( ("pdirent" variable
+                       (:pointer 1
+                        :type ("dirent_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [4917 4936]))                  
+                :type "void")
+                nil [4897 5307])
+            ("do_ls" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [5322 5347]))                  
+                :type "void")
+                nil [5309 6202])
+            ("_del_token" function
+               (:arguments 
+                  ( ("dir" variable
+                       (:pointer 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [6222 6233]))                  
+                :type "void")
+                nil [6204 6427])
+            ("do_cd" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [6442 6467]))                  
+                :type "void")
+                nil [6429 7105])
+            ("do_mkdir" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [7123 7148]))                  
+                :type "void")
+                nil [7107 7373])
+            ("do_rm" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [7388 7413]))                  
+                :type "void")
+                nil [7375 7918])
+            ("do_cat" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [7934 7959]))                  
+                :type "void")
+                nil [7920 8885])
+            ("_get_input" function
+               (:pointer 1
+                :type "char")
+                nil [8887 9213])
+            ("do_write" function
+               (:arguments 
+                  ( ("psession" variable
+                       (:pointer 1
+                        :type ("tsh_session_t" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [9231 9256]))                  
+                :type "void")
+                nil [9215 10180]))          
+      :file "tsh.c"
+      :pointmax 10182
+      :fsize 10181
+      :lastmodtime '(21795 3480 171020 539000)
+      :unmatched-syntax '((punctuation 3308 . 3309) (semantic-list 3300 . 3308) (SIZEOF 3294 . 3300) (punctuation 3293 . 3294) (semantic-list 3288 . 3293) (SIZEOF 3282 . 3288) (punctuation 3280 . 3281) (symbol 3272 . 3279) (INT 3268 . 3271) (TYPEDEF 2067 . 2074))
+      :lexical-table 
+        '(("min" (spp-arg-list ("a" "b") 144 . 150) . 
+              ((semantic-list "(a)" 151 . 154) (punctuation "<" 154 . 155) (semantic-list "(b)" 155 . 158) (punctuation "?" 158 . 159) (semantic-list "(a)" 159 . 162) (punctuation ":" 162 . 163) (semantic-list "(b)" 163 . 166) (punctuation ";" 166 . 167)))
+          ("MAX_CMD_LEN" . ((number "64" 1907 . 1909)))
+          ("MAX_ARG_NUM" . ((number "3" 1931 . 1932)))
+          ("MAX_PATH" . ((number "64" 186 . 188)))
+          )
+))
+  :file "!home!peter!workspace!msp430!tffs-lib-read-only!tshell!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

@@ -1,10 +1,10 @@
 ;;; fic-mode-autoloads.el --- automatically extracted autoloads
 ;;
 ;;; Code:
-
+(add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads (turn-on-fic-mode fic-mode) "fic-mode" "fic-mode.el"
-;;;;;;  (21716 11392 0 0))
+;;;### (autoloads nil "fic-mode" "fic-mode.el" (21793 64160 294036
+;;;;;;  787000))
 ;;; Generated autoloads from fic-mode.el
 
 (autoload 'fic-mode "fic-mode" "\
@@ -19,16 +19,9 @@ turn fic-mode on
 
 ;;;***
 
-;;;### (autoloads nil nil ("fic-mode-pkg.el") (21716 11392 493259
-;;;;;;  0))
-
-;;;***
-
-(provide 'fic-mode-autoloads)
 ;; Local Variables:
 ;; version-control: never
 ;; no-byte-compile: t
 ;; no-update-autoloads: t
-;; coding: utf-8
 ;; End:
 ;;; fic-mode-autoloads.el ends here

@@ -1,0 +1,112 @@
+;; Object msp430fr5739/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "msp430fr5739/"
+  :tables
+  (list
+    (semanticdb-table "Makefile"
+      :major-mode 'makefile-gmake-mode
+      :tags 
+        '( ("DEVICE" variable (:default-value ("msp430fr5739")) nil [1 21])
+            ("CC" variable (:default-value ("msp430-gcc")) nil [22 36])
+            ("CFLAGS" variable (:default-value ("-mmcu=$(DEVICE)" "-O2" "-g" "-Wall")) nil [36 72])
+            ("SRC" variable (:default-value ("rtc.c" "experimenter.c")) nil [161 186])
+            ("%.o" function (:arguments ("%.c")) nil [210 285])
+            ("all" function (:arguments ("$(SRC:.c=.o)")) nil [286 324])
+            ("clean" function nil nil [325 371]))          
+      :file "Makefile"
+      :pointmax 371
+      :fsize 370
+      :lastmodtime '(21786 57841 0 0)
+      :unmatched-syntax nil)
+    (semanticdb-table "rtc.c"
+      :major-mode 'c-mode
+      :tags 
+        '( ("stdio.h" include (:system-flag t) nil [1 19])
+            ("msp430fr5739.h" include (:system-flag t) nil [20 45])
+            ("experimenter.h" include nil nil [46 71])
+            ("timer_init" function
+               (:arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [90 95]))                  
+                :type "void")
+                nil [74 556])
+            ("main" function
+               (:arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [567 572]))                  
+                :type "int")
+                nil [558 862])
+            ("TIMER0_A0_ISR" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [977 982]))                  
+                :type "void")
+                nil [902 1096]))          
+      :file "rtc.c"
+      :pointmax 1097
+      :fsize 1096
+      :lastmodtime '(21781 46462 0 0)
+      :unmatched-syntax nil)
+    (semanticdb-table "experimenter.h"
+      :file "experimenter.h"
+      :fsize 502
+      :lastmodtime '(21781 45929 0 0))
+    (semanticdb-table "experimenter.c"
+      :major-mode 'c-mode
+      :tags 
+        '( ("experimenter.h" include nil nil [1 26])
+            ("uart_buff" variable
+               (:dereference 1
+                :typemodifiers ("volatile" "static")
+                :type ("uint8_t" type (:type "class") nil nil))
+                nil [28 76])
+            ("uart_next_open" variable
+               (:typemodifiers ("volatile" "static")
+                :default-value "0"
+                :type "unsigned int")
+                nil [77 125])
+            ("uart_next_out" variable
+               (:typemodifiers ("volatile" "static")
+                :default-value "0"
+                :type "unsigned int")
+                nil [126 173])
+            ("idle" variable
+               (:typemodifiers ("volatile" "static")
+                :default-value "1"
+                :type "int")
+                nil [174 203])
+            ("enable_led" function
+               (:arguments 
+                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [222 230]))                  
+                :type "void")
+                nil [206 313])
+            ("enable_uart" function (:type "void") nil [315 688])
+            ("read_uart" function (:type ("uint16_t" type (:type "class") nil nil)) nil [690 801])
+            ("putchar" function
+               (:arguments 
+                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [816 822]))                  
+                :type "int")
+                nil [804 1395])
+            ("set_clocks_out" function
+               (:arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1442 1447]))                  
+                :type "void")
+                nil [1422 1534])
+            ("set_led" function
+               (:arguments 
+                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [1549 1557])
+                    ("val" variable (:type "int") (reparse-symbol arg-sub-list) [1558 1566]))                  
+                :type "void")
+                nil [1536 1874])
+            ("UART_ISR" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1944 1949]))                  
+                :type "void")
+                nil [1876 2711]))          
+      :file "experimenter.c"
+      :pointmax 2712
+      :fsize 2711
+      :lastmodtime '(21786 40250 0 0)
+      :unmatched-syntax nil))
+  :file "!home!peter!shr!msp430fr5739!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

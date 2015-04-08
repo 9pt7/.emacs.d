@@ -1,0 +1,17 @@
+;; Object option/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "option/"
+  :tables
+  (list
+    (semanticdb-table "syscall.c"
+      :major-mode 'c-mode
+      :tags 
+        '( ("../ff.h" include nil nil [311 329]))          
+      :file "syscall.c"
+      :pointmax 4608
+      :fsize 4758
+      :lastmodtime '(21721 20888 0 0)
+      :unmatched-syntax nil))
+  :file "!home!peter!workspace!msp430!fatfs!src!option!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

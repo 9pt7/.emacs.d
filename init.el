@@ -1,8 +1,7 @@
+
 ;;; .emacs -- My emacs config file
 ;;; Commentary:
 ;;; Code:
-
-(byte-recompile-directory (expand-file-name "~/.emacs.d") 0)
 
 (require 'package)
 (package-initialize)
@@ -32,24 +31,9 @@
 					  :foreground "red3"
 					  :weight bold))))
 
-(require 'auto-highlight-symbol)
-;; (add-hook 'prog-mode-hook 'auto-highlight-symbol-mode)
-(ahs-set-idle-interval 0)
-(let ((ahs-spec '((t (:background "gainsboro" :foreground nil))))
-      (highlight-bg "#ffffff"))
-  (face-spec-set 'ahs-definition-face ahs-spec)
-  (face-spec-set 'ahs-edit-mode-face ahs-spec)
-  (face-spec-set 'ahs-face ahs-spec)
-  (face-spec-set 'ahs-plugin-bod-face ahs-spec)
-  (face-spec-set 'ahs-plugin-defalt-face ahs-spec)
-  (face-spec-set 'ahs-plugin-whole-buffer-face ahs-spec)
-  (face-spec-set 'ahs-warning-face ahs-spec))
 
-;; (setq split-height-threshold nil
-;;       split-width-threshold 80)
+(set-face-attribute 'default nil :height 105)
 
-
-;; Save clipboard to kill ring
 (auto-insert-mode 1)
 (setq set-mark-command-repeat-pop t
       ring-bell-function 'ignore)
@@ -61,7 +45,7 @@
 (show-paren-mode 1)
 (electric-pair-mode 1)
 (require 'flycheck)
-(global-flycheck-mode 1)
+(global-flycheck-mode 0)
 (add-to-list 'revert-without-query ".+\\.pdf$")
 (setq sentence-end-double-space t)
 (setq gc-cons-threshold 20000000)
@@ -80,7 +64,6 @@
 (setq gdb-show-main t)
 
 (require 'ido)
-;; (setq ido-mode 'buffer)
 (ido-mode 'buffers)
 
 (dotimes (i 10)
@@ -97,9 +80,6 @@
 	`((".*" . ,backup-dir))
 	auto-save-file-name-transforms
 	`((".*" ,backup-dir t))))
-
-;; (require 'expand-region)
-;; (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; Swap keys for regex and regular isearch/replace
 (global-set-key "\C-s" 'isearch-forward-regexp)
@@ -143,13 +123,35 @@ Does not set point.  Does nothing if mark ring is empty."
     (goto-char (or (car (last mark-ring 2)) (mark t)))
     (pop-mark2)))
 
+(defun my-fit-text-to-window (max-size)
+
+  ;; After saving current window configuration, split frame horizontally and
+  ;; decrease text size until the number of columns in the window is greater
+  ;; than 80.
+  (let ((frameset (frameset-save (list (selected-frame)))))
+    (delete-other-windows)
+    (split-window-horizontally)
+    (cl-labels
+	((fix-text-size (start-size)
+			(set-face-attribute 'default nil :height start-size)
+			(if (< (window-body-width) 80)
+			    (fix-text-size (- start-size 5))
+			  start-size)))
+      (let ((text-size (fix-text-size max-size)))
+	(frameset-restore frameset)
+	(set-face-attribute 'default nil :height text-size)
+	text-size))))
+
+
 (defun toggle-fullscreen ()
   "Toggle full screen on X11"
   (interactive)
   (when (eq window-system 'x)
     (set-frame-parameter
      nil 'fullscreen
-     (when (not (frame-parameter nil 'fullscreen)) 'fullboth))))
+     (when (not (frame-parameter nil 'fullscreen)) 'fullboth))
+    (when (frame-parameter nil 'fullscreen)
+      (my-fit-text-to-window 130))))
 
 (global-set-key [f11] 'toggle-fullscreen)
 
@@ -182,9 +184,16 @@ Does not set point.  Does nothing if mark ring is empty."
   "Call `compile' interactively from a chosen directory."
   (interactive)
   (let ((default-directory
-	  (read-directory-name "Compilation directory: "
-			       (or compilation-directory
-				   default-directory))))
+	  (read-directory-name
+	   "Compilation directory: "
+	   ;; Use current compilation directory if the default directory is a subdirectory
+	   (if (and compilation-directory
+		    (locate-dominating-file
+		     default-directory
+		     (lambda (dir)
+		       (file-equal-p dir compilation-directory))))
+	       compilation-directory
+	     default-directory))))
     (call-interactively 'compile)))
 
 (global-set-key "\C-ce" 'flycheck-list-errors)
@@ -218,13 +227,22 @@ Does not set point.  Does nothing if mark ring is empty."
   (when shell
     (setq explicit-shell-file-name shell)))
 
+
+(let ((ack-cmd
+       (or (executable-find "ack-grep")
+	   (executable-find "grep")))
+      (ack-args " --nogroup -H "))
+  (when ack-cmd
+      (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helm
-(require 'helm)
-(require 'helm-config)
+;; (require 'helm)
+;; (require 'helm-config)
 
-(global-set-key (kbd "C-c m") 'helm-semantic-or-imenu)
-(global-set-key (kbd "M-x") 'helm-M-x)
+;; (global-set-key (kbd "C-c m") 'helm-semantic-or-imenu)
+;; (global-set-key (kbd "M-x") 'helm-M-x)
+;; (define-key helm-map (kbd "C-z")  'helm-select-action)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Time modeline
@@ -319,10 +337,45 @@ Does not set point.  Does nothing if mark ring is empty."
   "My C mode hook."
   (semantic-mode 1)
   (semantic-idle-summary-mode 1)
-  (eldoc-mode -1))
+  (eldoc-mode -1)
+
+  ;; C-style comments
+  (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
+      comment-start "/* "
+      comment-end " */"))
 (add-hook 'c-mode-common-hook 'my-c-mode-hook)
 (define-key c-mode-map (kbd "M-C-.") 'semantic-symref-symbol)
 (define-key c++-mode-map (kbd "M-C-.") 'semantic-symref-symbol)
+
+;; Fix c++ enum
+
+(defun inside-class-enum-p (pos)
+  "Checks if POS is within the braces of a C++ \"enum class\"."
+  (ignore-errors
+    (save-excursion
+      (goto-char pos)
+      (up-list -1)
+      (backward-sexp 1)
+      (looking-back "enum[ \t]+class[ \t]+"))))
+ 
+(defun align-enum-class (langelem)
+  (if (inside-class-enum-p (c-langelem-pos langelem))
+      0
+    (c-lineup-topmost-intro-cont langelem)))
+ 
+(defun align-enum-class-closing-brace (langelem)
+  (if (inside-class-enum-p (c-langelem-pos langelem))
+      '-
+    '+))
+ 
+(defun fix-enum-class ()
+  "Setup `c++-mode' to better handle \"class enum\"."
+  (add-to-list 'c-offsets-alist '(topmost-intro-cont . align-enum-class))
+  (add-to-list 'c-offsets-alist
+               '(statement-cont . align-enum-class-closing-brace)))
+ 
+(add-hook 'c++-mode-hook 'fix-enum-class)
+
 
 ;; Make \\[pop-tag-mark] work with \\[semantic-ia-fast-jump].
 (require 'etags)
@@ -526,7 +579,6 @@ The app is chosen from your OS's preference."
 (setq inferior-lisp-program "sbcl")
 (slime-setup)
 
-(define-key helm-map (kbd "C-z")  'helm-select-action)
 (defun slime-eval-region-dwim ()
   "Evaluate region if it is active, otherwise evaluate the entire buffer."
   (interactive)
@@ -626,7 +678,6 @@ The app is chosen from your OS's preference."
   (with-current-buffer (get-buffer "*scratch*")
     (text-mode)))
 (init-scratch-buffer)
-
 
 (provide '.emacs)
 ;;; .emacs ends here

@@ -2,9 +2,13 @@
 ;; Automatically generated file!!! DO NOT EDIT!!!
 
 (setq url-cookie-storage
- '(("marmalade-repo.org"
-  [url-cookie "httpOnly" nil "Tue, 08 Apr 2014 02:10:48 GMT" "/" "marmalade-repo.org" nil]
-  [url-cookie "connect.sid" "6avdqzJw2yRRtJovFMQXRfwF.ITf0tJKlS3pDQZqGmzKCVD84XrtcKIYoJ6W0NIqaKsE" "Tue, 08 Apr 2014 02:10:48 GMT" "/" "marmalade-repo.org" nil]))
+ '((".google.ca"
+  [url-cookie "PREF" "ID=352acc7b0f9ed6bd:U=27487e3fe7efc1bd:FF=0:TM=1427685193:LM=1427685197:S=0vrHR3RxrS3LPtQZ" "29-Mar-2017 03:13:17.00 GMT" "/" ".google.ca" nil]
+  [url-cookie "NID" "67=Yzuc3AFQeHMOzW_V2TWuDMEBuNyPwlmn8qkcnzK9RZ8TTEK3uEt9Ndul_bii5a5EUTr3LAZ-Sz8DWN0uMbdfDERrkB7TEt_J3rbihZBPzbH0Uri0FpQT1wYAoEU750br" "29-Sep-2015 03:13:13.00 GMT" "/" ".google.ca" nil]
+  [url-cookie "HttpOnly" nil "29-Sep-2015 03:13:13.00 GMT" "/" ".google.ca" nil])
+ (".reddit.com"
+  [url-cookie "__cfduid" "db172b81a45029692dea4a5530e9b74c31427685235" "29 Mar 16 03:13:55 [GMT]" "/" ".reddit.com" nil]
+  [url-cookie "HttpOnly" nil "29 Mar 16 03:13:55 [GMT]" "/" ".reddit.com" nil]))
 )
 (setq url-cookie-secure-storage
  'nil)

@@ -1,0 +1,285 @@
+;; Object microfat/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "microfat/"
+  :tables
+  (list
+    (semanticdb-table "test_interface.c"
+      :major-mode 'c-mode
+      :tags 
+        '( ("stdio.h" include (:system-flag t) nil [1 19])
+            ("TEST_FN" variable (:constant-flag t) nil [29 36])
+            ("fd" variable
+               (:pointer 1
+                :typemodifiers ("static")
+                :type ("FILE" type (:type "class") nil nil))
+                nil [48 64])
+            ("read_sector" function
+               (:arguments 
+                  ( ("sec" variable (:type ("SEC_IDX" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [164 176])
+                    ("buf" variable
+                       (:dereference 1
+                        :type ("BYTE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [177 188]))                  
+                :type "int")
+                nil [148 234])
+            ("write_sector" function
+               (:arguments 
+                  ( ("sec" variable (:type ("SEC_IDX" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [324 336])
+                    ("buf" variable
+                       (:dereference 1
+                        :constant-flag t
+                        :type ("BYTE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [337 354]))                  
+                :type "int")
+                nil [307 400])
+            ("main" function
+               (:arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [412 417]))                  
+                :type "int")
+                nil [403 483]))          
+      :file "test_interface.c"
+      :pointmax 484
+      :fsize 483
+      :lastmodtime '(21795 9158 845477 209000)
+      :unmatched-syntax nil
+      :lexical-table 
+        '(("TEST_FN" . ((string "\"test_fat\"" 37 . 47)))
+          )
+)
+    (semanticdb-table "fat.c"
+      :major-mode 'c-mode
+      :tags 
+        '( ("fat.h" include nil nil [1 17])
+            ("vol" variable (:type ("FATCache" type
+                 (:prototype t
+                  :type "struct")
+                  nil nil)) nil [19 155])
+            ("FATCache" type
+               (:members 
+                  ( ("blocks_per_alloc" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [41 66])
+                    ("num_fat_copies" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [71 94])
+                    ("num_blocks" variable (:type ("uint32_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [99 119])
+                    ("blocks_per_fat" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [124 148]))                  
+                :type "struct")
+                nil [19 155])
+            ("mf_buf" variable
+               (:dereference 1
+                :type ("uint8_t" type (:type "class") nil nil))
+                nil [157 177])
+            ("read_fat_sector" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("i" variable (:type "int") (reparse-symbol arg-sub-list) [311 317]))                  
+                :type "void")
+                nil [283 353])
+            ("last_used_alloc_unit" function
+               (:typemodifiers ("static")
+                :type "int")
+                nil [572 730])
+            ("cluster_to_alloc" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("cluster" variable (:type ("SEC_IDX" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [827 843]))                  
+                :type ("SEC_IDX" type (:type "class") nil nil))
+                nil [795 945])
+            ("last_free_alloc_unit_from_end" function
+               (:typemodifiers ("static")
+                :type ("SEC_IDX" type (:type "class") nil nil))
+                nil [1082 1788])
+            ("init" function
+               (:arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1801 1806]))                  
+                :type "void")
+                nil [1791 3496]))          
+      :file "fat.c"
+      :pointmax 3497
+      :fsize 3496
+      :lastmodtime '(21795 50552 520561 711000)
+      :unmatched-syntax nil)
+    (semanticdb-table "fat.h"
+      :major-mode 'c-mode
+      :tags 
+        '( ("FAT_H" variable (:constant-flag t) nil [23 28])
+            ("stdint.h" include (:system-flag t) nil [30 49])
+            ("SEC_SZ" variable (:constant-flag t) nil [59 65])
+            ("SEC_IDX" type
+               (:typedef ("uint16_t" type (:type "class") nil nil)
+                :type "typedef")
+                nil [71 96])
+            ("BYTE" type
+               (:typedef ("char")
+                :type "typedef")
+                nil [97 115])
+            ("mf_buf" variable
+               (:dereference 1
+                :type ("BYTE" type (:type "class") nil nil))
+                nil [131 151])
+            ("mf_read_sector" variable (:constant-flag t) nil [161 175])
+            ("read_bootblock" variable (:constant-flag t) nil [214 228])
+            ("BB_READ" variable (:constant-flag t) nil [258 265])
+            ("BB_BYTES_PER_BLOCK" variable (:constant-flag t) nil [445 463])
+            ("BB_RESERVED" variable (:constant-flag t) nil [551 562])
+            ("BB_NUM_FAT_COPIES" variable (:constant-flag t) nil [598 615])
+            ("BB_NUM_BLOCKS1" variable (:constant-flag t) nil [649 663])
+            ("BB_MEDIA_DESC" variable (:constant-flag t) nil [699 712])
+            ("BB_BLOCKS_PER_FAT" variable (:constant-flag t) nil [747 764])
+            ("BB_TOTAL_BLOCKS2" variable (:constant-flag t) nil [799 815])
+            ("BB_VOL_LABEL" variable (:constant-flag t) nil [850 862])
+            ("BB_FILE_SYS" variable (:constant-flag t) nil [895 906])
+            ("BB_SIG" variable (:constant-flag t) nil [939 945])
+            ("FAT_ENTRIES_PER_SEC" variable (:constant-flag t) nil [1085 1104])
+            ("FAT_ENTRIES_PER_SEC" variable (:constant-flag t) nil [1085 1104])
+            ("FAT_ENTRIES_PER_SEC" variable (:constant-flag t) nil [1085 1104])
+            ("FAT_ENTRIES_PER_SEC" variable (:constant-flag t) nil [1085 1104])
+            ("FAT_EMPTY_ENTRY" variable (:constant-flag t) nil [1127 1142])
+            ("FAT_EMPTY_ENTRY" variable (:constant-flag t) nil [1127 1142])
+            ("FAT_EMPTY_ENTRY" variable (:constant-flag t) nil [1127 1142])
+            ("FAT_EMPTY_ENTRY" variable (:constant-flag t) nil [1127 1142])
+            ("FAT_SUCC_IDX" variable (:constant-flag t) nil [1158 1170])
+            ("FAT_BUF_AS_FAT" variable (:constant-flag t) nil [1224 1238])
+            ("FAT_DIR_ENTRY" variable (:constant-flag t) nil [1333 1346])
+            ("FAT_DIR_ENTRY_FILENAME" variable (:constant-flag t) nil [1383 1405])
+            ("FAT_DIR_ENTRY_EXT" variable (:constant-flag t) nil [1450 1467])
+            ("FAT_DIR_ENTRY_ATTRIBS" variable (:constant-flag t) nil [1513 1534])
+            ("FAT_DIR_ENTRY_TIME" variable (:constant-flag t) nil [1582 1600])
+            ("FAT_DIR_ENTRY_DATE" variable (:constant-flag t) nil [1650 1668])
+            ("FAT_DIR_ENTRY_CLUSTER" variable (:constant-flag t) nil [1718 1739])
+            ("FAT_DIR_ENTRY_FILESIZE" variable (:constant-flag t) nil [1788 1810])
+            ("FAT_FILE_READ_ONLY" variable (:constant-flag t) nil [1945 1963])
+            ("FAT_FILE_HIDDEN" variable (:constant-flag t) nil [1977 1992])
+            ("FAT_FILE_SYS_FILE" variable (:constant-flag t) nil [2007 2024])
+            ("FAT_FILE_VOL_LABEL" variable (:constant-flag t) nil [2038 2056])
+            ("FAT_FILE_VOL_SUBDIR" variable (:constant-flag t) nil [2070 2089])
+            ("FAT_FILE_VOL_ARCHIVE" variable (:constant-flag t) nil [2103 2123])
+            ("fopen" function
+               (:prototype-flag t
+                :pointer 1
+                :arguments 
+                  ( ("filename" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [2205 2226])
+                    ("mode" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [2227 2244]))                  
+                :type ("FILE" type (:type "class") nil nil))
+                nil [2193 2245])
+            ("fclose" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("stream" variable
+                       (:pointer 1
+                        :type ("FILE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2286 2299]))                  
+                :type "int")
+                nil [2275 2300])
+            ("fgetc" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("stream" variable
+                       (:pointer 1
+                        :type ("FILE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2312 2325]))                  
+                :type "int")
+                nil [2302 2326])
+            ("fputc" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("character" variable (:type "int") (reparse-symbol arg-sub-list) [2337 2351])
+                    ("stream" variable
+                       (:pointer 1
+                        :type ("FILE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2352 2365]))                  
+                :type "int")
+                nil [2327 2366])
+            ("fflush" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("stream" variable
+                       (:pointer 1
+                        :type ("FILE" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2378 2391]))                  
+                :type "int")
+                nil [2367 2392])
+            ("opendir" function
+               (:prototype-flag t
+                :pointer 1
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :constant-flag t
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [2407 2420]))                  
+                :type ("DIR" type (:type "class") nil nil))
+                nil [2394 2421])
+            ("closedir" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :type ("DIR" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2435 2441]))                  
+                :type "int")
+                nil [2422 2442])
+            ("readdir" function
+               (:prototype-flag t
+                :pointer 1
+                :arguments 
+                  ( ("" variable
+                       (:pointer 1
+                        :type ("DIR" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [2466 2472]))                  
+                :type ("dirent" type
+                     (:prototype t
+                      :type "struct")
+                      nil nil))
+                nil [2443 2473]))          
+      :file "fat.h"
+      :pointmax 2488
+      :fsize 2486
+      :lastmodtime '(21795 48884 900497 193000)
+      :unmatched-syntax nil
+      :lexical-table 
+        '(("BB_READ" (spp-arg-list ("type" "off") 260 . 271) . ((semantic-list "((type)(mf_buf + off))" 272 . 294)))
+          ("BB_BYTES_PER_BLOCK" . ((symbol "BB_READ" 459 . 466) (semantic-list "(uint16_t*	, 0x0b)" 466 . 484)))
+          ("BB_SIG" . ((symbol "BB_READ" 943 . 950) (semantic-list "(uint16_t*	, 0x1fe)" 950 . 969)))
+          ("FAT_BUF_AS_FAT" . ((semantic-list "((uint16_t*)mf_buf)" 1234 . 1253)))
+          ("BB_FILE_SYS" . ((symbol "BB_READ" 903 . 910) (semantic-list "(char*		, 0x36)" 910 . 925)))
+          ("FAT_DIR_ENTRY_DATE" (spp-arg-list ("i") 1663 . 1666) . ((semantic-list "((uint16_t*)FAT_DIR_ENTRY(i)	+ 0x18)" 1668 . 1704)))
+          ("BB_TOTAL_BLOCKS2" . ((symbol "BB_READ" 811 . 818) (semantic-list "(uint32_t*	, 0x20)" 818 . 836)))
+          ("FAT_DIR_ENTRY_EXT" (spp-arg-list ("i") 1462 . 1465) . ((semantic-list "((char*)FAT_DIR_ENTRY(i)	+ 0x08)" 1467 . 1499)))
+          ("FAT_DIR_ENTRY_TIME" (spp-arg-list ("i") 1595 . 1598) . ((semantic-list "((uint16_t*)FAT_DIR_ENTRY(i)	+ 0x16)" 1600 . 1636)))
+          ("FAT_DIR_ENTRY_FILESIZE" (spp-arg-list ("i") 1805 . 1808) . ((semantic-list "((uint32_t*)FAT_DIR_ENTRY(i)	+ 0x1c)" 1809 . 1845)))
+          ("FAT_FILE_HIDDEN" . ((number "0x02" 1989 . 1993)))
+          ("BB_BLOCKS_PER_ALLOC" . ((symbol "BB_READ" 513 . 520) (semantic-list "(uint8_t*	, 0x0d)" 520 . 537)))
+          ("FAT_DIR_ENTRY_FILENAME" (spp-arg-list ("i") 1400 . 1403) . ((semantic-list "((char*)FAT_DIR_ENTRY(i)	+ 0x00)" 1404 . 1436)))
+          ("SEC_SZ" . ((number "512" 66 . 69)))
+          ("FAT_FILE_READ_ONLY" . ((number "0x01" 1959 . 1963)))
+          ("FAT_ENTRIES_PER_SEC" . ((semantic-list "(SEC_SZ / 2)" 1100 . 1112)))
+          ("FAT_SUCC_IDX" (spp-arg-list ("cluster") 1165 . 1174) . ((semantic-list "(((uint16_t*)mf_buf) + cluster + 2)" 1175 . 1210)))
+          ("FAT_FILE_SYS_FILE" . ((number "0x04" 2020 . 2024)))
+          ("SEC")
+          ("mf_read_sector" (spp-arg-list ("sec") 170 . 175) . ((symbol "read_sector" 176 . 187) (semantic-list "(sec, mf_buf)" 187 . 200)))
+          ("BB_VOL_LABEL" . ((symbol "BB_READ" 859 . 866) (semantic-list "(char*		, 0x2b)" 866 . 881)))
+          ("FAT_FILE_VOL_LABEL" . ((number "0x08" 2052 . 2056)))
+          ("BB_RESERVED" . ((symbol "BB_READ" 559 . 566) (semantic-list "(uint16_t*	, 0x0e)" 566 . 584)))
+          ("FAT_DIR_ENTRY_ATTRIBS" (spp-arg-list ("i") 1529 . 1532) . ((semantic-list "((uint8_t*)FAT_DIR_ENTRY(i)	+ 0x0b)" 1533 . 1568)))
+          ("FAT_FILE_VOL_SUBDIR" . ((number "0x10" 2085 . 2089)))
+          ("FAT_H")
+          ("read_bootblock" (spp-arg-list nil 223 . 225) . ((symbol "mf_read_sector" 226 . 240) (semantic-list "(0)" 240 . 243)))
+          ("BB_NUM_FAT_COPIES" . ((symbol "BB_READ" 611 . 618) (semantic-list "(uint8_t*	, 0x10)" 618 . 635)))
+          ("BB_NUM_BLOCKS1" . ((symbol "BB_READ" 660 . 667) (semantic-list "(uint16_t*	, 0x13)" 667 . 685)))
+          ("BB_BLOCKS_PER_FAT" . ((symbol "BB_READ" 760 . 767) (semantic-list "(uint16_t*	, 0x16)" 767 . 785)))
+          ("FAT_EMPTY_ENTRY" . ((number "0xffff" 1138 . 1144)))
+          ("FAT_DIR_ENTRY_CLUSTER" (spp-arg-list ("i") 1734 . 1737) . ((semantic-list "((uint16_t*)FAT_DIR_ENTRY(i)	+ 0x1a)" 1738 . 1774)))
+          ("BB_MEDIA_DESC" . ((symbol "BB_READ" 709 . 716) (semantic-list "(uint8_t*	, 0x15)" 716 . 733)))
+          ("FAT_DIR_ENTRY" (spp-arg-list ("i") 1341 . 1344) . ((semantic-list "((uint32_t*)mf_buf + i)" 1346 . 1369)))
+          ("FAT_FILE_VOL_ARCHIVE" . ((number "0x20" 2119 . 2123)))
+          )
+))
+  :file "!home!peter!workspace!msp430!microfat!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

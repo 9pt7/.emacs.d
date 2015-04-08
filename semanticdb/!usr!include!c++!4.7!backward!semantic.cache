@@ -1,0 +1,69 @@
+;; Object backward/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "backward/"
+  :tables
+  (list
+    (semanticdb-table "binders.h"
+      :major-mode 'c++-mode
+      :tags 
+        '( ("_BACKWARD_BINDERS_H" variable (:constant-flag t) nil [2443 2462])
+            ("std" type
+               (:members 
+                  ( ("bind1st" function
+                       (:template 
+                          ( ("_Operation" type (:type "class") nil nil)
+                            ("_Tp" type (:type "class") nil nil))                          
+                        :type ("binder1st" type
+                             (:template-specifier 
+                                ( ("_Operation" type nil nil nil))                                
+                              :type "class")
+                              nil nil)
+                        :arguments 
+                          ( ("__fn" variable
+                               (:reference 1
+                                :constant-flag t
+                                :type ("_Operation" type (:type "class") nil nil))
+                                (reparse-symbol arg-sub-list) [5581 5604])
+                            ("__x" variable
+                               (:reference 1
+                                :constant-flag t
+                                :type ("_Tp" type (:type "class") nil nil))
+                                (reparse-symbol arg-sub-list) [5605 5620]))                          
+                        :typemodifiers ("inline"))
+                        (reparse-symbol namespacesubparts) [5492 5758])
+                    ("bind2nd" function
+                       (:template 
+                          ( ("_Operation" type (:type "class") nil nil)
+                            ("_Tp" type (:type "class") nil nil))                          
+                        :type ("binder2nd" type
+                             (:template-specifier 
+                                ( ("_Operation" type nil nil nil))                                
+                              :type "class")
+                              nil nil)
+                        :arguments 
+                          ( ("__fn" variable
+                               (:reference 1
+                                :constant-flag t
+                                :type ("_Operation" type (:type "class") nil nil))
+                                (reparse-symbol arg-sub-list) [6784 6807])
+                            ("__x" variable
+                               (:reference 1
+                                :constant-flag t
+                                :type ("_Tp" type (:type "class") nil nil))
+                                (reparse-symbol arg-sub-list) [6808 6823]))                          
+                        :typemodifiers ("inline"))
+                        (reparse-symbol namespacesubparts) [6695 6962]))                  
+                :type "namespace")
+                nil [2466 7010]))          
+      :file "binders.h"
+      :pointmax 7058
+      :fsize 7057
+      :lastmodtime '(20713 58362 0 0)
+      :unmatched-syntax '((symbol 7000 . 7008) (punctuation 6634 . 6635) (semantic-list 5983 . 6614) (punctuation 5977 . 5978) (symbol 5966 . 5977) (punctuation 5965 . 5966) (punctuation 5964 . 5965) (symbol 5954 . 5964) (TYPENAME 5945 . 5953) (punctuation 5936 . 5937) (symbol 5917 . 5936) (punctuation 5916 . 5917) (punctuation 5915 . 5916) (symbol 5905 . 5915) (TYPENAME 5896 . 5904) (punctuation 5895 . 5896) (symbol 5881 . 5895) (PUBLIC 5874 . 5880) (punctuation 5872 . 5873) (symbol 5858 . 5867) (CLASS 5852 . 5857) (punctuation 5846 . 5847) (symbol 5836 . 5846) (TYPENAME 5827 . 5835) (punctuation 5826 . 5827) (TEMPLATE 5818 . 5826) (punctuation 5431 . 5432) (semantic-list 4780 . 5411) (punctuation 4774 . 4775) (symbol 4763 . 4774) (punctuation 4762 . 4763) (punctuation 4761 . 4762) (symbol 4751 . 4761) (TYPENAME 4742 . 4750) (punctuation 4733 . 4734) (symbol 4713 . 4733) (punctuation 4712 . 4713) (punctuation 4711 . 4712) (symbol 4701 . 4711) (TYPENAME 4692 . 4700) (punctuation 4691 . 4692) (symbol 4677 . 4691) (PUBLIC 4670 . 4676) (punctuation 4668 . 4669) (symbol 4654 . 4663) (CLASS 4648 . 4653) (punctuation 4642 . 4643) (symbol 4632 . 4642) (TYPENAME 4623 . 4631) (punctuation 4622 . 4623) (TEMPLATE 4614 . 4622))
+      :lexical-table 
+        '(("_BACKWARD_BINDERS_H" . ((number "1" 2463 . 2464)))
+          )
+))
+  :file "!usr!include!c++!4.7!backward!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")
