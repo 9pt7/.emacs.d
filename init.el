@@ -196,6 +196,23 @@ Does not set point.  Does nothing if mark ring is empty."
 	     default-directory))))
     (call-interactively 'compile)))
 
+(let ((ack-cmd
+       (cond ((executable-find "ack-grep") "ack-grep")
+	     ((executable-find "ack") "ack")))
+      (ack-args " --nogroup -H "))
+  (when ack-cmd
+    (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
+
+(defun grep-override (grep-cmd)
+  (let ((old-cmd grep-command))
+    (grep-apply-setting 'grep-command grep-cmd)
+    (call-interactively #'grep)
+    (grep-apply-setting 'grep-command old-cmd)))
+
+(defun grep-global ()
+  (interactive)
+  (grep-override "global --result grep -xi "))
+
 (global-set-key "\C-ce" 'flycheck-list-errors)
 (global-set-key "\C-cs" 'shell)
 (global-set-key "\C-cr" 'recompile)
@@ -204,6 +221,8 @@ Does not set point.  Does nothing if mark ring is empty."
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key "\C-cf" 'recentf-open-files)
 (global-set-key "\C-cg" 'magit-status)
+(global-set-key "\C-cb" 'grep-global)
+(global-set-key "\C-cp" 'grep)
 
 (require 'org-bibtex)
 (defun my-org-bibtex-transfer ()
@@ -227,13 +246,6 @@ Does not set point.  Does nothing if mark ring is empty."
   (when shell
     (setq explicit-shell-file-name shell)))
 
-
-(let ((ack-cmd
-       (or (executable-find "ack-grep")
-	   (executable-find "grep")))
-      (ack-args " --nogroup -H "))
-  (when ack-cmd
-      (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helm
@@ -395,7 +407,7 @@ Does not set point.  Does nothing if mark ring is empty."
 		      (error (string-trim (buffer-string)))))))
     (when (buffer-file-name)
       (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
-      (call "gtags" "--single-update" (buffer-file-name)))))
+      (call "global" "-u"))))
 
 (defun my/update-gtags-on-save-hook ()
   "Update GTAGS for the current file."
@@ -631,7 +643,8 @@ The app is chosen from your OS's preference."
 
 (c-add-style "my-cc-mode"
 		  '("cc-mode"
-		    (c-offsets-alist . ((innamespace . [0])))))
+		    (c-offsets-alist . ((innamespace . 0)
+					(inline-open . 0)))))
 
 (defun my-cpp-setup()
   (c-set-style "my-cc-mode")
