@@ -6,12 +6,12 @@
     (semanticdb-table "stubs.h"
       :major-mode 'c-mode
       :tags 
-        '( ("bits/wordsize.h" include (:system-flag t) nil [129 155]))          
+        '( ("gnu/stubs-32.h" include (:system-flag t) nil [195 221]))          
       :file "stubs.h"
-      :pointmax 316
-      :fsize 315
-      :lastmodtime '(21737 48919 0 0)
-      :unmatched-syntax '((string 269 . 308) (symbol 263 . 268) (punctuation 261 . 262))))
+      :pointmax 385
+      :fsize 384
+      :lastmodtime '(21764 6193 0 0)
+      :unmatched-syntax nil))
   :file "!usr!include!x86_64-linux-gnu!gnu!semantic.cache"
   :semantic-tag-version "2.0"
   :semanticdb-version "2.2")

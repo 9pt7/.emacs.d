@@ -3,1919 +3,272 @@
 (semanticdb-project-database-file "msp430/"
   :tables
   (list
-    (semanticdb-table "main.c"
-      :major-mode 'c-mode
-      :tags 
-        '( ("msp430fr5739.h" include (:system-flag t) nil [1 26])
-            ("clock.h" include nil nil [27 45])
-            ("timer.h" include nil nil [46 64])
-            ("pins.h" include nil nil [65 82])
-            ("main" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [93 98]))                  
-                :type "int")
-                nil [84 427]))          
-      :file "main.c"
-      :pointmax 428
-      :fsize 427
-      :lastmodtime '(21789 57520 396418 616000)
-      :unmatched-syntax nil)
     (semanticdb-table "Makefile"
       :major-mode 'makefile-gmake-mode
       :tags 
-        '( ("DEVICE" variable (:default-value ("msp430fr5739")) nil [1 21])
-            ("FRAM_START" variable (:default-value ("0xF200")) nil [350 368])
-            ("FRAM_END" variable (:default-value ("0xFE00")) nil [368 384])
-            ("FRAM_SZ" variable (:default-value ("0x0C00")) nil [384 399])
-            ("CC" variable (:default-value ("msp430-gcc")) nil [400 414])
-            ("CXX" variable (:default-value ("msp430-g++")) nil [414 429])
-            ("CFLAGS" variable (:default-value ("-mmcu=$(DEVICE)" "-O2" "-std=gnu99" "-g" "-Wall" "-Wa,-ahl=$*.lst" "-D" "FRAM_SZ=$(FRAM_SZ)" "-D" "FRAM_START=$(FRAM_START)" "-D" "FRAM_END=$(FRAM_END)")) nil [430 569])
-            ("SRC" variable (:default-value ("main.c" "pins.c" "clock.c" "timer.c")) nil [570 604])
-            ("MMCSRC" variable (:default-value ("mmc.c" "experimenter.c" "pins.c" "clock.c" "MMC_lib/mmc.c" "MMC_lib/hal_SPI.c")) nil [604 679])
-            ("MMCLIBSRC" variable (:default-value ("MMC_lib/mmc.c" "MMC_lib/hal_SPI.c" "MMC_lib/main.c" "experimenter.c")) nil [679 751])
-            ("MMC2SRC" variable (:default-value ("mmc/main.c" "pins.c" "mmc/spi.c" "clock.c" "experimenter.c")) nil [751 810])
-            ("FRAMSRC" variable (:default-value ("framtest/main.c" "experimenter.c" "pins.c")) nil [810 856])
-            ("ALLSRC" variable (:default-value ("$(MMCSRC)" "$(MMCLIBSRC)" "$(MMC2SRC)" "$(FRAMSRC)")) nil [856 910])
-            ("echofram" function nil nil [934 991])
-            ("test" function nil nil [992 1018])
-            ("%.o" function (:arguments ("%.c")) nil [1019 1094])
-            ("%.o" function (:arguments ("%.cpp")) nil [1095 1140])
-            ("all" function (:arguments ("$(SRC:.c=.o)")) nil [1141 1179])
-            ("mmc" function (:arguments ("$(MMCSRC:.c=.o)")) nil [1180 1221])
-            ("mmc2" function (:arguments ("$(MMC2SRC:.c=.o)")) nil [1222 1265])
-            ("mmclib" function (:arguments ("$(MMCLIBSRC:.c=.o)")) nil [1266 1313])
-            ("framtest" function (:arguments ("$(FRAMSRC:.c=.o)")) nil [1314 1401])
-            ("clean" function nil nil [1402 1488]))          
+        '( ("PATH" function (:arguments ("=" "/usr/lib/x86_64-linux-gnu:$(PATH)")) nil [2 51])
+            ("export" function (:arguments ("=" "/usr/lib/x86_64-linux-gnu:$(PATH)")) nil [2 51])
+            ("GCC_DIR" variable (:default-value ("/home/peter/ti/gcc/bin")) nil [52 86])
+            ("SUPPORT_FILE_DIR" variable (:default-value ("/home/peter/ti/gcc/include")) nil [86 133])
+            ("DEVICE" variable (:default-value ("msp430fr5969")) nil [134 157])
+            ("CC" variable (:default-value ("$(GCC_DIR)/msp430-elf-gcc")) nil [157 189])
+            ("BUILDDIR" variable (:default-value ("build")) nil [189 207])
+            ("EXPERIMENTERSRC" variable (:default-value ("experimenter.c")) nil [207 241])
+            ("FATFSSRC" variable (:default-value ("fatfs/ff.c" "fatfs/option/unicode.c")) nil [241 287])
+            ("SRC" variable (:default-value ("main.c" "time.c" "$(EXPERIMENTERSRC)")) nil [287 327])
+            ("FRAM_START" variable (:default-value ("0xE000")) nil [403 423])
+            ("CFLAGS" variable (:default-value ("-mmcu=$(DEVICE)" "-g3" "-std=gnu99" "-Wall" "-Wl,--section-start=.fram=$(FRAM_START)" "-I" "$(SUPPORT_FILE_DIR)")) nil [424 536])
+            ("OBJS" variable (:default-value ("$(patsubst %.c,$(BUILDDIR)/%.o,$(SRC))")) nil [538 585])
+            ("FATFSOBJS" variable (:default-value ("$(patsubst %.c,$(BUILDDIR)/%.o,$(FATFSSRC))")) nil [585 642])
+            ("$(BUILDDIR)" function (:arguments ("%.c" "Makefile")) nil [697 882])
+            ("all" function (:arguments ("$(OBJS)")) nil [883 916])
+            ("clean" function nil nil [917 950]))          
       :file "Makefile"
-      :pointmax 1488
-      :fsize 1487
-      :lastmodtime '(21797 35465 250139 923000)
+      :pointmax 950
+      :fsize 949
+      :lastmodtime '(21800 9853 107992 834000)
       :unmatched-syntax nil)
-    (semanticdb-table "experimenter.h"
+    (semanticdb-table "main.c"
       :major-mode 'c-mode
       :tags 
-        '( ("EXPERIMENTER_H" variable (:constant-flag t) nil [32 46])
-            ("msp430fr5739.h" include (:system-flag t) nil [48 73])
-            ("stdint.h" include (:system-flag t) nil [74 93])
-            ("UART_BUFF_SZ" variable (:constant-flag t) nil [103 115])
-            ("LED1" variable (:constant-flag t) nil [128 132])
-            ("LED2" variable (:constant-flag t) nil [146 150])
-            ("LED3" variable (:constant-flag t) nil [164 168])
-            ("LED4" variable (:constant-flag t) nil [182 186])
-            ("LED5" variable (:constant-flag t) nil [200 204])
-            ("LED6" variable (:constant-flag t) nil [218 222])
-            ("LED7" variable (:constant-flag t) nil [236 240])
-            ("LED8" variable (:constant-flag t) nil [254 258])
-            ("putchar" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "int"
-                :arguments 
-                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [539 545]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [527 546])
-            ("write_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("data" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [512 525]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [496 526])
-            ("read_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type ("uint16_t" type (:type "class") nil nil)
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [474 495])
-            ("enable_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [467 472]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [450 473])
-            ("set_clocks_out" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [443 448]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [423 449])
-            ("set_led" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [404 412])
-                    ("val" variable (:type "int") (reparse-symbol arg-sub-list) [413 421]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [391 422])
-            ("enable_led" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [381 389]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [365 390])
-            ("putchar" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "int"
-                :arguments 
-                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [539 545]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [527 546])
-            ("write_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("data" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [512 525]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [496 526])
-            ("read_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type ("uint16_t" type (:type "class") nil nil)
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [474 495])
-            ("enable_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [467 472]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [450 473])
-            ("set_clocks_out" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [443 448]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [423 449])
-            ("set_led" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [404 412])
-                    ("val" variable (:type "int") (reparse-symbol arg-sub-list) [413 421]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [391 422])
-            ("enable_led" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [381 389]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [365 390])
-            ("putchar" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "int"
-                :arguments 
-                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [539 545]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [527 546])
-            ("write_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("data" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [512 525]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [496 526])
-            ("read_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type ("uint16_t" type (:type "class") nil nil)
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [474 495])
-            ("enable_uart" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [467 472]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [450 473])
-            ("set_clocks_out" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [443 448]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [423 449])
-            ("set_led" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [404 412])
-                    ("val" variable (:type "int") (reparse-symbol arg-sub-list) [413 421]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [391 422])
-            ("enable_led" function
-               (:typemodifiers ("extern" "\"C\"")
-                :type "void"
-                :arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [381 389]))                  
-                :prototype-flag t)
-                (reparse-symbol extern-c-contents) [365 390]))          
-      :file "experimenter.h"
-      :pointmax 584
-      :fsize 583
-      :lastmodtime '(21795 60321 21309 329000)
+        '( ("stdio.h" include (:system-flag t) nil [1 19])
+            ("msp430.h" include (:system-flag t) nil [20 39])
+            ("experimenter.h" include nil nil [40 65])
+            ("time.h" include nil nil [66 83])
+            ("FRAMVAR" variable (:constant-flag t) nil [93 100])
+            ("data" variable
+               (:default-value "{{0}}"
+                :type ("" type
+                     (:members 
+                        ( ("c" variable
+                             (:dereference 1
+                              :type ("uint32_t" type (:type "class") nil nil))
+                              (reparse-symbol classsubparts) [150 167]))                        
+                      :type "struct")
+                      nil nil))
+                nil [137 191])
+            ("PRINTHEX" variable (:constant-flag t) nil [201 209])
+            ("PRINTP" variable (:constant-flag t) nil [253 259])
+            ("PRINTP" variable (:constant-flag t) nil [253 259])
+            ("_etext" variable
+               (:typemodifiers ("extern")
+                :type "int")
+                nil [294 312])
+            ("__data_start" variable
+               (:typemodifiers ("extern")
+                :type "int")
+                nil [313 337])
+            ("_edata" variable
+               (:typemodifiers ("extern")
+                :type "int")
+                nil [338 356])
+            ("__bss_start" variable
+               (:typemodifiers ("extern")
+                :type "int")
+                nil [357 380])
+            ("__bss_end" variable
+               (:typemodifiers ("extern")
+                :type "int")
+                nil [381 402])
+            ("__stack" variable
+               (:typemodifiers ("extern")
+                :type "int")
+                nil [403 422])
+            ("main" function
+               (:arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [433 438]))                  
+                :type "int")
+                nil [424 1107]))          
+      :file "main.c"
+      :pointmax 1108
+      :fsize 1107
+      :lastmodtime '(21800 1972 60908 867000)
       :unmatched-syntax nil
       :lexical-table 
-        '(("HIGH" . ((number "1" 292 . 293)))
-          ("LED1" . ((symbol "BIT0" 133 . 137)))
-          ("LED2" . ((symbol "BIT1" 151 . 155)))
-          ("LED3" . ((symbol "BIT2" 169 . 173)))
-          ("LED4" . ((symbol "BIT3" 187 . 191)))
-          ("LED5" . ((symbol "BIT4" 205 . 209)))
-          ("LED6" . ((symbol "BIT5" 223 . 227)))
-          ("UART_BUFF_SZ" . ((number "32" 116 . 118)))
-          ("LED7" . ((symbol "BIT6" 241 . 245)))
-          ("LOW" . ((number "0" 277 . 278)))
-          ("LED8" . ((symbol "BIT7" 259 . 263)))
-          ("EXPERIMENTER_H")
-          ("TOGGLE" . ((number "2" 309 . 310)))
+        '(("PRINTHEX" (spp-arg-list ("val") 215 . 220) . ((symbol "printf" 221 . 227) (semantic-list "(#val \" = %x\\n\", val)" 227 . 248)))
+          ("PRINTP" (spp-arg-list ("val") 265 . 270) . ((symbol "printf" 271 . 277) (semantic-list "(#val \" = 0x%p\\n\", val)" 277 . 300)))
+          ("FRAMVAR" . ((symbol "__attribute__" 107 . 120) (semantic-list "((section(\".fram\")))" 120 . 140)))
           )
 )
     (semanticdb-table "experimenter.c"
       :major-mode 'c-mode
       :tags 
         '( ("experimenter.h" include nil nil [1 26])
-            ("uart_buff" variable
-               (:dereference 1
-                :typemodifiers ("volatile" "static")
-                :type ("uint8_t" type (:type "class") nil nil))
-                nil [28 76])
-            ("uart_next_open" variable
-               (:typemodifiers ("volatile" "static")
-                :default-value "0"
-                :type "unsigned int")
-                nil [77 125])
-            ("uart_next_out" variable
-               (:typemodifiers ("volatile" "static")
-                :default-value "0"
-                :type "unsigned int")
-                nil [126 173])
-            ("idle" variable
-               (:typemodifiers ("volatile" "static")
-                :default-value "1"
-                :type "int")
-                nil [174 203])
             ("enable_led" function
                (:arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [222 230]))                  
+                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [44 52]))                  
                 :type "void")
-                nil [206 313])
-            ("enable_uart" function (:type "void") nil [315 688])
-            ("read_uart" function (:type ("uint16_t" type (:type "class") nil nil)) nil [690 801])
+                nil [28 265])
+            ("enable_uart" function (:type "void") nil [267 640])
             ("putchar" function
                (:arguments 
-                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [816 822]))                  
+                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [655 661]))                  
                 :type "int")
-                nil [804 1543])
+                nil [643 748])
             ("set_clocks_out" function
                (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1590 1595]))                  
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [795 800]))                  
                 :type "void")
-                nil [1570 1682])
+                nil [775 887])
             ("set_led" function
                (:arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [1697 1705])
-                    ("val" variable (:type "int") (reparse-symbol arg-sub-list) [1706 1714]))                  
+                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [902 910])
+                    ("val" variable (:type "int") (reparse-symbol arg-sub-list) [911 919]))                  
                 :type "void")
-                nil [1684 2034]))          
+                nil [889 1227]))          
       :file "experimenter.c"
-      :pointmax 3056
-      :fsize 3055
-      :lastmodtime '(21795 61481 389248 176000)
+      :pointmax 1228
+      :fsize 1227
+      :lastmodtime '(21800 1938 525987 905000)
       :unmatched-syntax nil)
-    (semanticdb-table "pins.h"
+    (semanticdb-table "experimenter.h"
       :major-mode 'c-mode
       :tags 
-        '( ("msp430fr5739.h" include (:system-flag t) nil [1097 1122])
-            ("init_ports" function
+        '( ("EXPERIMENTER_H" variable (:constant-flag t) nil [209 223])
+            ("msp430.h" include (:system-flag t) nil [225 244])
+            ("stdint.h" include (:system-flag t) nil [245 264])
+            ("UART_BUFF_SZ" variable (:constant-flag t) nil [274 286])
+            ("LED1" variable (:constant-flag t) nil [299 303])
+            ("LED2" variable (:constant-flag t) nil [317 321])
+            ("LED3" variable (:constant-flag t) nil [335 339])
+            ("LED4" variable (:constant-flag t) nil [353 357])
+            ("LED5" variable (:constant-flag t) nil [371 375])
+            ("LED6" variable (:constant-flag t) nil [389 393])
+            ("LED7" variable (:constant-flag t) nil [407 411])
+            ("LED8" variable (:constant-flag t) nil [425 429])
+            ("LOW" variable (:constant-flag t) nil [444 447])
+            ("HIGH" variable (:constant-flag t) nil [458 462])
+            ("TOGGLE" variable (:constant-flag t) nil [473 479])
+            ("enable_led" function
                (:prototype-flag t
+                :arguments 
+                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [499 507]))                  
                 :type "void")
-                nil [1124 1142])
-            ("XIN_BIT" variable (:constant-flag t) nil [1330 1337])
-            ("XIN_IS_HIGH" variable (:constant-flag t) nil [1368 1379])
-            ("XIN_IS_LOW" variable (:constant-flag t) nil [1413 1423])
-            ("XOUT_BIT" variable (:constant-flag t) nil [1643 1651])
-            ("XOUT_IS_HIGH" variable (:constant-flag t) nil [1681 1693])
-            ("XOUT_IS_LOW" variable (:constant-flag t) nil [1726 1737]))          
-      :file "pins.h"
-      :pointmax 1766
-      :fsize 1765
-      :lastmodtime '(21794 61211 55168 688000)
-      :unmatched-syntax nil)
-    (semanticdb-table "pins.py"
-      :major-mode 'python-mode
-      :tags 
-        '( ("collections" include nil nil [1 19])
-            ("PORTS" variable nil nil [21 320])
-            ("OUT" variable nil nil [322 329])
-            ("IN" variable nil nil [330 336])
-            ("RISE" variable nil nil [337 345])
-            ("FALL" variable nil nil [346 354])
-            ("HIGH" variable nil nil [355 363])
-            ("LOW" variable nil nil [364 371])
-            ("INT_REGISTERS" variable nil nil [422 458])
-            ("HEADER" variable nil nil [460 618])
-            ("HEADER_SPEC" variable nil nil [620 775])
-            ("CFILE" variable nil nil [777 914])
-            ("Pins" type
-               (:superclasses ("object")
-                :members 
-                  ( ("__init__" function
-                       (:suite 
-                          ( ("self" variable nil (reparse-symbol indented_block_body) [997 1018])
-                            ("self" variable nil (reparse-symbol indented_block_body) [1027 1052])
-                            ("self" variable nil (reparse-symbol indented_block_body) [1061 1080])
-                            ("self" variable nil (reparse-symbol indented_block_body) [1089 1141])
-                            ("self" variable nil (reparse-symbol indented_block_body) [1150 1203])
-                            ("self" variable nil (reparse-symbol indented_block_body) [1212 1230])
-                            ("self" variable nil (reparse-symbol indented_block_body) [1239 1257])
-                            ("for" code nil (reparse-symbol indented_block_body) [1267 1518]))                          
-                        :parent "dummy"
-                        :arguments 
-                          ( ("self" variable nil (reparse-symbol function_parameters) [955 959])
-                            ("ports" variable nil (reparse-symbol function_parameters) [961 966])
-                            ("hfile" variable nil (reparse-symbol function_parameters) [968 973])
-                            ("cfile" variable nil (reparse-symbol function_parameters) [975 980]))                          
-                        :constructor-flag t)
-                        (reparse-symbol indented_block_body) [942 1512])
-                    ("hfile_contents" function
-                       (:parent "dummy"
-                        :arguments 
-                          ( ("self" variable nil (reparse-symbol function_parameters) [1536 1540]))                          )
-                        (reparse-symbol indented_block_body) [1517 2079])
-                    ("mkpin" function
-                       (:parent "dummy"
-                        :arguments 
-                          ( ("self" variable nil (reparse-symbol function_parameters) [2094 2098])
-                            ("name" variable nil (reparse-symbol function_parameters) [2100 2104])
-                            ("desc" variable nil (reparse-symbol function_parameters) [2106 2110])
-                            ("port" variable nil (reparse-symbol function_parameters) [2112 2116])
-                            ("bit" variable nil (reparse-symbol function_parameters) [2118 2121])
-                            ("dir_" variable nil (reparse-symbol function_parameters) [2123 2127])
-                            ("sel" variable nil (reparse-symbol function_parameters) [2143 2146])
-                            ("init_out" variable nil (reparse-symbol function_parameters) [2150 2158])
-                            ("init_in" variable nil (reparse-symbol function_parameters) [2162 2169])
-                            ("port_int" variable nil (reparse-symbol function_parameters) [2173 2181])
-                            ("ren" variable nil (reparse-symbol function_parameters) [2186 2189]))                          )
-                        (reparse-symbol indented_block_body) [2084 3409])
-                    ("cfile_contents" function
-                       (:parent "dummy"
-                        :arguments 
-                          ( ("self" variable nil (reparse-symbol function_parameters) [3433 3437]))                          )
-                        (reparse-symbol indented_block_body) [3414 3841])
-                    ("write" function
-                       (:parent "dummy"
-                        :arguments 
-                          ( ("self" variable nil (reparse-symbol function_parameters) [3856 3860]))                          )
-                        (reparse-symbol indented_block_body) [3846 4036]))                  
-                :type "class")
-                nil [917 4036])
-            ("assign" function (:arguments 
-              ( ("reg" variable nil (reparse-symbol function_parameters) [4061 4064])
-                ("val" variable nil (reparse-symbol function_parameters) [4066 4069])
-                ("bit" variable nil (reparse-symbol function_parameters) [4071 4074]))              ) nil [4050 4130])
-            ("define" function (:arguments 
-              ( ("define" variable nil (reparse-symbol function_parameters) [4143 4149])
-                ("value" variable nil (reparse-symbol function_parameters) [4151 4156]))              ) nil [4132 4317])
-            ("pin_defines" function (:arguments 
-              ( ("name" variable nil (reparse-symbol function_parameters) [4335 4339])
-                ("port" variable nil (reparse-symbol function_parameters) [4341 4345])
-                ("bit" variable nil (reparse-symbol function_parameters) [4347 4350])
-                ("dir_" variable nil (reparse-symbol function_parameters) [4352 4356])
-                ("init_out" variable nil (reparse-symbol function_parameters) [4358 4366])
-                ("init_in" variable nil (reparse-symbol function_parameters) [4368 4375])
-                ("sel" variable nil (reparse-symbol function_parameters) [4377 4380])
-                ("port_int" variable nil (reparse-symbol function_parameters) [4382 4390])
-                ("ren" variable nil (reparse-symbol function_parameters) [4392 4395]))              ) nil [4319 6034])
-            ("pins" variable nil nil [6034 6253])
-            ("pins" code nil nil [6367 6416])
-            ("pins" code nil nil [6417 6468]))          
-      :file "pins.py"
-      :pointmax 7617
-      :fsize 7616
-      :lastmodtime '(21794 61203 571429 971000)
-      :unmatched-syntax nil)
-    (semanticdb-table "pins.c"
-      :major-mode 'c-mode
-      :tags 
-        '( ("pins.h" include nil nil [82 99])
-            ("init_ports" function (:type "void") nil [101 794]))          
-      :file "pins.c"
-      :pointmax 795
-      :fsize 794
-      :lastmodtime '(21794 61211 55168 688000)
-      :unmatched-syntax nil)
-    (semanticdb-table "stat.c"
-      :major-mode 'c-mode
-      :tags 
-        '( ("stat.h" include nil nil [1 18])
-            ("ST1_t_high" variable
-               (:typemodifiers ("static")
-                :default-value "0"
-                :type ("uint16_t" type (:type "class") nil nil))
-                nil [20 51])
-            ("ST1_t_low" variable
-               (:typemodifiers ("static")
-                :default-value "0"
-                :type ("uint16_t" type (:type "class") nil nil))
-                nil [52 82])
-            ("ST2_t_high" variable
-               (:typemodifiers ("static")
-                :default-value "0"
-                :type ("uint16_t" type (:type "class") nil nil))
-                nil [83 114])
-            ("ST2_t_low" variable
-               (:typemodifiers ("static")
-                :default-value "0"
-                :type ("uint16_t" type (:type "class") nil nil))
-                nil [115 145])
-            ("ST1_high" variable
-               (:typemodifiers ("static")
-                :default-value "0"
+                nil [483 508])
+            ("set_led" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [522 530])
+                    ("val" variable (:type "int") (reparse-symbol arg-sub-list) [531 539]))                  
+                :type "void")
+                nil [509 540])
+            ("set_clocks_out" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [561 566]))                  
+                :type "void")
+                nil [541 567])
+            ("enable_uart" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [585 590]))                  
+                :type "void")
+                nil [568 591])
+            ("write_uart" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("data" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [608 621]))                  
+                :type "void")
+                nil [592 622])
+            ("putchar" function
+               (:prototype-flag t
+                :arguments 
+                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [635 641]))                  
                 :type "int")
-                nil [146 170])
-            ("ST2_high" variable
-               (:typemodifiers ("static")
-                :default-value "0"
-                :type "int")
-                nil [171 195])
-            ("led_timer_init" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [217 222]))                  
-                :type "void")
-                nil [197 362])
-            ("led_blink_ST1" function
-               (:arguments 
-                  ( ("dur_high" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [384 402])
-                    ("dur_low" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [403 420]))                  
-                :type "void")
-                nil [365 1326])
-            ("led_blink_off" function
-               (:arguments 
-                  ( ("led" variable (:type "int") (reparse-symbol arg-sub-list) [1348 1356]))                  
-                :type "void")
-                nil [1329 1434])
-            ("TIMER0_A0_ISR" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1512 1517]))                  
-                :type "void")
-                nil [1437 2641]))          
-      :file "stat.c"
-      :pointmax 2642
-      :fsize 2641
-      :lastmodtime '(21786 62635 699961 123000)
-      :unmatched-syntax nil)
-    (semanticdb-table "stat.h"
-      :major-mode 'c-mode
-      :tags 
-        '( ("STAT_H" variable (:constant-flag t) nil [636 642])
-            ("stdint.h" include (:system-flag t) nil [644 663])
-            ("pins.h" include nil nil [664 681])
-            ("MS_1000" variable (:constant-flag t) nil [691 698])
-            ("MS_500" variable (:constant-flag t) nil [725 731])
-            ("MS_500" variable (:constant-flag t) nil [725 731])
-            ("MS_250" variable (:constant-flag t) nil [759 765])
-            ("MS_250" variable (:constant-flag t) nil [759 765])
-            ("MS_125" variable (:constant-flag t) nil [793 799])
-            ("MS_125" variable (:constant-flag t) nil [793 799])
-            ("MS_62" variable (:constant-flag t) nil [827 832])
-            ("MS_62" variable (:constant-flag t) nil [827 832])
-            ("MS_31" variable (:constant-flag t) nil [861 866])
-            ("MS_31" variable (:constant-flag t) nil [861 866])
-            ("MS_16" variable (:constant-flag t) nil [895 900])
-            ("MS_16" variable (:constant-flag t) nil [895 900])
-            ("led_timer_init" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [988 993]))                  
-                :type "void")
-                nil [968 994])
-            ("led_blink_ST1" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("dur_high" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1015 1033])
-                    ("dur_low" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1034 1051]))                  
-                :type "void")
-                nil [996 1052]))          
-      :file "stat.h"
-      :pointmax 1061
-      :fsize 1060
-      :lastmodtime '(21786 58632 304912 989000)
+                nil [623 642]))          
+      :file "experimenter.h"
+      :pointmax 651
+      :fsize 650
+      :lastmodtime '(21800 1965 77131 660000)
       :unmatched-syntax nil
       :lexical-table 
-        '(("MS_1000" . ((number "0x8000" 708 . 714)))
-          ("MS_500" . ((semantic-list "(0x4000)" 742 . 750)))
-          ("MS_62" . ((semantic-list "(0x0800)" 844 . 852)))
-          ("MS_250" . ((semantic-list "(0x2000)" 776 . 784)))
-          ("MS_125" . ((semantic-list "(0x1000)" 810 . 818)))
-          ("MS_16" . ((semantic-list "(0x0200)" 912 . 920)))
-          ("STAT_H")
-          ("MS_31" . ((semantic-list "(0x0400)" 878 . 886)))
+        '(("HIGH" . ((number "1" 469 . 470)))
+          ("LED1" . ((symbol "BIT0" 310 . 314)))
+          ("LED2" . ((symbol "BIT1" 328 . 332)))
+          ("LED3" . ((symbol "BIT2" 346 . 350)))
+          ("LED4" . ((symbol "BIT3" 364 . 368)))
+          ("LED5" . ((symbol "BIT4" 382 . 386)))
+          ("LED6" . ((symbol "BIT5" 400 . 404)))
+          ("UART_BUFF_SZ" . ((number "32" 293 . 295)))
+          ("LED7" . ((symbol "BIT6" 418 . 422)))
+          ("LOW" . ((number "0" 454 . 455)))
+          ("LED8" . ((symbol "BIT7" 436 . 440)))
+          ("EXPERIMENTER_H")
+          ("TOGGLE" . ((number "2" 486 . 487)))
           )
 )
-    (semanticdb-table "timer.c"
+    (semanticdb-table "spi.h"
       :major-mode 'c-mode
       :tags 
-        '( ("timer.h" include nil nil [1 19])
-            ("led_state" type
-               (:members 
-                  ( ("ST1_high" variable (:type "int") (reparse-symbol classsubparts) [318 331])
-                    ("ST2_high" variable (:type "int") (reparse-symbol classsubparts) [336 349])
-                    ("time" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [354 368]))                  
-                :type "struct")
-                nil [295 371])
-            ("LED_IDLE" variable (:constant-flag t) nil [382 390])
-            ("LED_ON" variable (:constant-flag t) nil [416 422])
-            ("LED_GAP" variable (:constant-flag t) nil [446 453])
-            ("st1_blink" variable
-               (:dereference 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :default-value "{
-    {1, 0, LED_ON},
-    {0, 0, LED_IDLE},
-}"
-                :type ("led_state" type
-                     (:prototype t
-                      :type "struct")
-                      nil nil))
-                nil [503 593])
-            ("st2_blink" variable
-               (:dereference 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :default-value "{
-    {0, 1, LED_ON},
-    {0, 0, LED_IDLE},
-}"
-                :type ("led_state" type
-                     (:prototype t
-                      :type "struct")
-                      nil nil))
-                nil [595 685])
-            ("alt_blink" variable
-               (:dereference 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :default-value "{
-    {1, 0, LED_ON},
-    {0, 0, LED_GAP},
-    {0, 1, LED_ON},
-    {0, 0, LED_IDLE},
-}"
-                :type ("led_state" type
-                     (:prototype t
-                      :type "struct")
-                      nil nil))
-                nil [687 818])
-            ("st1_double_blink" variable
-               (:dereference 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :default-value "{
-    {1, 0, LED_ON},
-    {0, 0, LED_GAP},
-    {1, 0, LED_ON},
-    {0, 0, LED_IDLE},
-}"
-                :type ("led_state" type
-                     (:prototype t
-                      :type "struct")
-                      nil nil))
-                nil [820 958])
-            ("st2_double_blink" variable
-               (:dereference 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :default-value "{
-    {0, 1, LED_ON},
-    {0, 0, LED_GAP},
-    {0, 1, LED_ON},
-    {0, 0, LED_IDLE},
-}"
-                :type ("led_state" type
-                     (:prototype t
-                      :type "struct")
-                      nil nil))
-                nil [960 1098])
-            ("alt_double_blink" variable
-               (:dereference 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :default-value "{
-    {1, 0, LED_ON},
-    {0, 0, LED_GAP},
-    {1, 0, LED_ON},
-    {0, 0, LED_IDLE},
-    {0, 1, LED_ON},
-    {0, 0, LED_GAP},
-    {0, 1, LED_ON},
-    {0, 0, LED_IDLE},
-}"
-                :type ("led_state" type
-                     (:prototype t
-                      :type "struct")
-                      nil nil))
-                nil [1100 1321])
-            ("pattern" variable
-               (:pointer 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :type ("led_state" type
-                     (:prototype t
-                      :type "struct")
-                      nil nil))
-                nil [1478 1517])
-            ("nstates" variable
-               (:typemodifiers ("static")
-                :type "int")
-                nil [1558 1577])
-            ("state" variable
-               (:typemodifiers ("static")
-                :type "int")
-                nil [1631 1648])
-            ("cycles_left" variable
-               (:typemodifiers ("static")
-                :type "int")
-                nil [1889 1912])
-            ("waiting_mode" variable
-               (:typemodifiers ("static")
-                :type ("wait_mode" type (:type "enum") nil nil))
-                nil [1970 2005])
-            ("init_TIMERA0" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [2026 2031]))                  
+        '( ("SPI_H" variable (:constant-flag t) nil [23 28])
+            ("init_spi" function
+               (:prototype-flag t
                 :type "void")
-                nil [2008 2169])
-            ("set_led_pattern" function
-               (:arguments 
-                  ( ("pat" variable (:type ("blink_pattern" type (:type "enum") nil nil)) (reparse-symbol arg-sub-list) [2192 2215])
-                    ("cycles" variable (:type "int") (reparse-symbol arg-sub-list) [2216 2227]))                  
-                :type "void")
-                nil [2171 3661])
-            ("leds_off" function (:type "void") nil [3664 3777])
-            ("wait" function
-               (:arguments 
-                  ( ("time" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [3790 3804])
-                    ("mode" variable (:type ("wait_mode" type (:type "enum") nil nil)) (reparse-symbol arg-sub-list) [3805 3825]))                  
-                :type "void")
-                nil [3780 4708])
-            ("TIMER0_A0_ISR" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [4814 4819]))                  
-                :type "void")
-                nil [4739 5488])
-            ("TIMER0_A1_ISR" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [5605 5610]))                  
-                :type "void")
-                nil [5530 6173]))          
-      :file "timer.c"
-      :pointmax 6174
-      :fsize 6173
-      :lastmodtime '(21789 63181 857255 637000)
+                nil [30 46]))          
+      :file "spi.h"
+      :pointmax 55
+      :fsize 54
+      :lastmodtime '(21798 51028 798894 152000)
+      :unmatched-syntax '((symbol 35 . 40) (VOID 30 . 34) (symbol 30 . 34))
+      :lexical-table 
+        '(("SPI_H")
+          )
+)
+    (semanticdb-table "time.h"
+      :major-mode 'c-mode
+      :tags 
+        '( ("TIME_H" variable (:constant-flag t) nil [456 462])
+            ("stdint.h" include (:system-flag t) nil [464 483])
+            ("experimenter.h" include nil nil [485 510])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("INIT_" variable (:constant-flag t) nil [520 520])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_" variable (:constant-flag t) nil [520 524])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_ST1" variable (:constant-flag t) nil [520 527])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_ST1_DIR" variable (:constant-flag t) nil [520 531])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_ST1_DIR" variable (:constant-flag t) nil [520 531])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_ST1_DIR" variable (:constant-flag t) nil [520 531])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_ST1_DIR" variable (:constant-flag t) nil [520 531])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_ST1_DIR" variable (:constant-flag t) nil [520 531])
+            ("SET_ST2_DIR" variable (:constant-flag t) nil [561 572])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613])
+            ("SET_ST1_DIR" variable (:constant-flag t) nil [520 531])
+            ("SET_ST2_DIR" variable (:constant-flag t) nil [561 572])
+            ("ST1_SET_LOW" variable (:constant-flag t) nil [602 613]))          
+      :file "time.h"
+      :pointmax 2969
+      :fsize 2968
+      :lastmodtime '(21798 53356 860123 714000)
       :unmatched-syntax nil
       :lexical-table 
-        '(("LED_IDLE" . ((symbol "TIMERA0_MS" 391 . 401) (semantic-list "(2000)" 401 . 407)))
-          ("LED_ON" . ((symbol "TIMERA0_MS" 423 . 433) (semantic-list "(10)" 433 . 437)))
-          ("LED_GAP" . ((symbol "TIMERA0_MS" 454 . 464) (semantic-list "(200)" 464 . 469)))
+        '(("ST2_SET_HIGH" (spp-arg-list nil 657 . 659) . ((symbol "set_led" 660 . 667) (semantic-list "(LED2, HIGH)" 667 . 679)))
+          ("ACLK_HZ" . ((number "32768" 727 . 732)))
+          ("SMCLK_KHZ" . ((number "1000" 755 . 759)))
+          ("INIT_")
+          ("TIME_H")
+          ("SET_ST2_DIR" (spp-arg-list nil 572 . 574) . ((symbol "enable_led" 577 . 587) (semantic-list "(LED2)" 587 . 593)))
+          ("SEC_TO_ACLK_CYCLES" (spp-arg-list ("sec") 876 . 881) . ((semantic-list "((uint16_t)(ACLK_HZ * sec))" 882 . 909)))
+          ("TIMERA0_MS" (spp-arg-list ("ms") 1738 . 1742) . ((semantic-list "((SMCLK_KHZ/40) * (uint16_t)(ms))" 1743 . 1776)))
+          ("SET_ST1")
+          ("ST2_SET_LOW" (spp-arg-list nil 615 . 617) . ((symbol "set_led" 618 . 625) (semantic-list "(LED2, LOW)" 625 . 636)))
+          ("MCLK_KHZ" . ((number "1000" 777 . 781)))
+          ("MS_TO_MCLK_CYCLES" (spp-arg-list ("ms") 995 . 999) . ((semantic-list "((uint16_t)(MCLK_KHZ * ms))" 1000 . 1027)))
+          ("INIT_ST1")
+          ("ST1_SET_LOW" (spp-arg-list nil 613 . 615) . ((symbol "set_led" 616 . 623) (semantic-list "(LED1, LOW)" 623 . 634)))
+          ("MS_TO_SMCLK_CYCLES" (spp-arg-list ("ms") 936 . 940) . ((semantic-list "((uint16_t)(SMCLK_KHZ * ms))" 941 . 969)))
+          ("SET_")
+          ("ST1_SET_HIGH" (spp-arg-list nil 573 . 575) . ((symbol "set_led" 576 . 583) (semantic-list "(LED1, HIGH)" 583 . 595)))
+          ("WAIT_MS" (spp-arg-list ("ms") 2275 . 2279) . ((symbol "wait" 2280 . 2284) (semantic-list "(TIMERA0_MS(ms))" 2284 . 2300)))
+          ("SET_ST1_DIR" (spp-arg-list nil 531 . 533) . ((symbol "enable_led" 536 . 546) (semantic-list "(LED1)" 546 . 552)))
           )
-)
-    (semanticdb-table "timer.h"
-      :major-mode 'c-mode
-      :tags 
-        '( ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("TIMER_H" variable (:constant-flag t) nil [311 318])
-            ("stdint.h" include (:system-flag t) nil [320 339])
-            ("pins.h" include nil nil [340 357])
-            ("intrinsics.h" include nil nil [358 381])
-            ("clock.h" include nil nil [382 400])
-            ("blink_pattern" type
-               (:members 
-                  ( ("ST1_BLINK" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [428 438])
-                    ("ST2_BLINK" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [443 453])
-                    ("ALT_BLINK" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [458 468])
-                    ("ST1_DOUBLE_BLINK" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [473 490])
-                    ("ST2_DOUBLE_BLINK" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [495 512])
-                    ("ALT_DOUBLE_BLINK" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [517 534]))                  
-                :type "enum")
-                nil [403 537])
-            ("wait_mode" type
-               (:members 
-                  ( ("WAIT_IN_LPM0" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [560 573])
-                    ("WAIT_IN_LPM1" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [578 591])
-                    ("WAIT_IN_LPM2" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [596 609])
-                    ("WAIT_IN_LPM3" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [614 627])
-                    ("WAIT_IN_LPM4" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [632 645]))                  
-                :type "enum")
-                nil [539 648])
-            ("TIMERA0_MS" variable (:constant-flag t) nil [708 718])
-            ("TIMERA0_MS" variable (:constant-flag t) nil [708 718])
-            ("TIMERA0_MS" variable (:constant-flag t) nil [708 718])
-            ("TIMERA0_MS" variable (:constant-flag t) nil [708 718])
-            ("TIMERA0_MS" variable (:constant-flag t) nil [708 718])
-            ("init_TIMERA0" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [808 813]))                  
-                :type "void")
-                nil [790 814])
-            ("wait" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("time" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1030 1044])
-                    ("mode" variable (:type ("wait_mode" type (:type "enum") nil nil)) (reparse-symbol arg-sub-list) [1045 1065]))                  
-                :type "void")
-                nil [1020 1066])
-            ("WAIT_MS" variable (:constant-flag t) nil [1248 1255])
-            ("WAIT_MS" variable (:constant-flag t) nil [1248 1255])
-            ("WAIT_MS" variable (:constant-flag t) nil [1248 1255])
-            ("WAIT_MS" variable (:constant-flag t) nil [1248 1255])
-            ("WAIT_MS" variable (:constant-flag t) nil [1248 1255])
-            ("set_led_pattern" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("pat" variable (:type ("blink_pattern" type (:type "enum") nil nil)) (reparse-symbol arg-sub-list) [1779 1802])
-                    ("cycles" variable (:type "int") (reparse-symbol arg-sub-list) [1803 1814]))                  
-                :type "void")
-                nil [1758 1815])
-            ("leds_off" function
-               (:prototype-flag t
-                :type "void")
-                nil [1846 1862]))          
-      :file "timer.h"
-      :pointmax 1871
-      :fsize 1870
-      :lastmodtime '(21789 26095 202148 542000)
-      :unmatched-syntax nil
-      :lexical-table 
-        '(("TIMER_H")
-          )
-)
-    (semanticdb-table "mpu.h"
-      :major-mode 'c-mode
-      :tags 
-        '( ("MPU_H" variable (:constant-flag t) nil [23 28])
-            ("SELF_TEST_X_GYRO" variable (:constant-flag t) nil [38 54])
-            ("SELF_TEST_Y_GYRO" variable (:constant-flag t) nil [74 90])
-            ("SELF_TEST_Z_GYRO" variable (:constant-flag t) nil [110 126])
-            ("SELF_TEST_Z_GYRO" variable (:constant-flag t) nil [110 126])
-            ("SELF_TEST_X_ACCE" variable (:constant-flag t) nil [146 162])
-            ("SELF_TEST_X_ACCE" variable (:constant-flag t) nil [146 162])
-            ("SELF_TEST_Y_ACCE" variable (:constant-flag t) nil [182 198])
-            ("SELF_TEST_Y_ACCE" variable (:constant-flag t) nil [182 198])
-            ("SELF_TEST_Z_ACCE" variable (:constant-flag t) nil [218 234])
-            ("SELF_TEST_Z_ACCE" variable (:constant-flag t) nil [218 234])
-            ("XG_OFFSET_H" variable (:constant-flag t) nil [254 265])
-            ("XG_OFFSET_H" variable (:constant-flag t) nil [254 265])
-            ("XG_OFFSET_L" variable (:constant-flag t) nil [286 297])
-            ("YG_OFFSET_H" variable (:constant-flag t) nil [318 329])
-            ("YG_OFFSET_L" variable (:constant-flag t) nil [350 361])
-            ("ZG_OFFSET_H" variable (:constant-flag t) nil [382 393])
-            ("ZG_OFFSET_L" variable (:constant-flag t) nil [414 425])
-            ("SMPLRT_DIV" variable (:constant-flag t) nil [446 456])
-            ("CONFIG" variable (:constant-flag t) nil [477 483])
-            ("GYRO_CONFIG" variable (:constant-flag t) nil [505 516])
-            ("ACCEL_CONFIG" variable (:constant-flag t) nil [537 549])
-            ("ACCEL_CONFIG_2" variable (:constant-flag t) nil [570 584])
-            ("LP_ACCEL_ODR" variable (:constant-flag t) nil [605 617])
-            ("WOM_THR" variable (:constant-flag t) nil [638 645])
-            ("FIFO_EN" variable (:constant-flag t) nil [667 674])
-            ("I2C_MST_CTRL" variable (:constant-flag t) nil [696 708])
-            ("I2C_SLV0_ADDR" variable (:constant-flag t) nil [729 742])
-            ("I2C_SLV0_REG" variable (:constant-flag t) nil [763 775])
-            ("I2C_SLV0_CTRL" variable (:constant-flag t) nil [796 809])
-            ("I2C_SLV1_ADDR" variable (:constant-flag t) nil [830 843])
-            ("I2C_SLV1_REG" variable (:constant-flag t) nil [864 876])
-            ("I2C_SLV1_CTRL" variable (:constant-flag t) nil [897 910])
-            ("I2C_SLV2_ADDR" variable (:constant-flag t) nil [931 944])
-            ("I2C_SLV2_REG" variable (:constant-flag t) nil [965 977])
-            ("I2C_SLV2_CTRL" variable (:constant-flag t) nil [998 1011])
-            ("I2C_SLV3_ADDR" variable (:constant-flag t) nil [1032 1045])
-            ("I2C_SLV3_REG" variable (:constant-flag t) nil [1066 1078])
-            ("I2C_SLV3_CTRL" variable (:constant-flag t) nil [1099 1112])
-            ("I2C_SLV4_ADDR" variable (:constant-flag t) nil [1133 1146])
-            ("I2C_SLV4_REG" variable (:constant-flag t) nil [1167 1179])
-            ("I2C_SLV4_DO" variable (:constant-flag t) nil [1200 1211])
-            ("I2C_SLV4_CTRL" variable (:constant-flag t) nil [1232 1245])
-            ("I2C_SLV4_DI" variable (:constant-flag t) nil [1266 1277])
-            ("I2C_MST_STATUS" variable (:constant-flag t) nil [1298 1312])
-            ("INT_PIN_CFG" variable (:constant-flag t) nil [1333 1344])
-            ("INT_ENABLE" variable (:constant-flag t) nil [1365 1375])
-            ("INT_STATUS" variable (:constant-flag t) nil [1396 1406])
-            ("ACCEL_XOUT_H" variable (:constant-flag t) nil [1427 1439])
-            ("ACCEL_XOUT_L" variable (:constant-flag t) nil [1460 1472])
-            ("ACCEL_YOUT_H" variable (:constant-flag t) nil [1493 1505])
-            ("ACCEL_YOUT_L" variable (:constant-flag t) nil [1526 1538])
-            ("ACCEL_ZOUT_H" variable (:constant-flag t) nil [1559 1571])
-            ("ACCEL_ZOUT_L" variable (:constant-flag t) nil [1592 1604])
-            ("TEMP_OUT_H" variable (:constant-flag t) nil [1625 1635])
-            ("TEMP_OUT_L" variable (:constant-flag t) nil [1656 1666])
-            ("GYRO_XOUT_H" variable (:constant-flag t) nil [1687 1698])
-            ("GYRO_XOUT_L" variable (:constant-flag t) nil [1719 1730])
-            ("GYRO_YOUT_H" variable (:constant-flag t) nil [1751 1762])
-            ("GYRO_YOUT_L" variable (:constant-flag t) nil [1783 1794])
-            ("GYRO_ZOUT_H" variable (:constant-flag t) nil [1815 1826])
-            ("GYRO_ZOUT_L" variable (:constant-flag t) nil [1847 1858])
-            ("EXT_SENS_DATA_00" variable (:constant-flag t) nil [1879 1895])
-            ("EXT_SENS_DATA_01" variable (:constant-flag t) nil [1915 1931])
-            ("EXT_SENS_DATA_02" variable (:constant-flag t) nil [1951 1967])
-            ("EXT_SENS_DATA_03" variable (:constant-flag t) nil [1987 2003])
-            ("EXT_SENS_DATA_04" variable (:constant-flag t) nil [2023 2039])
-            ("EXT_SENS_DATA_05" variable (:constant-flag t) nil [2059 2075])
-            ("EXT_SENS_DATA_06" variable (:constant-flag t) nil [2095 2111])
-            ("EXT_SENS_DATA_07" variable (:constant-flag t) nil [2131 2147])
-            ("EXT_SENS_DATA_08" variable (:constant-flag t) nil [2167 2183])
-            ("EXT_SENS_DATA_09" variable (:constant-flag t) nil [2203 2219])
-            ("EXT_SENS_DATA_10" variable (:constant-flag t) nil [2239 2255])
-            ("EXT_SENS_DATA_11" variable (:constant-flag t) nil [2275 2291])
-            ("EXT_SENS_DATA_12" variable (:constant-flag t) nil [2311 2327])
-            ("EXT_SENS_DATA_13" variable (:constant-flag t) nil [2347 2363])
-            ("EXT_SENS_DATA_14" variable (:constant-flag t) nil [2383 2399])
-            ("EXT_SENS_DATA_15" variable (:constant-flag t) nil [2419 2435])
-            ("EXT_SENS_DATA_16" variable (:constant-flag t) nil [2455 2471])
-            ("EXT_SENS_DATA_17" variable (:constant-flag t) nil [2491 2507])
-            ("EXT_SENS_DATA_18" variable (:constant-flag t) nil [2527 2543])
-            ("EXT_SENS_DATA_19" variable (:constant-flag t) nil [2563 2579])
-            ("EXT_SENS_DATA_20" variable (:constant-flag t) nil [2599 2615])
-            ("EXT_SENS_DATA_21" variable (:constant-flag t) nil [2635 2651])
-            ("EXT_SENS_DATA_22" variable (:constant-flag t) nil [2671 2687])
-            ("EXT_SENS_DATA_23" variable (:constant-flag t) nil [2707 2723])
-            ("I2C_SLV0_DO" variable (:constant-flag t) nil [2743 2754])
-            ("I2C_SLV1_DO" variable (:constant-flag t) nil [2775 2786])
-            ("I2C_SLV2_DO" variable (:constant-flag t) nil [2807 2818])
-            ("I2C_SLV3_DO" variable (:constant-flag t) nil [2839 2850])
-            ("I2C_MST_DELAY_CT" variable (:constant-flag t) nil [2871 2887])
-            ("SIGNAL_PATH_RESE" variable (:constant-flag t) nil [2907 2923])
-            ("MOT_DETECT_CTRL" variable (:constant-flag t) nil [2943 2958])
-            ("USER_CTRL" variable (:constant-flag t) nil [2979 2988])
-            ("PWR_MGMT_1" variable (:constant-flag t) nil [3009 3019])
-            ("PWR_MGMT_2" variable (:constant-flag t) nil [3040 3050])
-            ("FIFO_COUNTH" variable (:constant-flag t) nil [3071 3082])
-            ("FIFO_COUNTL" variable (:constant-flag t) nil [3103 3114])
-            ("FIFO_R_W" variable (:constant-flag t) nil [3135 3143])
-            ("WHO_AM_I" variable (:constant-flag t) nil [3164 3172])
-            ("XA_OFFSET_H" variable (:constant-flag t) nil [3193 3204])
-            ("XA_OFFSET_L" variable (:constant-flag t) nil [3225 3236])
-            ("YA_OFFSET_H" variable (:constant-flag t) nil [3257 3268])
-            ("YA_OFFSET_L" variable (:constant-flag t) nil [3289 3300])
-            ("ZA_OFFSET_H" variable (:constant-flag t) nil [3321 3332])
-            ("ZA_OFFSET_L" variable (:constant-flag t) nil [3353 3364]))          
-      :file "mpu.h"
-      :pointmax 3385
-      :fsize 3384
-      :lastmodtime '(21788 47788 995925 196000)
-      :unmatched-syntax nil
-      :lexical-table 
-        '(("XG_OFFSET_L" . ((number "0x14" 305 . 309)))
-          ("SMPLRT_DIV" . ((number "0x19" 464 . 468)))
-          ("I2C_SLV4_REG" . ((number "0x32" 1187 . 1191)))
-          ("EXT_SENS_DATA_17" . ((number "0x5C" 2514 . 2518)))
-          ("ZA_OFFSET_L" . ((number "0x7E" 3372 . 3376)))
-          ("I2C_SLV0_REG" . ((number "0x26" 783 . 787)))
-          ("I2C_MST_STATUS" . ((number "0x36" 1320 . 1324)))
-          ("EXT_SENS_DATA_18" . ((number "0x5D" 2550 . 2554)))
-          ("I2C_SLV0_DO" . ((number "0x63" 2762 . 2766)))
-          ("USER_CTRL" . ((number "0x6A" 2996 . 3000)))
-          ("PWR_MGMT_1" . ((number "0x6B" 3027 . 3031)))
-          ("WHO_AM_I" . ((number "0x75" 3180 . 3184)))
-          ("ZG_OFFSET_H" . ((number "0x17" 401 . 405)))
-          ("GYRO_XOUT_L" . ((number "0x46" 1738 . 1742)))
-          ("EXT_SENS_DATA_19" . ((number "0x5E" 2586 . 2590)))
-          ("I2C_SLV1_DO" . ((number "0x64" 2794 . 2798)))
-          ("MOT_DETECT_CTRL" . ((number "0x69" 2966 . 2970)))
-          ("PWR_MGMT_2" . ((number "0x6C" 3058 . 3062)))
-          ("FIFO_COUNTL" . ((number "0x73" 3122 . 3126)))
-          ("FIFO_R_W" . ((number "0x74" 3151 . 3155)))
-          ("MPU_H")
-          ("SELF_TEST_Z_GYRO" . ((number "0x20" 133 . 137)))
-          ("YG_OFFSET_L" . ((number "0x16" 369 . 373)))
-          ("I2C_SLV2_ADDR" . ((number "0x2B" 952 . 956)))
-          ("I2C_SLV2_CTRL" . ((number "0x2D" 1019 . 1023)))
-          ("ACCEL_YOUT_H" . ((number "0x3F" 1513 . 1517)))
-          ("ACCEL_ZOUT_L" . ((number "0x42" 1612 . 1616)))
-          ("GYRO_ZOUT_H" . ((number "0x49" 1834 . 1838)))
-          ("EXT_SENS_DATA_00" . ((number "0x4B" 1902 . 1906)))
-          ("I2C_SLV2_DO" . ((number "0x65" 2826 . 2830)))
-          ("I2C_MST_DELAY_CT" . ((number "0x67" 2894 . 2898)))
-          ("XA_OFFSET_H" . ((number "0x77" 3212 . 3216)))
-          ("SELF_TEST_Z_ACCE" . ((number "0xF0" 241 . 245)))
-          ("ACCEL_CONFIG_2" . ((number "0x1D" 592 . 596)))
-          ("LP_ACCEL_ODR" . ((number "0x1E" 625 . 629)))
-          ("I2C_MST_CTRL" . ((number "0x24" 716 . 720)))
-          ("I2C_SLV1_REG" . ((number "0x29" 884 . 888)))
-          ("INT_STATUS" . ((number "0x3A" 1414 . 1418)))
-          ("TEMP_OUT_H" . ((number "0x43" 1643 . 1647)))
-          ("EXT_SENS_DATA_01" . ((number "0x4C" 1938 . 1942)))
-          ("I2C_SLV3_DO" . ((number "0x66" 2858 . 2862)))
-          ("CONFIG" . ((number "0x1A" 492 . 496)))
-          ("I2C_SLV4_DO" . ((number "0x33" 1219 . 1223)))
-          ("EXT_SENS_DATA_02" . ((number "0x4D" 1974 . 1978)))
-          ("ZG_OFFSET_L" . ((number "0x18" 433 . 437)))
-          ("EXT_SENS_DATA_03" . ((number "0x4E" 2010 . 2014)))
-          ("EXT_SENS_DATA_10" . ((number "0x55" 2262 . 2266)))
-          ("YA_OFFSET_H" . ((number "0x7A" 3276 . 3280)))
-          ("SELF_TEST_Y_GYRO" . ((number "0x1" 97 . 100)))
-          ("WOM_THR" . ((number "0x1F" 654 . 658)))
-          ("I2C_SLV1_ADDR" . ((number "0x28" 851 . 855)))
-          ("I2C_SLV1_CTRL" . ((number "0x2A" 918 . 922)))
-          ("I2C_SLV2_REG" . ((number "0x2C" 985 . 989)))
-          ("ACCEL_XOUT_H" . ((number "0x3B" 1447 . 1451)))
-          ("ACCEL_YOUT_L" . ((number "0x40" 1546 . 1550)))
-          ("GYRO_YOUT_H" . ((number "0x47" 1770 . 1774)))
-          ("GYRO_ZOUT_L" . ((number "0x4A" 1866 . 1870)))
-          ("EXT_SENS_DATA_04" . ((number "0x4F" 2046 . 2050)))
-          ("EXT_SENS_DATA_11" . ((number "0x56" 2298 . 2302)))
-          ("SIGNAL_PATH_RESE" . ((number "0x68" 2930 . 2934)))
-          ("XA_OFFSET_L" . ((number "0x78" 3244 . 3248)))
-          ("SELF_TEST_Y_ACCE" . ((number "0xE" 205 . 208)))
-          ("ACCEL_CONFIG" . ((number "0x1C" 557 . 561)))
-          ("I2C_SLV4_ADDR" . ((number "0x31" 1154 . 1158)))
-          ("I2C_SLV4_CTRL" . ((number "0x34" 1253 . 1257)))
-          ("INT_ENABLE" . ((number "0x38" 1383 . 1387)))
-          ("TEMP_OUT_L" . ((number "0x44" 1674 . 1678)))
-          ("EXT_SENS_DATA_05" . ((number "0x50" 2082 . 2086)))
-          ("EXT_SENS_DATA_12" . ((number "0x57" 2334 . 2338)))
-          ("XG_OFFSET_H" . ((number "0x13" 273 . 277)))
-          ("EXT_SENS_DATA_06" . ((number "0x51" 2118 . 2122)))
-          ("EXT_SENS_DATA_13" . ((number "0x58" 2370 . 2374)))
-          ("EXT_SENS_DATA_20" . ((number "0x5F" 2622 . 2626)))
-          ("ZA_OFFSET_H" . ((number "0x7D" 3340 . 3344)))
-          ("I2C_SLV3_REG" . ((number "0x2F" 1086 . 1090)))
-          ("EXT_SENS_DATA_07" . ((number "0x52" 2154 . 2158)))
-          ("EXT_SENS_DATA_14" . ((number "0x59" 2406 . 2410)))
-          ("EXT_SENS_DATA_21" . ((number "0x60" 2658 . 2662)))
-          ("YA_OFFSET_L" . ((number "0x7B" 3308 . 3312)))
-          ("SELF_TEST_X_GYRO" . ((number "0x00" 61 . 65)))
-          ("FIFO_EN" . ((number "0x23" 683 . 687)))
-          ("I2C_SLV0_ADDR" . ((number "0x25" 750 . 754)))
-          ("I2C_SLV0_CTRL" . ((number "0x27" 817 . 821)))
-          ("ACCEL_XOUT_L" . ((number "0x3C" 1480 . 1484)))
-          ("GYRO_XOUT_H" . ((number "0x45" 1706 . 1710)))
-          ("GYRO_YOUT_L" . ((number "0x48" 1802 . 1806)))
-          ("EXT_SENS_DATA_08" . ((number "0x53" 2190 . 2194)))
-          ("EXT_SENS_DATA_15" . ((number "0x5A" 2442 . 2446)))
-          ("EXT_SENS_DATA_22" . ((number "0x61" 2694 . 2698)))
-          ("FIFO_COUNTH" . ((number "0x72" 3090 . 3094)))
-          ("SELF_TEST_X_ACCE" . ((number "0xD0" 169 . 173)))
-          ("YG_OFFSET_H" . ((number "0x15" 337 . 341)))
-          ("GYRO_CONFIG" . ((number "0x1B" 524 . 528)))
-          ("I2C_SLV3_ADDR" . ((number "0x2E" 1053 . 1057)))
-          ("I2C_SLV3_CTRL" . ((number "0x30" 1120 . 1124)))
-          ("I2C_SLV4_DI" . ((number "0x35" 1285 . 1289)))
-          ("INT_PIN_CFG" . ((number "0x37" 1352 . 1356)))
-          ("ACCEL_ZOUT_H" . ((number "0x41" 1579 . 1583)))
-          ("EXT_SENS_DATA_09" . ((number "0x54" 2226 . 2230)))
-          ("EXT_SENS_DATA_16" . ((number "0x5B" 2478 . 2482)))
-          ("EXT_SENS_DATA_23" . ((number "0x62" 2730 . 2734)))
-          )
-)
-    (semanticdb-table "clock.c"
-      :major-mode 'c-mode
-      :tags 
-        '( ("msp430fr5739.h" include (:system-flag t) nil [1 26])
-            ("experimenter.h" include nil nil [27 52])
-            ("pins.h" include nil nil [53 70])
-            ("clock_system_init" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [96 101]))                  
-                :type "void")
-                nil [73 655])
-            ("oscillator_fault" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [679 684]))                  
-                :type "int")
-                nil [658 873]))          
-      :file "clock.c"
-      :pointmax 874
-      :fsize 873
-      :lastmodtime '(21789 17606 424629 506000)
-      :unmatched-syntax nil)
-    (semanticdb-table "binary.h"
-      :major-mode 'c-mode
-      :tags 
-        '( ("stdint.h" include (:system-flag t) nil [1485 1504])
-            ("BINARY_H" variable (:constant-flag t) nil [1531 1539])
-            ("LOG_MAX_DATA" variable (:constant-flag t) nil [1621 1633])
-            ("VALID_FREQ" variable (:constant-flag t) nil [1699 1709])
-            ("write_log1" function
-               (:prototype-flag t
-                :typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2020 2033])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2034 2046])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2055 2066]))                  
-                :type "int")
-                nil [1998 2067])
-            ("write_log2" function
-               (:prototype-flag t
-                :typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2090 2103])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2104 2116])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2125 2136])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2137 2148]))                  
-                :type "int")
-                nil [2068 2149])
-            ("write_log3" function
-               (:prototype-flag t
-                :typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2172 2185])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2186 2198])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2207 2218])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2219 2230])
-                    ("d2" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2231 2242]))                  
-                :type "int")
-                nil [2150 2243])
-            ("write_log4" function
-               (:prototype-flag t
-                :typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2266 2279])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2280 2292])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2301 2312])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2313 2324])
-                    ("d2" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2325 2336])
-                    ("d3" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2337 2348]))                  
-                :type "int")
-                nil [2244 2349])
-            ("write_log5" function
-               (:prototype-flag t
-                :typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2372 2385])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2386 2398])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2407 2418])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2419 2430])
-                    ("d2" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2431 2442])
-                    ("d3" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2443 2454])
-                    ("d4" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2455 2466]))                  
-                :type "int")
-                nil [2350 2467])
-            ("WRITE_LOG_HELPER" variable (:constant-flag t) nil [3210 3226])
-            ("LOG_HELPER" variable (:constant-flag t) nil [3273 3283])
-            ("WRITE_LOG" variable (:constant-flag t) nil [3324 3333])
-            ("LOG_ACCEL" variable (:constant-flag t) nil [3409 3418])
-            ("LOG_ACCEL_LEN" variable (:constant-flag t) nil [3433 3446])
-            ("LOG_GYRO" variable (:constant-flag t) nil [3459 3467])
-            ("LOG_GYRO_LEN" variable (:constant-flag t) nil [3482 3494])
-            ("LOG_MAG" variable (:constant-flag t) nil [3507 3514])
-            ("LOG_MAG_LEN" variable (:constant-flag t) nil [3530 3541])
-            ("LOG_PRS" variable (:constant-flag t) nil [3554 3561])
-            ("LOG_PRS_LEN" variable (:constant-flag t) nil [3577 3588])
-            ("LOG_TEMP" variable (:constant-flag t) nil [3601 3609])
-            ("LOG_TEMP_LEN" variable (:constant-flag t) nil [3624 3636])
-            ("LOG_TIME" variable (:constant-flag t) nil [3649 3657])
-            ("LOG_TIME_LEN" variable (:constant-flag t) nil [3672 3684])
-            ("LOG_PRS_CONF" variable (:constant-flag t) nil [3697 3709])
-            ("LOG_PRS_CONF_LEN" variable (:constant-flag t) nil [3724 3740])
-            ("LOG_VALID" variable (:constant-flag t) nil [3752 3761])
-            ("LOG_VALID_LEN" variable (:constant-flag t) nil [3776 3789])
-            ("LOG_BATT" variable (:constant-flag t) nil [3802 3810])
-            ("LOG_BATT_LEN" variable (:constant-flag t) nil [3825 3837])
-            ("LOG_OSC_FAULT" variable (:constant-flag t) nil [3850 3863])
-            ("LOG_OSC_FAULT_LEN" variable (:constant-flag t) nil [3878 3895])
-            ("LOG_OSC_RESTORE" variable (:constant-flag t) nil [3907 3922])
-            ("LOG_OSC_RESTORE_LEN" variable (:constant-flag t) nil [3937 3956])
-            ("LOG_HAL_START" variable (:constant-flag t) nil [3968 3981])
-            ("LOG_HAL_START_LEN" variable (:constant-flag t) nil [3996 4013])
-            ("LOG_HAL_END" variable (:constant-flag t) nil [4025 4036])
-            ("LOG_HAL_END_LEN" variable (:constant-flag t) nil [4051 4066])
-            ("LOG_SHUTDOWN" variable (:constant-flag t) nil [4079 4091])
-            ("LOG_SHUTDOWN_LEN" variable (:constant-flag t) nil [4106 4122])
-            ("LOG_IVL_START" variable (:constant-flag t) nil [4134 4147])
-            ("LOG_IVL_START_LEN" variable (:constant-flag t) nil [4162 4179])
-            ("LOG_IVL_END" variable (:constant-flag t) nil [4191 4202])
-            ("LOG_IVL_END_LEN" variable (:constant-flag t) nil [4217 4232])
-            ("LOG_FREQ_1HZ" variable (:constant-flag t) nil [4245 4257])
-            ("LOG_FREQ_2HZ" variable (:constant-flag t) nil [4271 4283])
-            ("LOG_FREQ_4HZ" variable (:constant-flag t) nil [4297 4309])
-            ("LOG_FREQ_8HZ" variable (:constant-flag t) nil [4323 4335])
-            ("LOG_FREQ_16HZ" variable (:constant-flag t) nil [4349 4362])
-            ("LOG_FREQ_32HZ" variable (:constant-flag t) nil [4376 4389])
-            ("LOG_FREQ_64HZ" variable (:constant-flag t) nil [4403 4416])
-            ("WRITE_OK" variable (:constant-flag t) nil [4431 4439])
-            ("WRITE_BAD_CMD" variable (:constant-flag t) nil [4451 4464])
-            ("READ_OK" variable (:constant-flag t) nil [4476 4483])
-            ("READ_BAD_CMD" variable (:constant-flag t) nil [4495 4507])
-            ("write_log" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [4526 4539])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [4540 4552])
-                    ("data" variable
-                       (:dereference 1
-                        :constant-flag t
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [4553 4574]))                  
-                :type "int")
-                nil [4512 4575])
-            ("read_log" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [4589 4602])
-                    ("cmd" variable
-                       (:pointer 1
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [4603 4616])
-                    ("data" variable
-                       (:dereference 1
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [4617 4632]))                  
-                :type "int")
-                nil [4576 4633]))          
-      :file "binary.h"
-      :pointmax 4642
-      :fsize 4641
-      :lastmodtime '(21789 46314 437377 936000)
-      :unmatched-syntax '((number 1634 . 1635) (symbol 1645 . 1655))
-      :lexical-table 
-        '(("LOG_ACCEL_LEN" . ((number "3" 3448 . 3449)))
-          ("LOG_MAG" . ((number "0x02" 3517 . 3521)))
-          ("LOG_OSC_FAULT" . ((number "0x0A" 3865 . 3869)))
-          ("LOG_SHUTDOWN" . ((number "0x0E" 4093 . 4097)))
-          ("LOG_FREQ_32HZ" . ((number "0x05" 4390 . 4394)))
-          ("VALID_FREQ" . ((number "100" 1710 . 1713)))
-          ("LOG_HAL_END" . ((number "0x0D" 4038 . 4042)))
-          ("LOG_HAL_END_LEN" . ((number "3" 4068 . 4069)))
-          ("LOG_SHUTDOWN_LEN" . ((number "3" 4123 . 4124)))
-          ("LOG_IVL_START_LEN" . ((number "3" 4180 . 4181)))
-          ("READ_OK" . ((punctuation "-" 4484 . 4485) (number "1" 4485 . 4486)))
-          ("WRITE_LOG_HELPER" (spp-arg-list ("len" "args...") 3226 . 3240) . ((spp-symbol-merge ((symbol "write_log" 3241 . 3250) (symbol "len" 3254 . 3257)) 3241 . 3257) (semantic-list "(args)" 3258 . 3264)))
-          ("LOG_GYRO_LEN" . ((number "5" 3496 . 3497)))
-          ("LOG_TIME_LEN" . ((number "3" 3686 . 3687)))
-          ("LOG_OSC_RESTORE_LEN" . ((number "3" 3957 . 3958)))
-          ("READ_BAD_CMD" . ((punctuation "-" 4508 . 4509) (number "2" 4509 . 4510)))
-          ("BINARY_H")
-          ("LOG_IVL_START" . ((number "0x0F" 4149 . 4153)))
-          ("LOG_MAX_DATA" . ((number "5" 1634 . 1635)))
-          ("LOG_ACCEL" . ((number "0x00" 3420 . 3424)))
-          ("LOG_TEMP_LEN" . ((number "3" 3638 . 3639)))
-          ("LOG_OSC_FAULT_LEN" . ((number "3" 3896 . 3897)))
-          ("WRITE_OK" . ((punctuation "-" 4440 . 4441) (number "1" 4441 . 4442)))
-          ("LOG_HELPER" (spp-arg-list ("args...") 3283 . 3292) . ((symbol "WRITE_LOG_HELPER" 3293 . 3309) (semantic-list "(args)" 3309 . 3315)))
-          ("WRITE_LOG" (spp-arg-list ("stream" "cmd" "data...") 3333 . 3355) . ((symbol "LOG_HELPER" 3356 . 3366) (semantic-list "(cmd ## _LEN, stream, cmd, data)" 3366 . 3398)))
-          ("LOG_PRS_CONF" . ((number "0x06" 3711 . 3715)))
-          ("LOG_PRS_CONF_LEN" . ((number "3" 3741 . 3742)))
-          ("LOG_HAL_START_LEN" . ((number "3" 4014 . 4015)))
-          ("LOG_FREQ_2HZ" . ((number "0x01" 4284 . 4288)))
-          ("LOG_PRS_LEN" . ((number "3" 3590 . 3591)))
-          ("LOG_VALID" . ((number "0x07" 3763 . 3767)))
-          ("LOG_BATT" . ((number "0x08" 3812 . 3816)))
-          ("LOG_OSC_RESTORE" . ((number "0x0B" 3924 . 3928)))
-          ("LOG_FREQ_8HZ" . ((number "0x03" 4336 . 4340)))
-          ("LOG_FREQ_16HZ" . ((number "0x04" 4363 . 4367)))
-          ("LOG_FREQ_64HZ" . ((number "0x06" 4417 . 4421)))
-          ("LOG_VALID_LEN" . ((number "3" 3791 . 3792)))
-          ("LOG_BATT_LEN" . ((number "4" 3839 . 3840)))
-          ("LOG_HAL_START" . ((number "0x0C" 3983 . 3987)))
-          ("LOG_IVL_END" . ((number "0x10" 4204 . 4208)))
-          ("LOG_GYRO" . ((number "0x01" 3469 . 3473)))
-          ("LOG_TIME" . ((number "0x05" 3659 . 3663)))
-          ("LOG_FREQ_1HZ" . ((number "0x00" 4258 . 4262)))
-          ("LOG_MAG_LEN" . ((number "3" 3543 . 3544)))
-          ("LOG_TEMP" . ((number "0x04" 3611 . 3615)))
-          ("LOG_FREQ_4HZ" . ((number "0x02" 4310 . 4314)))
-          ("LOG_PRS" . ((number "0x03" 3564 . 3568)))
-          ("LOG_IVL_END_LEN" . ((number "3" 4234 . 4235)))
-          ("WRITE_BAD_CMD" . ((punctuation "-" 4465 . 4466) (number "2" 4466 . 4467)))
-          )
-)
-    (semanticdb-table "binary.c"
-      :major-mode 'c-mode
-      :tags 
-        '( ("stdio.h" include (:system-flag t) nil [1 19])
-            ("binary.h" include nil nil [20 39])
-            ("cmd_data_len" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [65 77]))                  
-                :type "int")
-                nil [41 847])
-            ("write_log_generic" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [879 892])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [893 905])
-                    ("data" variable
-                       (:dereference 1
-                        :constant-flag t
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [906 927])
-                    ("data_len" variable (:type "int") (reparse-symbol arg-sub-list) [928 941]))                  
-                :type "int")
-                nil [850 1338])
-            ("write_log1" function
-               (:typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [1363 1376])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1377 1389])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1394 1405]))                  
-                :type "int")
-                nil [1341 1488])
-            ("write_log2" function
-               (:typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [1513 1526])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1527 1539])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1544 1555])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1556 1567]))                  
-                :type "int")
-                nil [1491 1654])
-            ("write_log3" function
-               (:typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [1679 1692])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1693 1705])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1710 1721])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1722 1733])
-                    ("d2" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1734 1745]))                  
-                :type "int")
-                nil [1657 1836])
-            ("write_log4" function
-               (:typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [1860 1873])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1874 1886])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1895 1906])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1907 1918])
-                    ("d2" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1919 1930])
-                    ("d3" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1931 1942]))                  
-                :type "int")
-                nil [1838 2037])
-            ("write_log5" function
-               (:typemodifiers ("inline")
-                :arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2061 2074])
-                    ("cmd" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2075 2087])
-                    ("d0" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2096 2107])
-                    ("d1" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2108 2119])
-                    ("d2" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2120 2131])
-                    ("d3" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2132 2143])
-                    ("d4" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2144 2155]))                  
-                :type "int")
-                nil [2039 2254])
-            ("read_log" function
-               (:arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2270 2283])
-                    ("cmd" variable
-                       (:pointer 1
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2284 2297])
-                    ("data" variable
-                       (:dereference 1
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2298 2313]))                  
-                :type "int")
-                nil [2257 2802])
-            ("split_file" function
-               (:arguments 
-                  ( ("stream" variable
-                       (:pointer 1
-                        :type ("FILE" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [2820 2833]))                  
-                :type "void")
-                nil [2804 4071]))          
-      :file "binary.c"
-      :pointmax 4074
-      :fsize 4057
-      :lastmodtime '(21789 46643 401646 459000)
-      :unmatched-syntax nil)
-    (semanticdb-table "binary_test.c"
-      :major-mode 'c-mode
-      :tags 
-        '( ("assert.h" include (:system-flag t) nil [1 20])
-            ("stdio.h" include (:system-flag t) nil [21 39])
-            ("binary.h" include nil nil [40 59])
-            ("main" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [71 76]))                  
-                :type "int")
-                nil [62 1112]))          
-      :file "binary_test.c"
-      :pointmax 1113
-      :fsize 1112
-      :lastmodtime '(21789 42265 477598 692000)
-      :unmatched-syntax nil)
-    (semanticdb-table "clock.h"
-      :major-mode 'c-mode
-      :tags 
-        '( ("CLOCK_H" variable (:constant-flag t) nil [457 464])
-            ("stdint.h" include (:system-flag t) nil [466 485])
-            ("ACLK_HZ" variable (:constant-flag t) nil [525 532])
-            ("SMCLK_KHZ" variable (:constant-flag t) nil [547 556])
-            ("MCLK_KHZ" variable (:constant-flag t) nil [570 578])
-            ("SEC_TO_ACLK_CYCLES" variable (:constant-flag t) nil [660 678])
-            ("MS_TO_SMCLK_CYCLES" variable (:constant-flag t) nil [720 738])
-            ("MS_TO_MCLK_CYCLES" variable (:constant-flag t) nil [780 797])
-            ("clock_system_init" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1216 1221]))                  
-                :type "void")
-                nil [1193 1222])
-            ("oscillator_fault" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1394 1399]))                  
-                :type "int")
-                nil [1373 1400]))          
-      :file "clock.h"
-      :pointmax 1409
-      :fsize 1408
-      :lastmodtime '(21789 17425 871586 91000)
-      :unmatched-syntax nil
-      :lexical-table 
-        '(("ACLK_HZ" . ((number "32768" 533 . 538)))
-          ("SMCLK_KHZ" . ((number "1000" 557 . 561)))
-          ("SEC_TO_ACLK_CYCLES" (spp-arg-list ("sec") 678 . 683) . ((semantic-list "((uint16_t)(ACLK_HZ * sec))" 684 . 711)))
-          ("CLOCK_H")
-          ("MCLK_KHZ" . ((number "1000" 579 . 583)))
-          ("MS_TO_MCLK_CYCLES" (spp-arg-list ("ms") 797 . 801) . ((semantic-list "((uint16_t)(MCLK_KHZ * ms))" 802 . 829)))
-          ("MS_TO_SMCLK_CYCLES" (spp-arg-list ("ms") 738 . 742) . ((semantic-list "((uint16_t)(SMCLK_KHZ * ms))" 743 . 771)))
-          )
-)
-    (semanticdb-table "serial.cpp"
-      :major-mode 'c++-mode
-      :tags 
-        '( ("stdint.h" include (:system-flag t) nil [1 20])
-            ("istream" include (:system-flag t) nil [21 39])
-            ("vector" include (:system-flag t) nil [40 57])
-            ("ReadStatus" type (:type "class") nil [64 93])
-            ("WriteStatus" type (:type "class") nil [99 129])
-            ("read_byte" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("b" variable
-                       (:reference 1
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [152 163]))                  
-                :type ("ReadStatus" type (:type "class") nil nil))
-                nil [131 164])
-            ("write_byte" function
-               (:prototype-flag t
-                :arguments 
-                  ( ("b" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [188 198]))                  
-                :type ("WriteStatus" type (:type "class") nil nil))
-                nil [165 199])
-            ("cmd_code" type
-               (:typedef ("uint8_t" type (:type "class") nil nil)
-                :type "typedef")
-                nil [201 226])
-            ("std::istream" using (:type ("std::istream" type
-                 (:prototype t
-                  :type "class")
-                  nil nil)) nil [227 246])
-            ("std::ostream" using (:type ("std::ostream" type
-                 (:prototype t
-                  :type "class")
-                  nil nil)) nil [247 266])
-            ("read_data" function
-               (:template 
-                  ( ("T" type (:type "class") nil nil))                  
-                :type ("ReadStatus" type (:type "class") nil nil)
-                :arguments 
-                  ( ("t" variable (:type ("T" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [364 368]))                  )
-                nil [322 397])
-            ("read_data" function
-               (:type ("ReadStatus" type (:type "class") nil nil)
-                :arguments 
-                  ( ("t" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [441 451]))                  
-                :template-specifier 
-                  ( ("uint8_t" type nil nil nil))                  )
-                nil [400 480])
-            ("read_data" function
-               (:arguments 
-                  ( ("t1" variable
-                       (:reference 1
-                        :type ("T1" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [690 697])
-                    ("t2" variable
-                       (:reference 1
-                        :type ("T2" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [698 705])
-                    ("" variable
-                       (:reference 1
-                        :type ("Ts" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [706 710])
-                    ("" variable (:type ("ts" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [713 716]))                  
-                :type ("ReadStatus" type (:type "class") nil nil))
-                nil [669 888])
-            ("write_data" function
-               (:arguments 
-                  ( ("t1" variable (:type ("T1" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1013 1019])
-                    ("t2" variable (:type ("T2" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1020 1026])
-                    ("" variable (:type ("Ts" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1027 1030])
-                    ("" variable (:type ("ts" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1033 1036]))                  
-                :type ("WriteStatus" type (:type "class") nil nil))
-                nil [990 1213])
-            ("write_data" function
-               (:typemodifiers ("inline")
-                :arguments 
-                  ( ("t" variable (:type ("uint8_t" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1300 1310]))                  
-                :type ("WriteStatus" type (:type "class") nil nil))
-                nil [1270 1340])
-            ("data_size" function (:type "int") nil [1368 1396])
-            ("data_size" function (:type "int") nil [1436 1498])
-            ("Command" type
-               (:members 
-                  ( ("cc" variable
-                       (:typemodifiers ("static")
-                        :constant-flag t
-                        :default-value "Cc"
-                        :type ("cmd_code" type (:type "class") nil nil))
-                        (reparse-symbol classsubparts) [1560 1590])
-                    ("read" function
-                       (:typemodifiers ("static")
-                        :arguments 
-                          ( ("" variable
-                               (:reference 1
-                                :type ("Ts" type (:type "class") nil nil))
-                                (reparse-symbol arg-sub-list) [1672 1676])
-                            ("" variable (:type ("ts" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1679 1682]))                          
-                        :type ("ReadStatus" type (:type "class") nil nil))
-                        (reparse-symbol classsubparts) [1649 1711])
-                    ("write" function
-                       (:typemodifiers ("static")
-                        :arguments 
-                          ( ("" variable (:type ("Ts" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1741 1744])
-                            ("" variable (:type ("ts" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1747 1750]))                          
-                        :type ("WriteStatus" type (:type "class") nil nil))
-                        (reparse-symbol classsubparts) [1716 1784]))                  
-                :type "struct")
-                nil [1539 1787])
-            ("split_to_stream" function
-               (:arguments 
-                  ( ("c" variable (:type "char") (reparse-symbol arg-sub-list) [1837 1844])
-                    ("in" variable (:type ("istream" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1845 1856])
-                    ("" variable (:type ("Ostreams" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1857 1866])
-                    ("" variable (:type ("outs" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1869 1874]))                  
-                :type "void")
-                nil [1816 1883])
-            ("split_to_stream" function
-               (:arguments 
-                  ( ("c" variable (:type "char") (reparse-symbol arg-sub-list) [1948 1955])
-                    ("in" variable (:type ("istream" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1956 1967])
-                    ("outs" variable
-                       (:dereference 1
-                        :type ("std::vector" type
-                             (:template-specifier 
-                                ( ("char" type nil nil nil))                                
-                              :type "class")
-                              nil nil))
-                        (reparse-symbol arg-sub-list) [1968 1993]))                  
-                :type "void")
-                nil [1927 2188])
-            ("input_splitter" function
-               (:arguments 
-                  ( ("in" variable (:type ("istream" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2237 2248])
-                    ("" variable (:type ("ostream" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2249 2257])
-                    ("" variable (:type ("outs" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [2260 2265]))                  
-                :type "void")
-                nil [2217 2353])
-            ("LOG_ACCEL" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x00") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [2916 2975])
-            ("LOG_GYRO" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x01") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [2976 3034])
-            ("LOG_MAG" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x02") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3035 3092])
-            ("LOG_PRS" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x03") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3093 3150])
-            ("LOG_TEMP" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x04") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3151 3209])
-            ("LOG_TIME" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x05") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3210 3268])
-            ("LOG_PRS_CONF" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x06") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3269 3331])
-            ("LOG_VALID" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x07") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3332 3391])
-            ("LOG_BATT" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x08") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3392 3450])
-            ("LOG_OSC_FAULT" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x0A") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3451 3514])
-            ("LOG_OSC_RESTORE" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x0B") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3515 3580])
-            ("LOG_HAL_START" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x0C") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3581 3644])
-            ("LOG_HAL_END" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x0D") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3645 3706])
-            ("LOG_SHUTDOWN" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x0E") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3707 3769])
-            ("LOG_IVL_START" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x0F") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3770 3833])
-            ("LOG_IVL_END" type
-               (:typedef ("Command" type
-                     (:template-specifier (("0x10") ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil) ("uint8_t" type nil nil nil))
-                      :type "class")
-                      nil nil)
-                :type "typedef")
-                nil [3834 3895])
-            ("read_byte" function
-               (:arguments 
-                  ( ("in" variable (:type ("istream" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [3919 3930])
-                    ("val" variable
-                       (:reference 1
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [3931 3944]))                  
-                :type ("ReadStatus" type (:type "class") nil nil))
-                nil [3898 4090])
-            ("main" function (:type "int") nil [6463 6615]))          
-      :file "serial.cpp"
-      :pointmax 6616
-      :fsize 6615
-      :lastmodtime '(21791 55770 601594 749000)
-      :unmatched-syntax nil)
-    (semanticdb-table "test.cpp"
-      :major-mode 'c++-mode
-      :tags 
-        '( ("flag" variable
-               (:typemodifiers ("extern" "volatile")
-                :type "int")
-                nil [1 26])
-            ("main" function (:type "int") nil [28 66]))          
-      :file "test.cpp"
-      :pointmax 67
-      :fsize 66
-      :lastmodtime '(21792 26273 310399 887000)
-      :unmatched-syntax nil)
-    (semanticdb-table "main.cpp"
-      :major-mode 'c++-mode
-      :tags 
-        '( ("stdint.h" include (:system-flag t) nil [1 20])
-            ("ConfigData" type
-               (:members 
-                  ( ("year" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [46 94])
-                    ("month" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [46 94])
-                    ("day" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [46 94])
-                    ("hour" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [46 94])
-                    ("minute" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [46 94])
-                    ("second" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [46 94])
-                    ("duty_uptime" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [99 120])
-                    ("duty_downtime" variable (:type ("uint16_t" type (:type "class") nil nil)) (reparse-symbol classsubparts) [125 148]))                  
-                :type "struct")
-                nil [22 151])
-            ("fallback_conf" variable
-               (:constant-flag t
-                :type ("ConfigData" type (:type "class") nil nil))
-                nil [153 219])
-            ("SDStat" type (:type "class") nil [226 251])
-            ("EventFlag" type (:type "class") nil [257 508])
-            ("DutyCycleStatus" type (:type "class") nil [515 600])
-            ("evt" variable (:type ("EventFlag" type (:type "class") nil nil)) nil [611 625])
-            ("wait_for_event" function (:type ("EventFlag" type (:type "class") nil nil)) nil [627 1251])
-            ("usb_connected" variable
-               (:typemodifiers ("volatile")
-                :default-value "0"
-                :type "int")
-                nil [1253 1284])
-            ("hal_connected" variable
-               (:typemodifiers ("volatile")
-                :default-value "0"
-                :type "int")
-                nil [1285 1316])
-            ("run_duty_cycle" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1349 1354]))                  
-                :type ("DutyCycleStatus" type (:type "class") nil nil))
-                nil [1318 1363])
-            ("main" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1374 1379]))                  
-                :type "int")
-                nil [1365 4282])
-            ("main_loop" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [4299 4304]))                  
-                :type "void")
-                nil [4284 5085])
-            ("main" function
-               (:arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [5096 5101]))                  
-                :type "int")
-                nil [5087 8879]))          
-      :file "main.cpp"
-      :pointmax 8880
-      :fsize 8879
-      :lastmodtime '(21793 15395 215517 533000)
-      :unmatched-syntax nil)
-    (semanticdb-table "time.cpp"
-      :major-mode 'c++-mode
-      :tags 
-        '( ("FatFs" include nil nil [1 17])
-            ("FileStat" type (:type "class") nil [24 53])
-            ("log_buffer" variable
-               (:dereference 1
-                :typemodifiers ("static")
-                :type ("uint8_t" type (:type "class") nil nil))
-                nil [98 143])
-            ("buffered_log_bytes" variable
-               (:typemodifiers ("static")
-                :default-value "0"
-                :type "int")
-                nil [144 178])
-            ("make_log_file" function
-               (:arguments 
-                  ( ("file" variable
-                       (:pointer 1
-                        :type ("File" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [203 214]))                  
-                :type ("FileStat" type (:type "class") nil nil))
-                nil [180 2292]))          
-      :file "time.cpp"
-      :pointmax 2293
-      :fsize 2292
-      :lastmodtime '(21793 36211 865808 854000)
-      :unmatched-syntax nil)
-    (semanticdb-table "mmc.c"
-      :major-mode 'c-mode
-      :tags 
-        '( ("experimenter.h" include nil nil [1 26])
-            ("intrinsics.h" include nil nil [27 50])
-            ("pins.h" include nil nil [51 68])
-            ("clock.h" include nil nil [69 87])
-            ("stdio.h" include (:system-flag t) nil [88 106])
-            ("TX_BUFF_SZ" variable (:constant-flag t) nil [116 126])
-            ("SPIState" type
-               (:members 
-                  ( ("RX" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [148 151])
-                    ("TX" variable
-                       (:constant-flag t
-                        :type "int")
-                        (reparse-symbol enumsubparts) [156 159]))                  
-                :type "enum")
-                nil [128 162])
-            ("spi_state" variable
-               (:typemodifiers ("static" "volatile")
-                :default-value "RX"
-                :type ("SPIState" type (:type "enum") nil nil))
-                nil [165 210])
-            ("ntx" variable
-               (:typemodifiers ("static" "volatile")
-                :default-value "0"
-                :type "int")
-                nil [212 240])
-            ("tx_buff" variable
-               (:pointer 1
-                :typemodifiers ("static")
-                :constant-flag t
-                :type ("uint8_t" type (:type "class") nil nil))
-                nil [241 271])
-            ("nrx" variable
-               (:typemodifiers ("static" "volatile")
-                :default-value "0"
-                :type "int")
-                nil [273 301])
-            ("rx_buff" variable
-               (:pointer 1
-                :typemodifiers ("static")
-                :type ("uint8_t" type (:type "class") nil nil))
-                nil [302 326])
-            ("send_bytes" function
-               (:arguments 
-                  ( ("data" variable
-                       (:dereference 1
-                        :constant-flag t
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [388 409])
-                    ("num" variable (:type "int") (reparse-symbol arg-sub-list) [410 418]))                  
-                :type "void")
-                nil [372 554])
-            ("read_bytes" function
-               (:arguments 
-                  ( ("data" variable
-                       (:dereference 1
-                        :type ("uint8_t" type (:type "class") nil nil))
-                        (reparse-symbol arg-sub-list) [620 635])
-                    ("num" variable (:type "int") (reparse-symbol arg-sub-list) [636 644]))                  
-                :type "void")
-                nil [604 779])
-            ("main" function (:type "int") nil [880 3013])
-            ("USCI_B0_ISR" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [3087 3092]))                  
-                :type "void")
-                nil [3016 4043])
-            ("TIMER0_A1_ISR" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [4121 4126]))                  
-                :type "void")
-                nil [4046 4401]))          
-      :file "mmc.c"
-      :pointmax 4404
-      :fsize 4403
-      :lastmodtime '(21795 60275 794705 794000)
-      :unmatched-syntax nil
-      :lexical-table 
-        '(("TX_BUFF_SZ")
-          )
-)
-    (semanticdb-table "mmc.cpp"
-      :major-mode 'c++-mode
-      :tags 
-        '( ("../experimenter.h" include nil nil [1 29])
-            ("stdio.h" include (:system-flag t) nil [30 48])
-            ("main" function (:type "int") nil [149 432])
-            ("TIMER0_A0_ISR" function
-               (:typemodifiers ("static")
-                :arguments 
-                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [510 515]))                  
-                :type "void")
-                nil [435 546]))          
-      :file "mmc.cpp"
-      :pointmax 547
-      :fsize 546
-      :lastmodtime '(21794 36947 116192 601000)
-      :unmatched-syntax nil))
+))
   :file "!home!peter!workspace!msp430!semantic.cache"
   :semantic-tag-version "2.0"
   :semanticdb-version "2.2")

@@ -59,8 +59,8 @@
 (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
 
 (require 'gdb-mi)
-(setq gdb-many-windows t)
-(windmove-default-keybindings)
+;; (setq gdb-many-windows nil)
+;; (windmove-default-keybindings)
 (setq gdb-show-main t)
 
 (require 'ido)
@@ -204,6 +204,7 @@ Does not set point.  Does nothing if mark ring is empty."
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key "\C-cf" 'recentf-open-files)
 (global-set-key "\C-cg" 'magit-status)
+(global-set-key "\C-cp" 'grep)
 
 (require 'org-bibtex)
 (defun my-org-bibtex-transfer ()
@@ -227,10 +228,10 @@ Does not set point.  Does nothing if mark ring is empty."
   (when shell
     (setq explicit-shell-file-name shell)))
 
-
+(require 'grep)
 (let ((ack-cmd
        (or (executable-find "ack-grep")
-	   (executable-find "grep")))
+	   (executable-find "ack")))
       (ack-args " --nogroup -H "))
   (when ack-cmd
       (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
@@ -267,6 +268,7 @@ Does not set point.  Does nothing if mark ring is empty."
       comint-scroll-show-maximum-output nil)
 (add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
 (add-hook 'comint-mode-hook (lambda () (text-scale-set -2)))
+
 
 (defun close-comint-hook ()
   "Automatically close the comint buffer."
