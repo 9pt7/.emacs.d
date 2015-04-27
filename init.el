@@ -1,4 +1,3 @@
-
 ;;; .emacs -- My emacs config file
 ;;; Commentary:
 ;;; Code:
@@ -6,8 +5,8 @@
 (require 'package)
 (package-initialize)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-			 ("marmalade" . "http://marmalade-repo.org/packages/")
-			 ("melpa" . "http://melpa.milkbox.net/packages/")))
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
@@ -23,13 +22,12 @@
 (setq user-full-name "Peter Thompson"
       user-mail-address "peter.thompson92@gmail.com")
 
-(push (expand-file-name "~/.emacs.d/manual") load-path)
 (require 'fic-mode)			; Highlights TODO keywords
 (add-hook 'prog-mode-hook #'turn-on-fic-mode)
 (face-spec-set 'font-lock-fic-face
-			'((t (:background nil
-					  :foreground "red3"
-					  :weight bold))))
+                        '((t (:background nil
+                                          :foreground "red3"
+                                          :weight bold))))
 
 
 (set-face-attribute 'default nil :height 105)
@@ -51,9 +49,11 @@
 (setq gc-cons-threshold 20000000)
 (setq redisplay-dont-pause t)
 (pending-delete-mode 1)
-(setq indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 (setq comment-auto-fill-only-comments t
       auto-fill-function nil)
+(setq indent-tabs-mode nil
+      align-default-spacing 2)
 (add-hook 'prog-mode-hook 'turn-on-auto-fill)
 (require 'eldoc)
 (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
@@ -68,18 +68,18 @@
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
-		  (eval
-		   `(lambda ()
-		      (interactive)
-		      (select-window (window-at 0 0))
-		      (other-window (- ,i 1))))))
+                  (eval
+                   `(lambda ()
+                      (interactive)
+                      (select-window (window-at 0 0))
+                      (other-window (- ,i 1))))))
 
 (let ((backup-dir (expand-file-name "~/backup")))
   (setq backup-directory-alist `(("." . ,backup-dir))
-	backup-directory-alist
-	`((".*" . ,backup-dir))
-	auto-save-file-name-transforms
-	`((".*" ,backup-dir t))))
+        backup-directory-alist
+        `((".*" . ,backup-dir))
+        auto-save-file-name-transforms
+        `((".*" ,backup-dir t))))
 
 ;; Swap keys for regex and regular isearch/replace
 (global-set-key "\C-s" 'isearch-forward-regexp)
@@ -98,7 +98,7 @@ The state of the region will not altered without a prefix ARG,
 otherwise it is enabled."
   (interactive "p")
   (exchange-point-and-mark (and (not (use-region-p))
-				(= 1 arg))))
+                                (= 1 arg))))
 
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
 
@@ -119,7 +119,7 @@ Does not set point.  Does nothing if mark ring is empty."
   (if (null (mark t))
       (error "No mark set in this buffer")
     (if (= (point) (car (last mark-ring 2)))
-	(message "Mark popped"))
+        (message "Mark popped"))
     (goto-char (or (car (last mark-ring 2)) (mark t)))
     (pop-mark2)))
 
@@ -132,15 +132,15 @@ Does not set point.  Does nothing if mark ring is empty."
     (delete-other-windows)
     (split-window-horizontally)
     (cl-labels
-	((fix-text-size (start-size)
-			(set-face-attribute 'default nil :height start-size)
-			(if (< (window-body-width) 80)
-			    (fix-text-size (- start-size 5))
-			  start-size)))
+        ((fix-text-size (start-size)
+                        (set-face-attribute 'default nil :height start-size)
+                        (if (< (window-body-width) 80)
+                            (fix-text-size (- start-size 5))
+                          start-size)))
       (let ((text-size (fix-text-size max-size)))
-	(frameset-restore frameset)
-	(set-face-attribute 'default nil :height text-size)
-	text-size))))
+        (frameset-restore frameset)
+        (set-face-attribute 'default nil :height text-size)
+        text-size))))
 
 
 (defun toggle-fullscreen ()
@@ -184,17 +184,37 @@ Does not set point.  Does nothing if mark ring is empty."
   "Call `compile' interactively from a chosen directory."
   (interactive)
   (let ((default-directory
-	  (read-directory-name
-	   "Compilation directory: "
-	   ;; Use current compilation directory if the default directory is a subdirectory
-	   (if (and compilation-directory
-		    (locate-dominating-file
-		     default-directory
-		     (lambda (dir)
-		       (file-equal-p dir compilation-directory))))
-	       compilation-directory
-	     default-directory))))
+          (read-directory-name
+           "Compilation directory: "
+           ;; Use current compilation directory if the default directory is a
+           ;; subdirectory
+           (if (and compilation-directory
+                    (locate-dominating-file
+                     default-directory
+                     (lambda (dir)
+                       (file-equal-p dir compilation-directory))))
+               compilation-directory
+             default-directory))))
     (call-interactively 'compile)))
+
+(require 'grep)
+(let ((ack-cmd
+       (cond ((executable-find "ack-grep") "ack-grep")
+             ((executable-find "ack") "ack")))
+      (ack-args " --nogroup -H "))
+  (when ack-cmd
+    (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
+
+(defun grep-override (grep-cmd)
+  (let ((old-cmd grep-command))
+    (grep-apply-setting 'grep-command grep-cmd)
+    (unwind-protect
+        (call-interactively #'grep)
+      (grep-apply-setting 'grep-command old-cmd))))
+
+(defun grep-global ()
+  (interactive)
+  (grep-override "global --result grep -xi "))
 
 (global-set-key "\C-ce" 'flycheck-list-errors)
 (global-set-key "\C-cs" 'shell)
@@ -204,6 +224,10 @@ Does not set point.  Does nothing if mark ring is empty."
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key "\C-cf" 'recentf-open-files)
 (global-set-key "\C-cg" 'magit-status)
+<<<<<<< HEAD
+=======
+(global-set-key "\C-cb" 'grep-global)
+>>>>>>> b44ea8109466e91397382600dbe833ebca9d8c4c
 (global-set-key "\C-cp" 'grep)
 
 (require 'org-bibtex)
@@ -211,9 +235,8 @@ Does not set point.  Does nothing if mark ring is empty."
   "Read Bibtex entry when in Bibtex mode, paste when in org mode."
   (interactive)
   (cond ((eq major-mode 'bibtex-mode) (org-bibtex-read))
-	((eq major-mode 'org-mode) (org-bibtex-write))
-	(t (message "Need to be in bibtex-mode or org-mode."))))
-(global-set-key "\C-cb" 'my-org-bibtex-transfer)
+        ((eq major-mode 'org-mode) (org-bibtex-write))
+        (t (message "Need to be in bibtex-mode or org-mode."))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell
@@ -228,6 +251,7 @@ Does not set point.  Does nothing if mark ring is empty."
   (when shell
     (setq explicit-shell-file-name shell)))
 
+<<<<<<< HEAD
 (require 'grep)
 (let ((ack-cmd
        (or (executable-find "ack-grep")
@@ -235,6 +259,8 @@ Does not set point.  Does nothing if mark ring is empty."
       (ack-args " --nogroup -H "))
   (when ack-cmd
       (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
+=======
+>>>>>>> b44ea8109466e91397382600dbe833ebca9d8c4c
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helm
@@ -278,7 +304,7 @@ Does not set point.  Does nothing if mark ring is empty."
      proc
      `(lambda (process event)
         (if (string= event "finished\n")
-	    	(kill-buffer ,buff))))))
+                (kill-buffer ,buff))))))
 
 (add-hook 'comint-exec-hook 'close-comint-hook)
 
@@ -292,8 +318,8 @@ Does not set point.  Does nothing if mark ring is empty."
 ;; SQL
 (require 'sql)
 (add-hook 'sql-interactive-mode-hook
-	  (lambda ()
-	    (toggle-truncate-lines t)))
+          (lambda ()
+            (toggle-truncate-lines t)))
 
 (setq sql-sqlite-program "/usr/bin/sqlite3")
 (setq-default sql-sqlite-program "/usr/bin/sqlite3")
@@ -359,23 +385,23 @@ Does not set point.  Does nothing if mark ring is empty."
       (up-list -1)
       (backward-sexp 1)
       (looking-back "enum[ \t]+class[ \t]+"))))
- 
+
 (defun align-enum-class (langelem)
   (if (inside-class-enum-p (c-langelem-pos langelem))
       0
     (c-lineup-topmost-intro-cont langelem)))
- 
+
 (defun align-enum-class-closing-brace (langelem)
   (if (inside-class-enum-p (c-langelem-pos langelem))
       '-
     '+))
- 
+
 (defun fix-enum-class ()
   "Setup `c++-mode' to better handle \"class enum\"."
   (add-to-list 'c-offsets-alist '(topmost-intro-cont . align-enum-class))
   (add-to-list 'c-offsets-alist
                '(statement-cont . align-enum-class-closing-brace)))
- 
+
 (add-hook 'c++-mode-hook 'fix-enum-class)
 
 
@@ -392,28 +418,30 @@ Does not set point.  Does nothing if mark ring is empty."
   "Update gtags for the current buffer file."
   (interactive)
   (cl-flet ((call (program &rest args)
-		  (with-temp-buffer
-		    (unless (zerop (apply 'call-process program nil t nil args))
-		      (error (string-trim (buffer-string)))))))
+                  (with-temp-buffer
+                    (unless (zerop (apply 'call-process program nil t nil args))
+                      (error (string-trim (buffer-string)))))))
     (when (buffer-file-name)
       (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
-      (call "gtags" "--single-update" (buffer-file-name)))))
+      (call "global" "-u"))))
 
 (defun my/update-gtags-on-save-hook ()
   "Update GTAGS for the current file."
   (when (or (equal major-mode 'c++-mode)
-	    (equal major-mode 'c-mode))
+            (equal major-mode 'c-mode))
     (my/update-gtags)))
 
 (add-hook 'after-save-hook #'my/update-gtags-on-save-hook)
 
 
+
 (defun my/flycheck-on-save-hook ()
   "Update GTAGS for the current file."
   (when (and (memq 'flycheck-mode minor-mode-list)
-	     flycheck-mode)
+             flycheck-mode)
     (flycheck-buffer)))
 
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
 (add-hook 'before-save-hook #'my/flycheck-on-save-hook)
 
 (require 'cc-mode)
@@ -480,16 +508,17 @@ Does not set point.  Does nothing if mark ring is empty."
  org-agenda-todo-ignore-deadlines nil
 
  ;; TODO keywords
- org-todo-keywords '((type "TODO(t)" "READ(r)" "WAITING(w@)"
-			       "|" "DONE(d)" "CANCELLED(c)"))
- org-todo-keyword-faces '(("WAITING" . "orange"))
+ org-todo-keywords '((type "TODO(t)" "READ(r)" "WAITING(w@)" "INPROGRESS(p@)"
+                               "|" "DONE(d)" "CANCELLED(c)"))
+ org-todo-keyword-faces '(("WAITING" . "orange")
+                          ("INPROGRESS" . "orange"))
 
  ;; Capture templates
  org-capture-templates
       '(("t" "task" entry (file "~/Dropbox/org/agenda.org")
-	 "* TODO %^{Task Name} %^G\n/Entered on %U/\n%?")
-	("j" "journal" item (file+datetree "~/Dropbox/org/journal.org")
-	 "%U %?")))
+         "* TODO %^{Task Name} %^G\n/Entered on %U/\n%?")
+        ("j" "journal" item (file+datetree "~/Dropbox/org/journal.org")
+         "%U %?")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Spelling
@@ -511,13 +540,16 @@ Does not set point.  Does nothing if mark ring is empty."
 ;; Use Dired x
 ;; (require 'dired-x)
 ;; (add-hook 'dired-load-hook
-;; 	  (lambda ()
-;; 	    (load "dired-x")))
+;;        (lambda ()
+;;          (load "dired-x")))
 
 (add-hook 'dired-mode-hook
-	  (lambda ()
-	    (toggle-truncate-lines t)
-	    (text-scale-set -2)))
+          (lambda ()
+            (toggle-truncate-lines t)))
+
+;; Macros
+(global-set-key "\C-x(" 'kmacro-start-macro-or-insert-counter)
+
 
 ;; Use emac's ls program
 (setq ls-lisp-use-insert-directory-program nil)
@@ -539,7 +571,7 @@ The app is chosen from your OS's preference."
 
      ((string-equal system-type "gnu/linux")
       (let ((process-connection-type nil))
-	(start-process "" nil "xdg-open" abs-file-name)))
+        (start-process "" nil "xdg-open" abs-file-name)))
 
      ((t (error "Unknown system type: %s" system-type))))))
 
@@ -551,7 +583,7 @@ The app is chosen from your OS's preference."
   :init-value nil
   :lighter ""
   :keymap `((,(kbd "C-.") . dabbrev-expand)
-	    (,(kbd "M-o") . other-window))
+            (,(kbd "M-o") . other-window))
   :global t)
 (override-mode 1)
 
@@ -593,8 +625,8 @@ The app is chosen from your OS's preference."
 ;; (projectile-global-mode)
 ;; (setq projectile-enable-caching t)
 ;; (setq projectile-mode-line '(:eval
-;; 			     (format " Prj[%s]"
-;; 				     (projectile-project-name))))
+;;                           (format " Prj[%s]"
+;;                                   (projectile-project-name))))
 
 ;; (require 'helm-projectile)
 ;; (helm-projectile-on)
@@ -629,19 +661,20 @@ The app is chosen from your OS's preference."
 
 (require 'cc-vars)
 (setq c-default-style "k&r"
-	   c-basic-offset 4)
+           c-basic-offset 4)
 
 (c-add-style "my-cc-mode"
-		  '("cc-mode"
-		    (c-offsets-alist . ((innamespace . [0])))))
+                  '("cc-mode"
+                    (c-offsets-alist . ((innamespace . 0)
+                                        (inline-open . 0)))))
 
 (defun my-cpp-setup()
   (c-set-style "my-cc-mode")
   (setq flycheck-clang-language-standard "c++11"
-	flycheck-gcc-language-standard "c++11"))
+        flycheck-gcc-language-standard "c++11"))
 
 (setq flycheck-clang-language-standard "c++11"
-	flycheck-gcc-language-standard "c++11")
+        flycheck-gcc-language-standard "c++11")
 
 (add-hook 'c++-mode-hook #'my-cpp-setup)
 
@@ -649,14 +682,14 @@ The app is chosen from your OS's preference."
 (c-toggle-electric-state 1)
 
 (setq-default c-cleanup-list
-		   '(brace-else-brace
-		     brace-elseif-brace
-		     brace-catch-brace
-		     empty-defun-braces
-		     one-liner-defun
-		     defun-close-semi
-		     list-close-comma
-		     scope-operator))
+                   '(brace-else-brace
+                     brace-elseif-brace
+                     brace-catch-brace
+                     empty-defun-braces
+                     one-liner-defun
+                     defun-close-semi
+                     list-close-comma
+                     scope-operator))
 
 
 ;; ;; Yas-snippet
@@ -670,7 +703,7 @@ The app is chosen from your OS's preference."
 ;;   (save-excursion
 ;;     (let ((search-str "TEST(\\(\\(\\s_\\|\\s.\\|\\sw\\)+\\), *\\(\\s_\\|\\s.\\|\\sw\\)+)"))
 ;;       (when (search-backward-regexp search-str nil t)
-;; 	  (substring-no-properties (match-string 1))))))
+;;        (substring-no-properties (match-string 1))))))
 
 ;; Scratch
 
@@ -691,18 +724,18 @@ The app is chosen from your OS's preference."
  ;; If there is more than one, they won't work right.
  '(TeX-command-extra-options "-shell-escape")
  '(custom-safe-themes (quote ("fac19bbfd0257ca0257f55b8284ead2b55cc156b9b0204e15cfd6587f0066ddd" "1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" "52588047a0fe3727e3cd8a90e76d7f078c9bd62c0b246324e557dfa5112e0d0c" "1157a4055504672be1df1232bed784ba575c60ab44d8e6c7b3800ae76b42f8bd" "9dae95cdbed1505d45322ef8b5aa90ccb6cb59e0ff26fef0b8f411dfc416c552" "b5483a0dc11b5cd3a49a19c2b7e9cc85c3764fb96457f540c34bd5dbf6e32bfc" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
-				      '(flyspell-issue-welcome-flag nil)
-				      '(flyspell-persistent-highlight t)
-				      '(initial-buffer-choice t)
-				      '(org-agenda-files (quote ("~/Dropbox/org/agenda.org"))))
-				     (put 'narrow-to-region 'disabled nil)
-				     (put 'scroll-left 'disabled nil)
-				     (put 'narrow-to-page 'disabled nil)
-				     (custom-set-faces
-				      ;; custom-set-faces was added by Custom.
-				      ;; If you edit it by hand, you could mess it up, so be careful.
-				      ;; Your init file should contain only one such instance.
-				      ;; If there is more than one, they won't work right.
-				      )
-				     (put 'downcase-region 'disabled nil)
+                                      '(flyspell-issue-welcome-flag nil)
+                                      '(flyspell-persistent-highlight t)
+                                      '(initial-buffer-choice t)
+                                      '(org-agenda-files (quote ("~/Dropbox/org/agenda.org"))))
+                                     (put 'narrow-to-region 'disabled nil)
+                                     (put 'scroll-left 'disabled nil)
+                                     (put 'narrow-to-page 'disabled nil)
+                                     (custom-set-faces
+                                      ;; custom-set-faces was added by Custom.
+                                      ;; If you edit it by hand, you could mess it up, so be careful.
+                                      ;; Your init file should contain only one such instance.
+                                      ;; If there is more than one, they won't work right.
+                                      )
+                                     (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
