@@ -21,14 +21,6 @@
 (setq user-full-name "Peter Thompson"
       user-mail-address "peter.thompson92@gmail.com")
 
-;; (require 'fic-mode)			; Highlights TODO keywords
-;; (add-hook 'prog-mode-hook #'turn-on-fic-mode)
-;; (face-spec-set 'font-lock-fic-face
-;;                         '((t (:background nil
-;;                                           :foreground "red3"
-;;                                           :weight bold))))
-
-
 (set-face-attribute 'default nil :height 105)
 
 (auto-insert-mode 1)
