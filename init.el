@@ -314,6 +314,8 @@ Does not set point.  Does nothing if mark ring is empty."
   "My C mode hook."
   (gtags-mode 1)
   (eldoc-mode 1)
+  (define-key c-mode-map (kbd "M-.") 'gtags-find-tag)
+  (define-key c-mode-map (kbd "M-*") 'gtags-pop-stack)
 
   ;; C-style comments
   (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
@@ -371,8 +373,6 @@ Does not set point.  Does nothing if mark ring is empty."
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
 (require 'cc-mode)
-(define-key c-mode-base-map (kbd "M-.") 'semantic-ia-fast-jump)
-(define-key c-mode-base-map (kbd "C-c o") 'semantic-ia-show-doc)
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; Org
