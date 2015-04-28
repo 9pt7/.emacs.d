@@ -536,9 +536,6 @@ The app is chosen from your OS's preference."
       company-show-numbers t
       company-require-match nil)
 (add-hook 'prog-mode-hook 'company-mode-on)
-;; (add-to-list 'load-path "~/.emacs.d/themes")
-;; (add-to-list 'load-path "~/.emacs.d/pymacs")
-
 
 ;; Finally start emacs server
 (server-start)
