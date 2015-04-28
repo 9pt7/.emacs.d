@@ -402,26 +402,6 @@ Does not set point.  Does nothing if mark ring is empty."
 (add-hook 'text-mode-hook 'readable-text)
 (add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
 
-;; (require 'org-latex)
-;; (unless (boundp 'org-export-latex-classes)
-;;   (setq org-export-latex-classes nil))
-;; (add-to-list 'org-export-latex-classes
-;;              '("article"
-;;                "\\documentclass{article}"
-;;                ("\\section{%s}" . "\\section*{%s}")))
-
-;; (add-to-list 'TeX-view-program-list (cons "Preview" "open -a Preview %s.pdf"))
-;; (setq TeX-view-program-selection (cons ))
-
-;; (defun my-org-goto-and-narrow (show-all)
-;;   "Run org-agenda-goto, and narrow the resulting subtree if SHOW-ALL is nil."
-;;   (interactive "P")
-;;   (if show-all
-;;       (org-agenda-goto t)
-;;     (org-agenda-goto nil)
-;;     (org-narrow-to-subtree)))
-;; (eval-after-load 'org-agenda
-;;   '(define-key org-agenda-mode-map [(tab)] 'my-org-goto-and-narrow))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
