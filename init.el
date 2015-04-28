@@ -239,14 +239,6 @@ Does not set point.  Does nothing if mark ring is empty."
   (when ack-cmd
       (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Helm
-;; (require 'helm)
-;; (require 'helm-config)
-
-;; (global-set-key (kbd "C-c m") 'helm-semantic-or-imenu)
-;; (global-set-key (kbd "M-x") 'helm-M-x)
-;; (define-key helm-map (kbd "C-z")  'helm-select-action)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Time modeline
