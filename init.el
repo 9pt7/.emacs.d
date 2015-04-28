@@ -15,6 +15,11 @@
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (setq use-dialog-box nil)
 
+;; Better mouse scrolling
+(setq mouse-wheel-scroll-amount '(3 ((shift) . 3)))
+(setq mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-follow-mouse 't)
+
 (require 'face-remap)
 (setq text-scale-mode-step 1.1)
 
@@ -88,6 +93,18 @@ otherwise it is enabled."
                                 (= 1 arg))))
 
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
+
+(require 'calc)
+(setq math-additional-units '(
+  (GiB "1024 * MiB" "Giga Byte")
+  (MiB "1024 * KiB" "Mega Byte")
+  (KiB "1024 * B" "Kilo Byte")
+  (B nil "Byte")
+  (Gib "1024 * Mib" "Giga Bit")
+  (Mib "1024 * Kib" "Mega Bit")
+  (Kib "1024 * b" "Kilo Bit")
+  (b "B / 8" "Bit")))
+
 
 (defun pop-mark2 ()
   "Pop off mark ring into the buffer's actual mark.
