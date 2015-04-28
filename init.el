@@ -394,11 +394,8 @@ Does not set point.  Does nothing if mark ring is empty."
   (visual-line-mode 1)
   (flyspell-mode 1)
   (setq cursor-type 'box)
-  ;; (variable-pitch-mode 1)
   (setq line-spacing 5)
-  (text-scale-set 0)
-  ;; Turn off variable width font in tables for better alignment
-  (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
+  (text-scale-set 0))
 (add-hook 'text-mode-hook 'readable-text)
 (add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
 
