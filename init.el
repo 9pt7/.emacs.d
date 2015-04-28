@@ -308,20 +308,18 @@ Does not set point.  Does nothing if mark ring is empty."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
+(require 'gtags)
 (require 'cc-mode)
 (defun my-c-mode-hook ()
   "My C mode hook."
-  (semantic-mode 1)
-  (semantic-idle-summary-mode 1)
-  (eldoc-mode -1)
+  (gtags-mode 1)
+  (eldoc-mode 1)
 
   ;; C-style comments
   (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
       comment-start "/* "
       comment-end " */"))
 (add-hook 'c-mode-common-hook 'my-c-mode-hook)
-(define-key c-mode-map (kbd "M-C-.") 'semantic-symref-symbol)
-(define-key c++-mode-map (kbd "M-C-.") 'semantic-symref-symbol)
 
 ;; Fix c++ enum
 
@@ -351,16 +349,6 @@ Does not set point.  Does nothing if mark ring is empty."
                '(statement-cont . align-enum-class-closing-brace)))
 
 (add-hook 'c++-mode-hook 'fix-enum-class)
-
-
-;; Make \\[pop-tag-mark] work with \\[semantic-ia-fast-jump].
-(require 'etags)
-(unless (fboundp 'push-tag-mark)
-  (defun push-tag-mark ()
-    "Push the current position to the ring of markers so that
-    \\[pop-tag-mark] can be used to come back to current position."
-    (interactive)
-    (ring-insert find-tag-marker-ring (point-marker))))
 
 (defun my/update-gtags ()
   "Update gtags for the current buffer file."
