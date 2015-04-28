@@ -14,7 +14,6 @@
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (setq use-dialog-box nil)
-(abbrev-mode -1)
 
 (require 'face-remap)
 (setq text-scale-mode-step 1.1)
