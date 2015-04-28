@@ -662,19 +662,6 @@ The app is chosen from your OS's preference."
                      scope-operator))
 
 
-;; ;; Yas-snippet
-;; (require 'yasnippet)
-;; (setq yas-snippet-dirs '("~/.emacs.d/snippets" yas-installed-snippets-dir))
-;; (dolist (dir yas-snippet-dirs)
-;;   (yas-load-directory (expand-file-name (if (symbolp dir) (eval dir) dir))))
-
-;; (defun my/prev-test-case ()
-;;   "Search for the previous gtest test case.  Return nil if not found."
-;;   (save-excursion
-;;     (let ((search-str "TEST(\\(\\(\\s_\\|\\s.\\|\\sw\\)+\\), *\\(\\s_\\|\\s.\\|\\sw\\)+)"))
-;;       (when (search-backward-regexp search-str nil t)
-;;        (substring-no-properties (match-string 1))))))
-
 ;; Scratch
 
 (setq initial-scratch-message "")
