@@ -575,13 +575,6 @@ The app is chosen from your OS's preference."
 
 ;; Scratch
 
-(setq initial-scratch-message "")
-(defun init-scratch-buffer ()
-  "Initialize the scratch buffer."
-  (with-current-buffer (get-buffer "*scratch*")
-    (text-mode)))
-(init-scratch-buffer)
-
 (provide '.emacs)
 ;;; .emacs ends here
 
