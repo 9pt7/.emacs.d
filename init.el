@@ -584,11 +584,10 @@ The app is chosen from your OS's preference."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(TeX-command-extra-options "-shell-escape")
- '(custom-safe-themes (quote ("fac19bbfd0257ca0257f55b8284ead2b55cc156b9b0204e15cfd6587f0066ddd" "1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" "52588047a0fe3727e3cd8a90e76d7f078c9bd62c0b246324e557dfa5112e0d0c" "1157a4055504672be1df1232bed784ba575c60ab44d8e6c7b3800ae76b42f8bd" "9dae95cdbed1505d45322ef8b5aa90ccb6cb59e0ff26fef0b8f411dfc416c552" "b5483a0dc11b5cd3a49a19c2b7e9cc85c3764fb96457f540c34bd5dbf6e32bfc" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" default)))
-                                      '(flyspell-issue-welcome-flag nil)
-                                      '(flyspell-persistent-highlight t)
-                                      '(initial-buffer-choice t)
-                                      '(org-agenda-files (quote ("~/Dropbox/org/agenda.org"))))
+ '(flyspell-issue-welcome-flag nil)
+ '(flyspell-persistent-highlight t)
+ '(initial-buffer-choice t)
+ '(org-agenda-files (quote ("~/Dropbox/org/agenda.org"))))
                                      (put 'narrow-to-region 'disabled nil)
                                      (put 'scroll-left 'disabled nil)
                                      (put 'narrow-to-page 'disabled nil)
