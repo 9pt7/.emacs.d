@@ -524,20 +524,6 @@ The app is chosen from your OS's preference."
 
 (require 'tramp)
 (setq password-cache-expiry (* 60 60))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SLIME
-
-;; (require 'slime)
-;; (setq inferior-lisp-program "sbcl")
-;; (slime-setup)
-
-;; (defun slime-eval-region-dwim ()
-;;   "Evaluate region if it is active, otherwise evaluate the entire buffer."
-;;   (interactive)
-;;   (if (region-active-p)
-;;       (slime-eval-region (region-beginning) (region-end))
-;;     (slime-eval-buffer)))
-;; (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
 (require 'company)
 (require 'company-anaconda)
