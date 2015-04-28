@@ -3,8 +3,8 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "bash-completion" "bash-completion.el" (21784
-;;;;;;  17439 634762 86000))
+;;;### (autoloads nil "bash-completion" "bash-completion.el" (21822
+;;;;;;  60572 747968 128000))
 ;;; Generated autoloads from bash-completion.el
 
 (autoload 'bash-completion-setup "bash-completion" "\
@@ -49,7 +49,7 @@ and would like bash completion in Emacs to take these changes into account.
 ;;;***
 
 ;;;### (autoloads nil nil ("bash-completion-pkg.el" "sz-testutils.el")
-;;;;;;  (21784 17439 650839 535000))
+;;;;;;  (21822 60572 756839 647000))
 
 ;;;***
 

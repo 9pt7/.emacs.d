@@ -22,12 +22,12 @@
 (setq user-full-name "Peter Thompson"
       user-mail-address "peter.thompson92@gmail.com")
 
-(require 'fic-mode)			; Highlights TODO keywords
-(add-hook 'prog-mode-hook #'turn-on-fic-mode)
-(face-spec-set 'font-lock-fic-face
-                        '((t (:background nil
-                                          :foreground "red3"
-                                          :weight bold))))
+;; (require 'fic-mode)			; Highlights TODO keywords
+;; (add-hook 'prog-mode-hook #'turn-on-fic-mode)
+;; (face-spec-set 'font-lock-fic-face
+;;                         '((t (:background nil
+;;                                           :foreground "red3"
+;;                                           :weight bold))))
 
 
 (set-face-attribute 'default nil :height 105)
@@ -42,8 +42,8 @@
 (setq kill-whole-line t)
 (show-paren-mode 1)
 (electric-pair-mode 1)
-(require 'flycheck)
-(global-flycheck-mode 0)
+;; (require 'flycheck)
+;; (global-flycheck-mode 0)
 (add-to-list 'revert-without-query ".+\\.pdf$")
 (setq sentence-end-double-space t)
 (setq gc-cons-threshold 20000000)
@@ -216,7 +216,10 @@ Does not set point.  Does nothing if mark ring is empty."
   (interactive)
   (grep-override "global --result grep -xi "))
 
-(global-set-key "\C-ce" 'flycheck-list-errors)
+(require 'magit)
+(setq magit-last-seen-setup-instructions "1.4.0")
+
+;; (global-set-key "\C-ce" 'flycheck-list-errors)
 (global-set-key "\C-cs" 'shell)
 (global-set-key "\C-cr" 'recompile)
 (global-set-key "\C-cx" 'my-compile)
@@ -429,14 +432,14 @@ Does not set point.  Does nothing if mark ring is empty."
 
 
 
-(defun my/flycheck-on-save-hook ()
-  "Update GTAGS for the current file."
-  (when (and (memq 'flycheck-mode minor-mode-list)
-             flycheck-mode)
-    (flycheck-buffer)))
+;; (defun my/flycheck-on-save-hook ()
+;;   "Update GTAGS for the current file."
+;;   (when (and (memq 'flycheck-mode minor-mode-list)
+;;              flycheck-mode)
+;;     (flycheck-buffer)))
 
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
-(add-hook 'before-save-hook #'my/flycheck-on-save-hook)
+;; (add-hook 'before-save-hook #'my/flycheck-on-save-hook)
 
 (require 'cc-mode)
 (define-key c-mode-base-map (kbd "M-.") 'semantic-ia-fast-jump)
@@ -603,17 +606,17 @@ The app is chosen from your OS's preference."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SLIME
 
-(require 'slime)
-(setq inferior-lisp-program "sbcl")
-(slime-setup)
+;; (require 'slime)
+;; (setq inferior-lisp-program "sbcl")
+;; (slime-setup)
 
-(defun slime-eval-region-dwim ()
-  "Evaluate region if it is active, otherwise evaluate the entire buffer."
-  (interactive)
-  (if (region-active-p)
-      (slime-eval-region (region-beginning) (region-end))
-    (slime-eval-buffer)))
-(define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
+;; (defun slime-eval-region-dwim ()
+;;   "Evaluate region if it is active, otherwise evaluate the entire buffer."
+;;   (interactive)
+;;   (if (region-active-p)
+;;       (slime-eval-region (region-beginning) (region-end))
+;;     (slime-eval-buffer)))
+;; (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
 ;; (require 'projectile)
 ;; (projectile-global-mode)
@@ -664,11 +667,12 @@ The app is chosen from your OS's preference."
 
 (defun my-cpp-setup()
   (c-set-style "my-cc-mode")
-  (setq flycheck-clang-language-standard "c++11"
-        flycheck-gcc-language-standard "c++11"))
+  ;; (setq flycheck-clang-language-standard "c++11"
+  ;;       flycheck-gcc-language-standard "c++11")
+  )
 
-(setq flycheck-clang-language-standard "c++11"
-        flycheck-gcc-language-standard "c++11")
+;; (setq flycheck-clang-language-standard "c++11"
+;;         flycheck-gcc-language-standard "c++11")
 
 (add-hook 'c++-mode-hook #'my-cpp-setup)
 

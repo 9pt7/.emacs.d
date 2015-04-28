@@ -4,8 +4,8 @@
 
 ;; Author: Artem Malyshev <proofit404@gmail.com>
 ;; URL: https://github.com/proofit404/anaconda-mode
-;; Version: 20150115.1101
-;; X-Original-Version: 0.1.0
+;; Package-Version: 20150115.1101
+;; Version: 0.1.0
 ;; Package-Requires: ((company "0.8.0") (anaconda-mode "0.1.0") (cl-lib "0.5.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
