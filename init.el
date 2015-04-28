@@ -390,12 +390,8 @@ Does not set point.  Does nothing if mark ring is empty."
 ;; ;; Org
 (require 'org)
 (defun readable-text ()
-  "Variable width font, spell checking."
-  (visual-line-mode 1)
-  (flyspell-mode 1)
-  (setq cursor-type 'box)
-  (setq line-spacing 5)
-  (text-scale-set 0))
+  "spell checking."
+  (flyspell-mode 1))
 (add-hook 'text-mode-hook 'readable-text)
 (add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
 
