@@ -224,10 +224,7 @@ Does not set point.  Does nothing if mark ring is empty."
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key "\C-cf" 'recentf-open-files)
 (global-set-key "\C-cg" 'magit-status)
-<<<<<<< HEAD
-=======
 (global-set-key "\C-cb" 'grep-global)
->>>>>>> b44ea8109466e91397382600dbe833ebca9d8c4c
 (global-set-key "\C-cp" 'grep)
 
 (require 'org-bibtex)
@@ -251,7 +248,6 @@ Does not set point.  Does nothing if mark ring is empty."
   (when shell
     (setq explicit-shell-file-name shell)))
 
-<<<<<<< HEAD
 (require 'grep)
 (let ((ack-cmd
        (or (executable-find "ack-grep")
@@ -259,8 +255,6 @@ Does not set point.  Does nothing if mark ring is empty."
       (ack-args " --nogroup -H "))
   (when ack-cmd
       (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
-=======
->>>>>>> b44ea8109466e91397382600dbe833ebca9d8c4c
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helm
