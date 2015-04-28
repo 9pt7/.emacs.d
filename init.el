@@ -48,8 +48,6 @@
 (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
 
 (require 'gdb-mi)
-;; (setq gdb-many-windows nil)
-;; (windmove-default-keybindings)
 (setq gdb-show-main t)
 
 (require 'ido)
@@ -161,12 +159,6 @@ Does not set point.  Does nothing if mark ring is empty."
 (recentf-mode t)
 (setq recentf-max-saved-items 1000)
 
-(defun my/gdb ()
-  "Run gdb and restore windows."
-  (interactive)
-  (call-interactively 'gdb)
-  (gdb-restore-windows))
-
 (require 'compile)
 
 (defun my-compile ()
@@ -211,7 +203,7 @@ Does not set point.  Does nothing if mark ring is empty."
 (global-set-key "\C-cs" 'shell)
 (global-set-key "\C-cr" 'recompile)
 (global-set-key "\C-cx" 'my-compile)
-(global-set-key "\C-cd" 'my/gdb)
+(global-set-key "\C-cd" 'gdb)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key "\C-cf" 'recentf-open-files)
 (global-set-key "\C-cg" 'magit-status)
