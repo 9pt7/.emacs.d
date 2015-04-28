@@ -539,16 +539,6 @@ The app is chosen from your OS's preference."
 ;;     (slime-eval-buffer)))
 ;; (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
-;; (require 'projectile)
-;; (projectile-global-mode)
-;; (setq projectile-enable-caching t)
-;; (setq projectile-mode-line '(:eval
-;;                           (format " Prj[%s]"
-;;                                   (projectile-project-name))))
-
-;; (require 'helm-projectile)
-;; (helm-projectile-on)
-
 (require 'company)
 (require 'company-anaconda)
 (add-hook 'python-mode-hook 'company-mode)
