@@ -291,11 +291,6 @@ Does not set point.  Does nothing if mark ring is empty."
   '(define-key lisp-mode-map (kbd "C-c C-c") 'eval-buffer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Encryption
-;; (require 'epa-file)
-;; (epa-file-enable)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Python
 ;; (require 'jedi)
 (setq
