@@ -291,14 +291,6 @@ Does not set point.  Does nothing if mark ring is empty."
   '(define-key lisp-mode-map (kbd "C-c C-c") 'eval-buffer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Auto-Complete
-;; (require 'auto-complete)
-;; (setq ac-auto-start 2
-;;       ac-override-local-map nil
-;;       ac-use-menu-map t
-;;       ac-candidate-limit 20)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Encryption
 ;; (require 'epa-file)
 ;; (epa-file-enable)
