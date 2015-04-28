@@ -241,14 +241,6 @@ Does not set point.  Does nothing if mark ring is empty."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time modeline
-;; (require 'time)
-;; (setq display-time-day-and-date t
-;;       display-time-load-average-threshold 5.0
-;;       display-time-format "%a %d-%m,%H:%M")
-;; (display-time)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comint
 (require 'comint)
 (setq
