@@ -340,6 +340,30 @@ Does not set point.  Does nothing if mark ring is empty."
       comment-end " */"))
 (add-hook 'c-mode-common-hook 'my-c-mode-hook)
 
+(defun my-check-header-guards ()
+  "Make sure header guard defines match filename."
+  (save-excursion
+    (goto-char (point-min))
+    (when
+        (search-forward-regexp
+         "#ifndef\\s-+\\(\\(\\sw\\|\\s_\\)+\\)\\(\\s-\\|\n\\)+#define\\s-+\\1"
+         nil t)
+      (let ((guard (match-string 1))
+            (expected (upcase
+                       (concat (file-name-nondirectory
+                                (file-name-sans-extension buffer-file-name))
+                               "_"
+                               (file-name-extension buffer-file-name)))))
+        (when (not (string-equal guard expected))
+          (error "Warning: header guard not consistent with filename."))))))
+
+(defun my-header-hook ()
+  "Header file save hook."
+  (when (string-equal (file-name-extension buffer-file-name) "h")
+    (my-check-header-guards)))
+
+(add-hook 'after-save-hook #'my-header-hook)
+
 ;; Fix c++ enum
 
 (defun inside-class-enum-p (pos)
