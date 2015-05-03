@@ -217,6 +217,12 @@ Does not set point.  Does nothing if mark ring is empty."
 (require 'magit)
 (setq magit-last-seen-setup-instructions "1.4.0")
 
+(require 'files)
+(defun my-revert-buffer()
+  "Call `revert-buffer' without query."
+  (interactive)
+  (revert-buffer nil t))
+
 (global-set-key "\C-cs" 'shell)
 (global-set-key "\C-cr" 'recompile)
 (global-set-key "\C-cx" 'my-compile)
@@ -226,6 +232,8 @@ Does not set point.  Does nothing if mark ring is empty."
 (global-set-key "\C-cg" 'magit-status)
 (global-set-key "\C-cb" 'grep-global)
 (global-set-key "\C-cp" 'grep)
+(global-set-key (kbd "\C-cv") 'my-revert-buffer)
+
 
 (require 'org-bibtex)
 (defun my-org-bibtex-transfer ()
@@ -355,7 +363,7 @@ Does not set point.  Does nothing if mark ring is empty."
                                "_"
                                (file-name-extension buffer-file-name)))))
         (when (not (string-equal guard expected))
-          (error "Warning: header guard not consistent with filename."))))))
+          (message "Warning: header guard not consistent with filename."))))))
 
 (defun my-header-hook ()
   "Header file save hook."
@@ -399,7 +407,7 @@ Does not set point.  Does nothing if mark ring is empty."
   (cl-flet ((call (program &rest args)
                   (with-temp-buffer
                     (unless (zerop (apply 'call-process program nil t nil args))
-                      (error (string-trim (buffer-string)))))))
+                      (error (replace-regexp-in-string "\n+$" "" (buffer-string)))))))
     (when (buffer-file-name)
       (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
       (call "global" "-u"))))
