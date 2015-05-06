@@ -42,7 +42,6 @@
 (setq sentence-end-double-space t)
 (setq gc-cons-threshold 20000000)
 (setq redisplay-dont-pause t)
-(pending-delete-mode 1)
 (setq-default indent-tabs-mode nil)
 (setq comment-auto-fill-only-comments t
       auto-fill-function nil)
@@ -300,6 +299,130 @@ Does not set point.  Does nothing if mark ring is empty."
       ["black" "red" "DarkGreen" "DarkOrange3" "blue" "magenta" "DarkCyan" "dim gray"])
 (setq ansi-color-map (ansi-color-make-color-map))
 
+(require 'yasnippet)
+(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+(yas-global-mode 1)
+(pending-delete-mode 1)
+
+
+(defun my-param-format (str)
+  "Create @param statements for the parameters in `str'. It is
+assumed that `str' is contained within the function argument
+list."
+  (let ((param-regexp
+         "\\(\\_<\\(?:\\(?:\\s_\\)\\|\\(?:\\sw\\)\\)+\\_>\\)\\s-*\\(?:\\[.*\\]\\s-*\\)?\\(,\\|$\\)"))
+    (when (string-match param-regexp str)
+      (concat " * @param[in] " (match-string 1 str) "\n"
+              (my-param-format (substring str (match-end 0)))))))
+
+(defun my-function-format (str)
+  (when (string-match "\\(.*\\)\\(\\_<.*\\)(\\(.*\\))" str)
+    (let ((qualifiers (match-string 1 str))
+          (name (match-string 2 str))
+          (param-list (match-string 3 str)))
+      (concat (my-param-format param-list)
+              (when (not (string-match "\\_<void\\_>" qualifiers))
+                " * @return\n")))))
+
+(defun my-doc-align (str)
+  (with-temp-buffer
+    (insert str)
+    (align-regexp (point-min) (point-max) "\\* @param\\[.*?\\]\\(\\s-*\\)\\_<.*?\\_>" 1 1)
+    (align-regexp (point-min) (point-max) "\\(?:\\(?:\\* @param\\[.*?\\]\\s-*\\_<.*?\\_>\\)\\|\\(?:* @return\\)\\)\\(\\ *\\)" 1 2)
+    (delete-trailing-whitespace (point-min) (point-max))
+    (buffer-string)))
+
+
+
+(defvar my-doc-state nil)
+
+(defun my-complete-doc ()
+  (message "testing")
+  (cond ((eq my-doc-state 'expand-doc)
+         (yas-expand-snippet
+          (replace-regexp-in-string
+           "/\\*\\*\n \\* Description"
+           "/**\n * ${1:Description}"
+           (let* ((n 2)
+                  (param-regexp "^ \\* @param\\[in\\] \\(.*\\)$")
+                  (param-replaced
+                   (replace-regexp-in-string
+                    param-regexp
+                    (lambda (match)
+                      (prog1
+                          (format " * @param[${%d:in}] %s $%d"
+                                  n
+                                  (progn
+                                    (string-match param-regexp match)
+                                    (match-string 1 match))
+                                  (1+ n))
+                        (setq n (+ 2 n))))
+                    (buffer-substring yas-snippet-beg yas-snippet-end))))
+             (replace-regexp-in-string
+              "\\* @return"
+              (format "* @return $%d"
+                      (prog1
+                          n
+                        (setq n (1+ n))))
+              param-replaced)))
+          yas-snippet-beg (point))
+         (setq my-doc-state 'align))
+        ((eq my-doc-state 'align)
+         (let ((aligned (my-doc-align
+                         (buffer-substring yas-snippet-beg
+                                           yas-snippet-end))))
+           (goto-char yas-snippet-beg)
+           (delete-region yas-snippet-beg yas-snippet-end)
+           (insert aligned)
+         (setq my-doc-state nil)))))
+
+(add-hook 'yas-after-exit-snippet-hook 'my-complete-doc)
+
+(defun my-function-doc ()
+  (interactive)
+  (let ((yas-good-grace nil))
+    (yas-expand-snippet "/**
+ * Description
+${1:$(my-function-format yas-text)} */
+$1")
+    (setq my-doc-state 'expand-doc)))
+
+(defun my-file-doc-with-name ()
+  (interactive)
+  (let ((yas-good-grace nil)
+        (base-dir
+         (with-temp-buffer
+           (when (eq 0 (call-process "git" nil t nil "rev-parse" "--show-toplevel"))
+             (replace-regexp-in-string "\n+$" "" (buffer-string))))))
+    (yas-expand-snippet
+     (format "/**
+ * @file %s
+ *
+ * $0
+ */
+"
+             (if base-dir
+                 (file-relative-name buffer-file-name base-dir)
+               (file-name-nondirectory (buffer-file-name)))))))
+
+(defun my-file-doc-without-name ()
+  (interactive)
+  (let ((yas-good-grace nil))
+    (yas-expand-snippet "/**
+ * @file
+ *
+ * $0
+ */")))
+
+
+(defun my-doc-dwim ()
+  (interactive)
+  (if (eq (point) 1)
+      (my-file-doc-without-name)
+    (my-function-doc)))
+
+(global-set-key (kbd "\C-cm") 'my-doc-dwim)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SQL
 (require 'sql)
@@ -324,7 +447,7 @@ Does not set point.  Does nothing if mark ring is empty."
  python-shell-completion-setup-code
  "from IPython.core.completerlib import module_completion"
  python-shell-completion-module-string-code
- "';'.join(module_completion('''%s'''))\n" ;
+ "'                                   ;'.join(module_completion('''%s'''))\n" ;
  python-shell-completion-string-code
  "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
 
