@@ -332,6 +332,45 @@ list."
     (delete-trailing-whitespace (point-min) (point-max))
     (buffer-string)))
 
+(define-skeleton my-doxygen-function
+  "Insert a doxygen comment for a function."
+  nil
+  "/**" \n
+  "* " >
+  (skeleton-read "Description: ") & \n & "*" & \n | -2
+  >
+  '(setq v1 (point))
+  ("Direction: " "* @param[" str "]" " "
+   (skeleton-read "Parameter: ") " "
+   (skeleton-read "Description: ")
+   \n
+   '(align-regexp v1 (point) "\\* @param\\[.*?\\]\\(\\s-*\\)\\_<" 1 1)
+   '(align-regexp v1 (point) "\\* @param\\[.*?\\]\\s-*\\_<.*?\\_>\\( *\\)" 1 2))
+  "* @return " >
+  (skeleton-read "Return: ") & \n | -10
+  resume:
+  "*/" >)
+
+(define-skeleton my-doxygen-function-sans-params
+  "Insert a doxygen comment for a function."
+  nil
+  "/**" \n
+  "* " > - \n
+  "*" \n
+  "* @return " >
+  (skeleton-read "Return: ") & \n | -10
+  resume:
+  "*/" >)
+
+(defun my-doxygen-variable ()
+  (interactive)
+  (let ((comment-start "/**< ")
+        (comment-end " */"))
+    (comment-dwim nil)))
+
+(global-set-key (kbd "\C-c M-;") 'my-doxygen-function-sans-params)
+(global-set-key (kbd "\C-c;") 'my-doxygen-variable)
+
 
 
 (defvar my-doc-state nil)
