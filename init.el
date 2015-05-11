@@ -104,6 +104,31 @@ otherwise it is enabled."
   (Kib "1024 * b" "Kilo Bit")
   (b "B / 8" "Bit")))
 
+(define-skeleton my-configure-ac-skeleton
+  "Simple configure.ac skeleton."
+  nil
+  "AC_INIT([" (skeleton-read "Package name: ") "], [1.0], [" user-mail-address "])\n"
+  "AM_INIT_AUTOMAKE([-Wall -Werror foreign])\n"
+  "AC_PROG_CC\n"
+  "AC_CONFIG_HEADERS([config.h])\n"
+  "AC_CONFIG_FILES([\n"
+  " Makefile\n"
+  " src/Makefile\n"
+  "])\n"
+  "AC_OUTPUT\n")
+
+(add-to-list 'auto-insert-alist '("configure.ac" . my-configure-ac-skeleton))
+
+(define-skeleton my-makefile-am-skeleton
+  "Simple Makefile.am skeleton."
+  nil
+  '(setq v1 nil)
+  "bin_PROGRAMS = " ("Program name: " str " " '(push str v1)) -1 \n
+  '(setq v1 (nreverse v1))
+  ((skeleton-read "Program name: " (pop v1)) str "_SOURCES = " ("Source name: " str " ") -1 \n)
+  "SUBDIRS = "  ("Subdirectory: " str " ") & -1 | -10 \n)
+
+(add-to-list 'auto-insert-alist '("[Mm]akefile.am" . my-makefile-am-skeleton))
 
 (defun pop-mark2 ()
   "Pop off mark ring into the buffer's actual mark.
