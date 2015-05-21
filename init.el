@@ -792,8 +792,7 @@ The app is chosen from your OS's preference."
                      list-close-comma
                      scope-operator))
 
-
-;; Scratch
+(add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
 
 (provide '.emacs)
 ;;; .emacs ends here
