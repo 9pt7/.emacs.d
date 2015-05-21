@@ -522,6 +522,11 @@ list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
 (require 'gtags)
+(define-key gtags-select-mode-map (kbd "RET") 'gtags-select-tag)
+(define-key gtags-select-mode-map (kbd "o") 'gtags-select-tag-other-window)
+(define-key gtags-select-mode-map (kbd "q") '(lambda () (interactive) (kill-buffer)))
+
+
 (require 'cc-mode)
 (defun my-c-mode-hook ()
   "My C mode hook."
