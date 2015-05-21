@@ -95,6 +95,8 @@ otherwise it is enabled."
 
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
 
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
 (require 'calc)
 (setq math-additional-units '(
   (GiB "1024 * MiB" "Giga Byte")
@@ -106,6 +108,31 @@ otherwise it is enabled."
   (Kib "1024 * b" "Kilo Bit")
   (b "B / 8" "Bit")))
 
+(define-skeleton my-configure-ac-skeleton
+  "Simple configure.ac skeleton."
+  nil
+  "AC_INIT([" (skeleton-read "Package name: ") "], [1.0], [" user-mail-address "])\n"
+  "AM_INIT_AUTOMAKE([-Wall -Werror foreign])\n"
+  "AC_PROG_CC\n"
+  "AC_CONFIG_HEADERS([config.h])\n"
+  "AC_CONFIG_FILES([\n"
+  " Makefile\n"
+  " src/Makefile\n"
+  "])\n"
+  "AC_OUTPUT\n")
+
+(add-to-list 'auto-insert-alist '("configure.ac" . my-configure-ac-skeleton))
+
+(define-skeleton my-makefile-am-skeleton
+  "Simple Makefile.am skeleton."
+  nil
+  '(setq v1 nil)
+  "bin_PROGRAMS = " ("Program name: " str " " '(push str v1)) -1 \n
+  '(setq v1 (nreverse v1))
+  ((skeleton-read "Program name: " (pop v1)) str "_SOURCES = " ("Source name: " str " ") -1 \n)
+  "SUBDIRS = "  ("Subdirectory: " str " ") & -1 | -10 \n)
+
+(add-to-list 'auto-insert-alist '("[Mm]akefile.am" . my-makefile-am-skeleton))
 
 (defun pop-mark2 ()
   "Pop off mark ring into the buffer's actual mark.
@@ -280,7 +307,7 @@ Does not set point.  Does nothing if mark ring is empty."
 (setq comint-move-point-for-output nil
       comint-scroll-show-maximum-output nil)
 (add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
-(add-hook 'comint-mode-hook (lambda () (text-scale-set -2)))
+;; (add-hook 'comint-mode-hook (lambda () (text-scale-set -2)))
 
 
 (defun close-comint-hook ()
@@ -301,9 +328,6 @@ Does not set point.  Does nothing if mark ring is empty."
       ["black" "red" "DarkGreen" "DarkOrange3" "blue" "magenta" "DarkCyan" "dim gray"])
 (setq ansi-color-map (ansi-color-make-color-map))
 
-;; (require 'yasnippet)
-;; (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
-;; (yas-global-mode 1)
 (pending-delete-mode 1)
 
 
@@ -782,11 +806,12 @@ The app is chosen from your OS's preference."
                                      (put 'narrow-to-region 'disabled nil)
                                      (put 'scroll-left 'disabled nil)
                                      (put 'narrow-to-page 'disabled nil)
-                                     (custom-set-faces
-                                      ;; custom-set-faces was added by Custom.
-                                      ;; If you edit it by hand, you could mess it up, so be careful.
-                                      ;; Your init file should contain only one such instance.
-                                      ;; If there is more than one, they won't work right.
-                                      )
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
                                      (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
