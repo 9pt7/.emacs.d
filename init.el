@@ -521,19 +521,14 @@ list."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
-(require 'gtags)
-(define-key gtags-select-mode-map (kbd "RET") 'gtags-select-tag)
-(define-key gtags-select-mode-map (kbd "o") 'gtags-select-tag-other-window)
-(define-key gtags-select-mode-map (kbd "q") '(lambda () (interactive) (kill-buffer)))
 
 
 (require 'cc-mode)
 (defun my-c-mode-hook ()
   "My C mode hook."
-  (gtags-mode 1)
-  (eldoc-mode 1)
-  (define-key c-mode-map (kbd "M-.") 'gtags-find-tag)
-  (define-key c-mode-map (kbd "M-*") 'gtags-pop-stack)
+  (eldoc-mode -1)
+  (define-key c-mode-map (kbd "M-.") 'semantic-ia-fast-jump)
+  (define-key c-mode-map (kbd "C-M-.") 'semantic-symref)
 
   ;; C-style comments
   (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
@@ -772,6 +767,10 @@ The app is chosen from your OS's preference."
 (server-start)
 (setenv "EDITOR" "emacsclient")
 ;; (setenv "PAGER" "cat /dev/stdin > /tmp/epage; emacsclient -n /tmp/epage")
+
+(require 'semantic)
+(global-semantic-idle-summary-mode 1)
+(semantic-mode 1)
 
 (require 'cc-vars)
 (setq c-default-style "k&r"
