@@ -51,6 +51,8 @@
 (require 'eldoc)
 (add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
 
+(setq ediff-setup-windows-default 'ediff-setup-windows-plain)
+
 (require 'gdb-mi)
 (setq gdb-show-main t)
 
@@ -392,99 +394,99 @@ list."
         (comment-end " */"))
     (comment-dwim nil)))
 
-(global-set-key (kbd "\C-c M-;") 'my-doxygen-function-sans-params)
+(global-set-key (kbd "\C-c M-;") 'my-doxygen-function)
 (global-set-key (kbd "\C-c;") 'my-doxygen-variable)
 
 
 
 (defvar my-doc-state nil)
 
-(defun my-complete-doc ()
-  (message "testing")
-  (cond ((eq my-doc-state 'expand-doc)
-         (yas-expand-snippet
-          (replace-regexp-in-string
-           "/\\*\\*\n \\* Description"
-           "/**\n * ${1:Description}"
-           (let* ((n 2)
-                  (param-regexp "^ \\* @param\\[in\\] \\(.*\\)$")
-                  (param-replaced
-                   (replace-regexp-in-string
-                    param-regexp
-                    (lambda (match)
-                      (prog1
-                          (format " * @param[${%d:in}] %s $%d"
-                                  n
-                                  (progn
-                                    (string-match param-regexp match)
-                                    (match-string 1 match))
-                                  (1+ n))
-                        (setq n (+ 2 n))))
-                    (buffer-substring yas-snippet-beg yas-snippet-end))))
-             (replace-regexp-in-string
-              "\\* @return"
-              (format "* @return $%d"
-                      (prog1
-                          n
-                        (setq n (1+ n))))
-              param-replaced)))
-          yas-snippet-beg (point))
-         (setq my-doc-state 'align))
-        ((eq my-doc-state 'align)
-         (let ((aligned (my-doc-align
-                         (buffer-substring yas-snippet-beg
-                                           yas-snippet-end))))
-           (goto-char yas-snippet-beg)
-           (delete-region yas-snippet-beg yas-snippet-end)
-           (insert aligned)
-         (setq my-doc-state nil)))))
+;; (defun my-complete-doc ()
+;;   (message "testing")
+;;   (cond ((eq my-doc-state 'expand-doc)
+;;          (yas-expand-snippet
+;;           (replace-regexp-in-string
+;;            "/\\*\\*\n \\* Description"
+;;            "/**\n * ${1:Description}"
+;;            (let* ((n 2)
+;;                   (param-regexp "^ \\* @param\\[in\\] \\(.*\\)$")
+;;                   (param-replaced
+;;                    (replace-regexp-in-string
+;;                     param-regexp
+;;                     (lambda (match)
+;;                       (prog1
+;;                           (format " * @param[${%d:in}] %s $%d"
+;;                                   n
+;;                                   (progn
+;;                                     (string-match param-regexp match)
+;;                                     (match-string 1 match))
+;;                                   (1+ n))
+;;                         (setq n (+ 2 n))))
+;;                     (buffer-substring yas-snippet-beg yas-snippet-end))))
+;;              (replace-regexp-in-string
+;;               "\\* @return"
+;;               (format "* @return $%d"
+;;                       (prog1
+;;                           n
+;;                         (setq n (1+ n))))
+;;               param-replaced)))
+;;           yas-snippet-beg (point))
+;;          (setq my-doc-state 'align))
+;;         ((eq my-doc-state 'align)
+;;          (let ((aligned (my-doc-align
+;;                          (buffer-substring yas-snippet-beg
+;;                                            yas-snippet-end))))
+;;            (goto-char yas-snippet-beg)
+;;            (delete-region yas-snippet-beg yas-snippet-end)
+;;            (insert aligned)
+;;          (setq my-doc-state nil)))))
 
-(add-hook 'yas-after-exit-snippet-hook 'my-complete-doc)
+;; (add-hook 'yas-after-exit-snippet-hook 'my-complete-doc)
 
-(defun my-function-doc ()
-  (interactive)
-  (let ((yas-good-grace nil))
-    (yas-expand-snippet "/**
- * Description
-${1:$(my-function-format yas-text)} */
-$1")
-    (setq my-doc-state 'expand-doc)))
+;; (defun my-function-doc ()
+;;   (interactive)
+;;   (let ((yas-good-grace nil))
+;;     (yas-expand-snippet "/**
+;;  * Description
+;; ${1:$(my-function-format yas-text)} */
+;; $1")
+;;     (setq my-doc-state 'expand-doc)))
 
-(defun my-file-doc-with-name ()
-  (interactive)
-  (let ((yas-good-grace nil)
-        (base-dir
-         (with-temp-buffer
-           (when (eq 0 (call-process "git" nil t nil "rev-parse" "--show-toplevel"))
-             (replace-regexp-in-string "\n+$" "" (buffer-string))))))
-    (yas-expand-snippet
-     (format "/**
- * @file %s
- *
- * $0
- */
-"
-             (if base-dir
-                 (file-relative-name buffer-file-name base-dir)
-               (file-name-nondirectory (buffer-file-name)))))))
+;; (defun my-file-doc-with-name ()
+;;   (interactive)
+;;   (let ((yas-good-grace nil)
+;;         (base-dir
+;;          (with-temp-buffer
+;;            (when (eq 0 (call-process "git" nil t nil "rev-parse" "--show-toplevel"))
+;;              (replace-regexp-in-string "\n+$" "" (buffer-string))))))
+;;     (yas-expand-snippet
+;;      (format "/**
+;;  * @file %s
+;;  *
+;;  * $0
+;;  */
+;; "
+;;              (if base-dir
+;;                  (file-relative-name buffer-file-name base-dir)
+;;                (file-name-nondirectory (buffer-file-name)))))))
 
-(defun my-file-doc-without-name ()
-  (interactive)
-  (let ((yas-good-grace nil))
-    (yas-expand-snippet "/**
- * @file
- *
- * $0
- */")))
+;; (defun my-file-doc-without-name ()
+;;   (interactive)
+;;   (let ((yas-good-grace nil))
+;;     (yas-expand-snippet "/**
+;;  * @file
+;;  *
+;;  * $0
+;;  */")))
 
 
-(defun my-doc-dwim ()
-  (interactive)
-  (if (eq (point) 1)
-      (my-file-doc-without-name)
-    (my-function-doc)))
+;; (defun my-doc-dwim ()
+;;   (interactive)
+;;   (if (eq (point) 1)
+;;       (my-file-doc-without-name)
+;;     (my-function-doc)))
 
-(global-set-key (kbd "\C-cm") 'my-doc-dwim)
+;; (global-set-key (kbd "\C-cm") 'my-doc-dwim)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SQL
@@ -520,6 +522,11 @@ $1")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
 (require 'gtags)
+(define-key gtags-select-mode-map (kbd "RET") 'gtags-select-tag)
+(define-key gtags-select-mode-map (kbd "o") 'gtags-select-tag-other-window)
+(define-key gtags-select-mode-map (kbd "q") '(lambda () (interactive) (kill-buffer)))
+
+
 (require 'cc-mode)
 (defun my-c-mode-hook ()
   "My C mode hook."
@@ -793,8 +800,7 @@ The app is chosen from your OS's preference."
                      list-close-comma
                      scope-operator))
 
-
-;; Scratch
+(add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
 
 (provide '.emacs)
 ;;; .emacs ends here
