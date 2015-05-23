@@ -309,6 +309,21 @@ Does not set point.  Does nothing if mark ring is empty."
 (add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
 ;; (add-hook 'comint-mode-hook (lambda () (text-scale-set -2)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SLIME
+
+(require 'slime)
+(setq inferior-lisp-program "sbcl")
+(slime-setup)
+
+(defun slime-eval-region-dwim ()
+  "Evaluate region if it is active, otherwise evaluate the entire buffer."
+  (interactive)
+  (if (region-active-p)
+      (slime-eval-region (region-beginning) (region-end))
+    (slime-eval-buffer)))
+(define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
+
 
 (defun close-comint-hook ()
   "Automatically close the comint buffer."
