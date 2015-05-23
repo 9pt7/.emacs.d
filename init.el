@@ -562,21 +562,29 @@ $1")
 
 (defun inside-class-enum-p (pos)
   "Checks if POS is within the braces of a C++ \"enum class\"."
-  (ignore-errors
-    (save-excursion
-      (goto-char pos)
-      (up-list -1)
-      (backward-sexp 1)
-      (looking-back "enum[ \t]+class[ \t]+"))))
+  (save-excursion
+    (goto-char pos)
+    (beginning-of-line)
+    (up-list -1)
+    (or (looking-back "enum[ \t]+class[ \t]+\\_<.+?\\_>[ \t]*")
+        (looking-back "enum[ \t]+\\(?:class[ \t]+\\)?[ \t]*\\_<.*?\\_>[ \t]*:[ \t]*\\_<.*?\\_>[ \t]*"))))
 
 (defun align-enum-class (langelem)
   (if (inside-class-enum-p (c-langelem-pos langelem))
-      0
+      (if (save-excursion
+            (beginning-of-line)
+            (looking-at "[ \t]*}"))
+          '-
+        0)
     (c-lineup-topmost-intro-cont langelem)))
 
 (defun align-enum-class-closing-brace (langelem)
   (if (inside-class-enum-p (c-langelem-pos langelem))
-      '-
+      (if (save-excursion
+            (beginning-of-line)
+            (looking-at "[ \t]*}"))
+          '-
+        0)
     '+))
 
 (defun fix-enum-class ()
