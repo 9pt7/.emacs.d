@@ -313,7 +313,8 @@ Does not set point.  Does nothing if mark ring is empty."
 ;; SLIME
 
 (require 'slime)
-(setq inferior-lisp-program "sbcl")
+(setq inferior-lisp-program "sbcl"
+      lisp-indent-function #'common-lisp-indent-function)
 (slime-setup)
 
 (defun slime-eval-region-dwim ()
@@ -321,7 +322,7 @@ Does not set point.  Does nothing if mark ring is empty."
   (interactive)
   (if (region-active-p)
       (slime-eval-region (region-beginning) (region-end))
-    (slime-eval-buffer)))
+      (slime-eval-buffer)))
 (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
 
@@ -768,6 +769,7 @@ The app is chosen from your OS's preference."
 
 (require 'company)
 (require 'company-anaconda)
+(require 'slime-company)
 (add-hook 'python-mode-hook 'company-mode)
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'eldoc-mode)
