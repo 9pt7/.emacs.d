@@ -523,14 +523,21 @@ list."
 ;; Python
 ;; (require 'jedi)
 (setq
- python-shell-interpreter "ipython3"
- python-shell-interpreter-args "--matplotlib --classic"
- python-shell-completion-setup-code
- "from IPython.core.completerlib import module_completion"
- python-shell-completion-module-string-code
- "'                                   ;'.join(module_completion('''%s'''))\n" ;
- python-shell-completion-string-code
- "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+ python-shell-interpreter (cond ((executable-find "ipython3") "ipython3")
+                                ((executable-find "ipython") "ipython")
+                                ((executable-find "python3") "python3")
+                                ((executable-find "python") "python")))
+
+(when (or (string-equal python-shell-interpreter "ipython3")
+          (string-equal python-shell-interpreter "ipython"))
+  (setq
+   python-shell-interpreter-args  "--matplotlib --classic"
+   python-shell-completion-setup-code
+   "from IPython.core.completerlib import module_completion"
+   python-shell-completion-module-string-code
+   "'                                   ;'.join(module_completion('''%s'''))\n"  ;
+   python-shell-completion-string-code
+   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
 
 (setq-default comment-inline-offset 2)
 
