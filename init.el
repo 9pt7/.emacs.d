@@ -67,12 +67,9 @@
                       (select-window (window-at 0 0))
                       (other-window (- ,i 1))))))
 
-(let ((backup-dir (expand-file-name "~/backup")))
-  (setq backup-directory-alist `(("." . ,backup-dir))
-        backup-directory-alist
-        `((".*" . ,backup-dir))
-        auto-save-file-name-transforms
-        `((".*" ,backup-dir t))))
+(let ((backup-dir (expand-file-name (concat user-emacs-directory "backups"))))
+  (setq backup-directory-alist `((".*" . ,backup-dir))
+        auto-save-file-name-transforms `((".*" ,backup-dir t))))
 
 ;; Swap keys for regex and regular isearch/replace
 (global-set-key "\C-s" 'isearch-forward-regexp)
@@ -313,9 +310,8 @@ Does not set point.  Does nothing if mark ring is empty."
 ;; SLIME
 
 (require 'slime)
-(setq inferior-lisp-program "sbcl"
-      lisp-indent-function #'common-lisp-indent-function)
-(slime-setup)
+(setq inferior-lisp-program "sbcl")
+(slime-setup '(slime-company))
 
 (defun slime-eval-region-dwim ()
   "Evaluate region if it is active, otherwise evaluate the entire buffer."
