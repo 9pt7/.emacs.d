@@ -16,9 +16,9 @@
 (setq use-dialog-box nil)
 
 ;; Better mouse scrolling
-(setq mouse-wheel-scroll-amount '(3 ((shift) . 3)))
-(setq mouse-wheel-progressive-speed nil)
-(setq mouse-wheel-follow-mouse 't)
+(setq mouse-wheel-scroll-amount '(3 ((shift) . 3))
+      mouse-wheel-progressive-speed nil
+      mouse-wheel-follow-mouse t)
 
 (require 'face-remap)
 (setq text-scale-mode-step 1.1)
@@ -28,10 +28,13 @@
 
 (set-face-attribute 'default nil :height 105)
 
+(setq ring-bell-function 'ignore)
+(setq set-mark-command-repeat-pop t)
+
+(require 'autoinsert)
 (auto-insert-mode 1)
-(setq set-mark-command-repeat-pop t
-      ring-bell-function 'ignore)
-(setq require-final-newline t)
+
+(setq-default require-final-newline t)
 (setq-default fill-column 79)
 (menu-bar-enable-clipboard)
 (column-number-mode t)
@@ -61,11 +64,10 @@
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
-                  (eval
-                   `(lambda ()
-                      (interactive)
-                      (select-window (window-at 0 0))
-                      (other-window (- ,i 1))))))
+                  `(lambda ()
+                     (interactive)
+                     (select-window (window-at 0 0))
+                     (other-window (- ,i 1)))))
 
 (let ((backup-dir (expand-file-name (concat user-emacs-directory "backups"))))
   (setq backup-directory-alist `((".*" . ,backup-dir))
@@ -95,65 +97,17 @@ otherwise it is enabled."
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 (require 'calc)
-(setq math-additional-units '(
-  (GiB "1024 * MiB" "Giga Byte")
-  (MiB "1024 * KiB" "Mega Byte")
-  (KiB "1024 * B" "Kilo Byte")
-  (B nil "Byte")
-  (Gib "1024 * Mib" "Giga Bit")
-  (Mib "1024 * Kib" "Mega Bit")
-  (Kib "1024 * b" "Kilo Bit")
-  (b "B / 8" "Bit")))
-
-(define-skeleton my-configure-ac-skeleton
-  "Simple configure.ac skeleton."
-  nil
-  "AC_INIT([" (skeleton-read "Package name: ") "], [1.0], [" user-mail-address "])\n"
-  "AM_INIT_AUTOMAKE([-Wall -Werror foreign])\n"
-  "AC_PROG_CC\n"
-  "AC_CONFIG_HEADERS([config.h])\n"
-  "AC_CONFIG_FILES([\n"
-  " Makefile\n"
-  " src/Makefile\n"
-  "])\n"
-  "AC_OUTPUT\n")
-
-;; (add-to-list 'auto-insert-alist '("configure.ac" . my-configure-ac-skeleton))
-
-(define-skeleton my-makefile-am-skeleton
-  "Simple Makefile.am skeleton."
-  nil
-  '(setq v1 nil)
-  "bin_PROGRAMS = " ("Program name: " str " " '(push str v1)) -1 \n
-  '(setq v1 (nreverse v1))
-  ((skeleton-read "Program name: " (pop v1)) str "_SOURCES = " ("Source name: " str " ") -1 \n)
-  "SUBDIRS = "  ("Subdirectory: " str " ") & -1 | -10 \n)
-
-;; (add-to-list 'auto-insert-alist '("[Mm]akefile.am" . my-makefile-am-skeleton))
-
-(defun pop-mark2 ()
-  "Pop off mark ring into the buffer's actual mark.
-Does not set point.  Does nothing if mark ring is empty."
-  (push (copy-marker (mark-marker)) mark-ring)
-  (let ((last-mark (car (last mark-ring))))
-    (set-marker (mark-marker) (+ 0 last-mark) (current-buffer))
-    (move-marker last-mark nil)
-    (if (null (mark t)) (ding))
-    (setq mark-ring (nbutlast mark-ring))))
-
-(defun pop-to-mark-command2 ()
-  "Jump to mark, and pop a new position for mark off the ring.
-\(Does not affect global mark ring\)."
-  (interactive)
-  (if (null (mark t))
-      (error "No mark set in this buffer")
-    (if (= (point) (car (last mark-ring 2)))
-        (message "Mark popped"))
-    (goto-char (or (car (last mark-ring 2)) (mark t)))
-    (pop-mark2)))
+(setq math-additional-units
+      '((GiB "1024 * MiB" "Giga Byte")
+        (MiB "1024 * KiB" "Mega Byte")
+        (KiB "1024 * B" "Kilo Byte")
+        (B nil "Byte")
+        (Gib "1024 * Mib" "Giga Bit")
+        (Mib "1024 * Kib" "Mega Bit")
+        (Kib "1024 * b" "Kilo Bit")
+        (b "B / 8" "Bit")))
 
 (defun my-fit-text-to-window (max-size)
-
   ;; After saving current window configuration, split frame horizontally and
   ;; decrease text size until the number of columns in the window is greater
   ;; than 80.
@@ -184,9 +138,6 @@ Does not set point.  Does nothing if mark ring is empty."
 
 (global-set-key [f11] 'toggle-fullscreen)
 
-;; (global-set-key (kbd "M-n") 'pop-to-mark-command2)
-;; (global-set-key (kbd "M-p") 'pop-to-mark-command)
-
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
@@ -212,10 +163,10 @@ Does not set point.  Does nothing if mark ring is empty."
            ;; Use current compilation directory if the default directory is a
            ;; subdirectory
            (if (and compilation-directory
-                    (locate-dominating-file
-                     default-directory
-                     (lambda (dir)
-                       (file-equal-p dir compilation-directory))))
+                    (locate-dominating-file default-directory
+                                            (lambda (dir)
+                                              (file-equal-p dir
+                                                            compilation-directory))))
                compilation-directory
              default-directory))))
     (call-interactively 'compile)))
