@@ -10,9 +10,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(flet ((disable (sym) (when (fboundp sym) (funcall sym -1))))
+  (disable 'menu-bar-mode)
+  (disable 'tool-bar-mode)
+  (disable 'scoll-bar-mode))
 (setq use-dialog-box nil)
 
 ;; Better mouse scrolling
@@ -34,6 +35,7 @@
 (require 'autoinsert)
 (auto-insert-mode 1)
 
+(setq-local lexical-binding t)
 (setq-default require-final-newline t)
 (setq-default fill-column 79)
 (menu-bar-enable-clipboard)
@@ -43,18 +45,19 @@
 (electric-pair-mode 1)
 (add-to-list 'revert-without-query ".+\\.pdf$")
 (setq sentence-end-double-space t)
-(setq gc-cons-threshold 20000000)
-(setq redisplay-dont-pause t)
+(setq gc-cons-threshold 20000000)       ;Makes GC faster
+(setq redisplay-dont-pause t)           ;Makes redisplay faster
 (setq-default indent-tabs-mode nil)
 (setq comment-auto-fill-only-comments t
       auto-fill-function nil)
-(setq indent-tabs-mode nil
-      align-default-spacing 2)
-(add-hook 'prog-mode-hook 'turn-on-auto-fill)
+(setq-default indent-tabs-mode nil
+              align-default-spacing 2)
+(add-hook 'prog-mode-hook #'turn-on-auto-fill)
 (require 'eldoc)
-(add-hook 'prog-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'prog-mode-hook #'turn-on-eldoc-mode)
 
-(setq ediff-setup-windows-default 'ediff-setup-windows-plain)
+(require 'ediff)
+(setq-default ediff-window-setup-function #'ediff-setup-windows-plain)
 
 (require 'gdb-mi)
 (setq gdb-show-main t)
@@ -74,15 +77,15 @@
         auto-save-file-name-transforms `((".*" ,backup-dir t))))
 
 ;; Swap keys for regex and regular isearch/replace
-(global-set-key "\C-s" 'isearch-forward-regexp)
-(global-set-key "\C-r" 'isearch-backward-regexp)
-(global-set-key "\C-\M-s" 'isearch-forward)
-(global-set-key "\C-\M-r" 'isearch-backward)
-(global-set-key "\M-%" 'query-replace-regexp)
-(global-set-key (kbd "C-M-%") 'query-replace)
-(global-set-key "\M-%" 'query-replace-regexp)
+(global-set-key (kbd "\C-s") #'isearch-forward-regexp)
+(global-set-key (kbd "\C-r") #'isearch-backward-regexp)
+(global-set-key (kbd "\C-\M-s") #'isearch-forward)
+(global-set-key (kbd "\C-\M-r") #'isearch-backward)
+(global-set-key (kbd "\M-%") #'query-replace-regexp)
+(global-set-key (kbd "C-M-%") #'query-replace)
+(global-set-key (kbd "\M-%") #'query-replace-regexp)
 (global-set-key (kbd "<C-M-backspace>") 'backward-kill-sexp)
-(setq isearch-allow-scroll t)
+(setq-default isearch-allow-scroll t)
 
 (defun my-exchange-point-and-mark (&optional arg)
   "Change when region is activated in `exchange-point-and-mark'.
@@ -93,8 +96,6 @@ otherwise it is enabled."
                                 (= 1 arg))))
 
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
-
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 (require 'calc)
 (setq math-additional-units
@@ -144,8 +145,7 @@ otherwise it is enabled."
 (require 'doc-view)
 (require 'autorevert)
 (setq auto-revert-interval 1)
-(add-hook 'doc-view-mode-hook 'auto-revert-mode)
-(remove-hook 'doc-view-mode-hook 'doc-view-fit-page-to-window)
+(add-hook 'doc-view-mode-hook #'auto-revert-mode)
 (setq doc-view-resolution 300)
 
 (require 'recentf)
@@ -169,12 +169,11 @@ otherwise it is enabled."
                                                             compilation-directory))))
                compilation-directory
              default-directory))))
-    (call-interactively 'compile)))
+    (call-interactively #'compile)))
 
 (require 'grep)
-(let ((ack-cmd
-       (cond ((executable-find "ack-grep") "ack-grep")
-             ((executable-find "ack") "ack")))
+(let ((ack-cmd (cond ((executable-find "ack-grep") "ack-grep")
+                     ((executable-find "ack") "ack")))
       (ack-args " --nogroup -H "))
   (when ack-cmd
     (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
@@ -199,16 +198,16 @@ otherwise it is enabled."
   (interactive)
   (revert-buffer nil t))
 
-(global-set-key "\C-cs" 'shell)
-(global-set-key "\C-cr" 'recompile)
-(global-set-key "\C-cx" 'my-compile)
-(global-set-key "\C-cd" 'gdb)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key "\C-cf" 'recentf-open-files)
-(global-set-key "\C-cg" 'magit-status)
-(global-set-key "\C-cb" 'grep-global)
-(global-set-key "\C-cp" 'grep)
-(global-set-key (kbd "\C-cv") 'my-revert-buffer)
+(global-set-key (kbd "\C-cs") #'shell)
+(global-set-key (kbd "\C-cr") #'recompile)
+(global-set-key (kbd "\C-cx") #'my-compile)
+(global-set-key (kbd "\C-cd") #'gdb)
+(global-set-key (kbd "C-x C-b") #'ibuffer)
+(global-set-key (kbd "\C-cf") #'recentf-open-files)
+(global-set-key (kbd "\C-cg") #'magit-status)
+(global-set-key (kbd "\C-cb") #'grep-global)
+(global-set-key (kbd "\C-cp") #'grep)
+(global-set-key (kbd "\C-cv") #'my-revert-buffer)
 
 
 (require 'org-bibtex)
@@ -232,30 +231,19 @@ otherwise it is enabled."
   (when shell
     (setq explicit-shell-file-name shell)))
 
-(require 'grep)
-(let ((ack-cmd
-       (or (executable-find "ack-grep")
-	   (executable-find "ack")))
-      (ack-args " --nogroup -H "))
-  (when ack-cmd
-      (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comint
 (require 'comint)
-(setq
- comint-completion-addsuffix t
- comint-completion-autolist t
- comint-input-ignoredups t
- ;; Do not set to non-nil; breaks clisp
- comint-process-echoes nil)
+(setq comint-completion-addsuffix t
+      comint-completion-autolist t
+      comint-input-ignoredups t
+      ;; Do not set to non-nil; breaks clisp
+      comint-process-echoes nil)
 
 ;; Makes it slightly less slow
 (setq comint-move-point-for-output nil
       comint-scroll-show-maximum-output nil)
 (add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
-;; (add-hook 'comint-mode-hook (lambda () (text-scale-set -2)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SLIME
@@ -277,14 +265,11 @@ otherwise it is enabled."
   "Automatically close the comint buffer."
   (let* ((buff (current-buffer))
          (proc (get-buffer-process buff)))
-    (set-process-sentinel
-     proc
-     `(lambda (process event)
-        (if (string= event "finished\n")
-                (kill-buffer ,buff))))))
-
+    (set-process-sentinel proc
+                          (lambda (process event)
+                            (if (string= event "finished\n")
+                                (kill-buffer buff))))))
 (add-hook 'comint-exec-hook 'close-comint-hook)
-
 
 ;; Don't use yellow or white in comint. Use orange instead
 (setq ansi-color-names-vector
@@ -292,7 +277,6 @@ otherwise it is enabled."
 (setq ansi-color-map (ansi-color-make-color-map))
 
 (pending-delete-mode 1)
-
 
 (defun my-param-format (str)
   "Create @param statements for the parameters in `str'. It is
@@ -368,8 +352,10 @@ list."
           (lambda ()
             (toggle-truncate-lines t)))
 
-(setq sql-sqlite-program "/usr/bin/sqlite3")
-(setq-default sql-sqlite-program "/usr/bin/sqlite3")
+(let ((sqlite (cond ((executable-find "sqlite3"))
+                    ((executable-find "sqlite")))))
+  (when sqlite
+    (setq-default sql-sqlite-program sqlite)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Lisp
@@ -379,22 +365,23 @@ list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Python
 ;; (require 'jedi)
-(setq
- python-shell-interpreter (cond ((executable-find "ipython3") "ipython3")
-                                ((executable-find "ipython") "ipython")
-                                ((executable-find "python3") "python3")
-                                ((executable-find "python") "python")))
+(setq python-shell-interpreter
+      (flet ((exec-find (program)
+                        (when (executable-find program) program)))
+        (cond ((exec-find "ipython3"))
+              ((exec-find "ipython"))
+              ((exec-find "python3"))
+              ((exec-find "python")))))
 
-(when (or (string-equal python-shell-interpreter "ipython3")
-          (string-equal python-shell-interpreter "ipython"))
-  (setq
-   python-shell-interpreter-args  "--matplotlib --classic"
-   python-shell-completion-setup-code
-   "from IPython.core.completerlib import module_completion"
-   python-shell-completion-module-string-code
-   "'                                   ;'.join(module_completion('''%s'''))\n"  ;
-   python-shell-completion-string-code
-   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
+(when (or (string= python-shell-interpreter "ipython3")
+          (string= python-shell-interpreter "ipython"))
+  (setq python-shell-interpreter-args  "--matplotlib --classic"
+        python-shell-completion-setup-code
+        "from IPython.core.completerlib import module_completion"
+        python-shell-completion-module-string-code
+        "'                                   ;'.join(module_completion('''%s'''))\n"  ;
+        python-shell-completion-string-code
+        "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
 
 (setq-default comment-inline-offset 2)
 
@@ -412,9 +399,9 @@ list."
 
   ;; C-style comments
   (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
-      comment-start "/* "
-      comment-end " */"))
-(add-hook 'c-mode-common-hook 'my-c-mode-hook)
+        comment-start "/* "
+        comment-end " */"))
+(add-hook 'c-mode-common-hook #'my-c-mode-hook)
 
 (defun my-check-header-guards ()
   "Make sure header guard defines match filename."
@@ -430,12 +417,12 @@ list."
                                 (file-name-sans-extension buffer-file-name))
                                "_"
                                (file-name-extension buffer-file-name)))))
-        (when (not (string-equal guard expected))
+        (when (not (string= guard expected))
           (message "Warning: header guard not consistent with filename."))))))
 
 (defun my-header-hook ()
   "Header file save hook."
-  (when (string-equal (file-name-extension buffer-file-name) "h")
+  (when (string= (file-name-extension buffer-file-name) "h")
     (my-check-header-guards)))
 
 (add-hook 'after-save-hook #'my-header-hook)
