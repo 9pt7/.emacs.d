@@ -218,6 +218,26 @@ otherwise it is enabled."
         ((eq major-mode 'org-mode) (org-bibtex-write))
         (t (message "Need to be in bibtex-mode or org-mode."))))
 
+(defun my-in-org-table-p ()
+  (let ((type (org-element-type (org-element-context))))
+    (or (eq type 'table) (eq type 'table-cell) (eq type 'table-row))))
+
+(defun my-highlight-org-table-line ()
+  (when (my-in-org-table-p) (hl-line-highlight)))
+
+(defun my-unhighlight-org-table-line ()
+  (when (my-in-org-table-p) (hl-line-unhighlight)))
+
+(defun my-org-table-highlight ()
+  (setf hl-line-sticky-flag nil)
+  (hl-line-mode 1)
+  (remove-hook 'post-command-hook #'hl-line-highlight t)
+  (remove-hook 'pre-command-hook #'hl-line-unhighlight t)
+  (add-hook 'post-command-hook #'my-highlight-org-table-line nil t)
+  (add-hook 'pre-command-hook #'my-unhighlight-org-table-line nil t))
+
+(add-hook 'org-mode-hook #'my-org-table-highlight)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell
 (setenv "PAGER" "cat")
