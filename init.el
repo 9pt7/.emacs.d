@@ -219,8 +219,15 @@ otherwise it is enabled."
         (t (message "Need to be in bibtex-mode or org-mode."))))
 
 (defun my-in-org-table-p ()
-  (let ((type (org-element-type (org-element-context))))
-    (or (eq type 'table) (eq type 'table-cell) (eq type 'table-row))))
+  (flet ((context-in-table-p (context)
+           (let ((type (org-element-type context)))
+             (or (eq type 'table)
+                 (eq type 'table-cell)
+                 (eq type 'table-row)
+                 (let ((parent (org-element-property :parent context)))
+                   (when parent
+                     (context-in-table-p parent)))))))
+    (context-in-table-p (org-element-context))))
 
 (defun my-highlight-org-table-line ()
   (when (my-in-org-table-p) (hl-line-highlight)))
