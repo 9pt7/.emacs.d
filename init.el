@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'package)
+(require 'cl)
 (package-initialize)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
@@ -10,10 +11,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
-(flet ((disable (sym) (when (fboundp sym) (funcall sym -1))))
-  (disable 'menu-bar-mode)
-  (disable 'tool-bar-mode)
-  (disable 'scoll-bar-mode))
+(cl-flet ((disable (sym) (when (fboundp sym) (funcall sym -1))))
+	 (disable 'menu-bar-mode)
+	 (disable 'tool-bar-mode)
+	 (disable 'scoll-bar-mode))
 (setq use-dialog-box nil)
 
 ;; Better mouse scrolling
@@ -219,15 +220,15 @@ otherwise it is enabled."
         (t (message "Need to be in bibtex-mode or org-mode."))))
 
 (defun my-in-org-table-p ()
-  (flet ((context-in-table-p (context)
-           (let ((type (org-element-type context)))
-             (or (eq type 'table)
-                 (eq type 'table-cell)
-                 (eq type 'table-row)
-                 (let ((parent (org-element-property :parent context)))
-                   (when parent
-                     (context-in-table-p parent)))))))
-    (context-in-table-p (org-element-context))))
+  (cl-flet ((context-in-table-p (context)
+				(let ((type (org-element-type context)))
+				  (or (eq type 'table)
+				      (eq type 'table-cell)
+				      (eq type 'table-row)
+				      (let ((parent (org-element-property :parent context)))
+					(when parent
+					  (context-in-table-p parent)))))))
+	   (context-in-table-p (org-element-context))))
 
 (defun my-highlight-org-table-line ()
   (when (my-in-org-table-p) (hl-line-highlight)))
@@ -393,12 +394,12 @@ list."
 ;; Python
 ;; (require 'jedi)
 (setq python-shell-interpreter
-      (flet ((exec-find (program)
-                        (when (executable-find program) program)))
-        (cond ((exec-find "ipython3"))
-              ((exec-find "ipython"))
-              ((exec-find "python3"))
-              ((exec-find "python")))))
+      (cl-flet ((exec-find (program)
+			   (when (executable-find program) program)))
+	       (cond ((exec-find "ipython3"))
+		     ((exec-find "ipython"))
+		     ((exec-find "python3"))
+		     ((exec-find "python")))))
 
 (when (or (string= python-shell-interpreter "ipython3")
           (string= python-shell-interpreter "ipython"))
@@ -498,9 +499,9 @@ list."
                   (with-temp-buffer
                     (unless (zerop (apply 'call-process program nil t nil args))
                       (error (replace-regexp-in-string "\n+$" "" (buffer-string)))))))
-    (when (buffer-file-name)
-      (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
-      (call "global" "-u"))))
+	   (when (buffer-file-name)
+	     (call "global" "--print-dbpath") ; Make sure we are in a gtags project.
+	     (call "global" "-u"))))
 
 (defun my/update-gtags-on-save-hook ()
   "Update GTAGS for the current file."
