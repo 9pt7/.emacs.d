@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(setq-local lexical-binding t)
+
 (require 'package)
 (require 'cl)
 (package-initialize)
@@ -36,7 +38,6 @@
 (require 'autoinsert)
 (auto-insert-mode 1)
 
-(setq-local lexical-binding t)
 (setq-default require-final-newline t)
 (setq-default fill-column 79)
 (menu-bar-enable-clipboard)
@@ -271,7 +272,7 @@ otherwise it is enabled."
 ;; Makes it slightly less slow
 (setq comint-move-point-for-output nil
       comint-scroll-show-maximum-output nil)
-(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
+(add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SLIME
@@ -288,16 +289,13 @@ otherwise it is enabled."
       (slime-eval-buffer)))
 (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
-
 (defun close-comint-hook ()
   "Automatically close the comint buffer."
-  (let* ((buff (current-buffer))
-         (proc (get-buffer-process buff)))
-    (set-process-sentinel proc
-                          (lambda (process event)
-                            (if (string= event "finished\n")
-                                (kill-buffer buff))))))
-(add-hook 'comint-exec-hook 'close-comint-hook)
+  (set-process-sentinel (get-buffer-process (current-buffer))
+                        (lambda (process event)
+                          (when (string= event "finished\n")
+                            (kill-buffer (current-buffer))))))
+(add-hook 'comint-exec-hook #'close-comint-hook)
 
 ;; Don't use yellow or white in comint. Use orange instead
 (setq ansi-color-names-vector
