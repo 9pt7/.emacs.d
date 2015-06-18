@@ -598,19 +598,19 @@ list."
   "Open the file given by FILE-NAME in external app.
 The app is chosen from your OS's preference."
   (interactive (list (read-file-name "File: " nil nil t "")))
-  (let ((abs-file-name (expand-file-name file-name)))
-    (cond
-     ((string-equal system-type "windows-nt")
-      (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" abs-file-name t t)))
-
-     ((string-equal system-type "darwin")
-      (shell-command (format "open \"%s\"" abs-file-name)))
-
-     ((string-equal system-type "gnu/linux")
-      (let ((process-connection-type nil))
-        (start-process "" nil "xdg-open" abs-file-name)))
-
-     ((t (error "Unknown system type: %s" system-type))))))
+  (let ((fname (expand-file-name file-name)))
+    (cl-flet ((system-p (sys) (string-equal system-type sys)))
+      (cond ((system-p "windows-nt")
+             (let ((w32-fname (replace-regexp-in-string "/" "\\" fname t t)))
+               (w32-shell-execute "open" w32-fname)))
+            ((system-p "darwin")
+             (shell-command (format "open \"%s\"" fname)))
+            ((system-p "gnu/linux")
+             (let ((process-connection-type nil))
+               (start-process "" nil "xdg-open" fname)))
+            ((t (error "Unknown system type: %s" system-type))))
+      (unless (file-directory-p fname)
+        (recentf-add-file fname)))))
 
 (global-set-key "\C-co" 'open-in-external-app)
 
