@@ -14,7 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
 (require 'cl)
-(cl-flet ((disable (sym) (when (fboundp sym) (funcall sym -1))))
+(cl-flet ((disable (mode) (when (fboundp mode) (funcall mode -1))))
   (disable 'menu-bar-mode)
   (disable 'tool-bar-mode)
   (disable 'scoll-bar-mode))
