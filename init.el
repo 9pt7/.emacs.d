@@ -13,10 +13,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
+(require 'cl)
 (cl-flet ((disable (sym) (when (fboundp sym) (funcall sym -1))))
-	 (disable 'menu-bar-mode)
-	 (disable 'tool-bar-mode)
-	 (disable 'scoll-bar-mode))
+  (disable 'menu-bar-mode)
+  (disable 'tool-bar-mode)
+  (disable 'scoll-bar-mode))
 (setq use-dialog-box nil)
 
 ;; Better mouse scrolling
@@ -402,11 +403,11 @@ list."
 ;; (require 'jedi)
 (setq python-shell-interpreter
       (cl-flet ((exec-find (program)
-			   (when (executable-find program) program)))
-	       (cond ((exec-find "ipython3"))
-		     ((exec-find "ipython"))
-		     ((exec-find "python3"))
-		     ((exec-find "python")))))
+                           (when (executable-find program) program)))
+        (cond ((exec-find "ipython3"))
+              ((exec-find "ipython"))
+              ((exec-find "python3"))
+              ((exec-find "python")))))
 
 (when (or (string= python-shell-interpreter "ipython3")
           (string= python-shell-interpreter "ipython"))
@@ -502,13 +503,15 @@ list."
 (defun my/update-gtags ()
   "Update gtags for the current buffer file."
   (interactive)
-  (cl-flet ((call (program &rest args)
+  (cl-flet ((call (prog &rest args)
                   (with-temp-buffer
-                    (unless (zerop (apply 'call-process program nil t nil args))
-                      (error (replace-regexp-in-string "\n+$" "" (buffer-string)))))))
-	   (when (buffer-file-name)
-	     (call "global" "--print-dbpath") ; Make sure we are in a gtags project.
-	     (call "global" "-u"))))
+                    (unless (zerop (apply #'call-process prog nil t nil args))
+                      (error (replace-regexp-in-string "\n+$"
+                                                       ""
+                                                       (buffer-string)))))))
+    (when (buffer-file-name)
+      (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
+      (call "global" "-u"))))
 
 (defun my/update-gtags-on-save-hook ()
   "Update GTAGS for the current file."
