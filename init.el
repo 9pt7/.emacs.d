@@ -10,7 +10,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
-(flet ((disable (sym) (when (fboundp sym) (funcall sym -1))))
+(require 'cl)
+(cl-flet ((disable (sym) (when (fboundp sym) (funcall sym -1))))
   (disable 'menu-bar-mode)
   (disable 'tool-bar-mode)
   (disable 'scoll-bar-mode))
@@ -366,8 +367,8 @@ list."
 ;; Python
 ;; (require 'jedi)
 (setq python-shell-interpreter
-      (flet ((exec-find (program)
-                        (when (executable-find program) program)))
+      (cl-flet ((exec-find (program)
+                           (when (executable-find program) program)))
         (cond ((exec-find "ipython3"))
               ((exec-find "ipython"))
               ((exec-find "python3"))
@@ -467,10 +468,12 @@ list."
 (defun my/update-gtags ()
   "Update gtags for the current buffer file."
   (interactive)
-  (cl-flet ((call (program &rest args)
+  (cl-flet ((call (prog &rest args)
                   (with-temp-buffer
-                    (unless (zerop (apply 'call-process program nil t nil args))
-                      (error (replace-regexp-in-string "\n+$" "" (buffer-string)))))))
+                    (unless (zerop (apply #'call-process prog nil t nil args))
+                      (error (replace-regexp-in-string "\n+$"
+                                                       ""
+                                                       (buffer-string)))))))
     (when (buffer-file-name)
       (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
       (call "global" "-u"))))
