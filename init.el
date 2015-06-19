@@ -78,6 +78,15 @@
   (setq backup-directory-alist `((".*" . ,backup-dir))
         auto-save-file-name-transforms `((".*" ,backup-dir t))))
 
+(defun my-increment-number-at-point (amount)
+  (interactive "p")
+  (save-excursion
+    (skip-chars-backward "0123456789")
+    (unless (looking-at "[0123456789]+")
+      (error "No number at point"))
+    (replace-match (number-to-string (+ amount (string-to-number (match-string 0)))))))
+(global-set-key (kbd "\C-c +") #'my-increment-number-at-point)
+
 ;; Swap keys for regex and regular isearch/replace
 (global-set-key (kbd "\C-s") #'isearch-forward-regexp)
 (global-set-key (kbd "\C-r") #'isearch-backward-regexp)
@@ -86,7 +95,7 @@
 (global-set-key (kbd "\M-%") #'query-replace-regexp)
 (global-set-key (kbd "C-M-%") #'query-replace)
 (global-set-key (kbd "\M-%") #'query-replace-regexp)
-(global-set-key (kbd "<C-M-backspace>") 'backward-kill-sexp)
+(global-set-key (kbd "<C-M-backspace>") #'backward-kill-sexp)
 (setq-default isearch-allow-scroll t)
 
 (defun my-exchange-point-and-mark (&optional arg)
