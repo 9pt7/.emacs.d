@@ -2,7 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
+(setq-local lexical-binding t)
+
 (require 'package)
+(require 'cl)
 (package-initialize)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
@@ -36,7 +39,6 @@
 (require 'autoinsert)
 (auto-insert-mode 1)
 
-(setq-local lexical-binding t)
 (setq-default require-final-newline t)
 (setq-default fill-column 79)
 (menu-bar-enable-clipboard)
@@ -219,6 +221,33 @@ otherwise it is enabled."
         ((eq major-mode 'org-mode) (org-bibtex-write))
         (t (message "Need to be in bibtex-mode or org-mode."))))
 
+(defun my-in-org-table-p ()
+  (cl-flet ((context-in-table-p (context)
+				(let ((type (org-element-type context)))
+				  (or (eq type 'table)
+				      (eq type 'table-cell)
+				      (eq type 'table-row)
+				      (let ((parent (org-element-property :parent context)))
+					(when parent
+					  (context-in-table-p parent)))))))
+	   (context-in-table-p (org-element-context))))
+
+(defun my-highlight-org-table-line ()
+  (when (my-in-org-table-p) (hl-line-highlight)))
+
+(defun my-unhighlight-org-table-line ()
+  (when (my-in-org-table-p) (hl-line-unhighlight)))
+
+(defun my-org-table-highlight ()
+  (setf hl-line-sticky-flag nil)
+  (hl-line-mode 1)
+  (remove-hook 'post-command-hook #'hl-line-highlight t)
+  (remove-hook 'pre-command-hook #'hl-line-unhighlight t)
+  (add-hook 'post-command-hook #'my-highlight-org-table-line nil t)
+  (add-hook 'pre-command-hook #'my-unhighlight-org-table-line nil t))
+
+(add-hook 'org-mode-hook #'my-org-table-highlight)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell
 (setenv "PAGER" "cat")
@@ -244,7 +273,7 @@ otherwise it is enabled."
 ;; Makes it slightly less slow
 (setq comint-move-point-for-output nil
       comint-scroll-show-maximum-output nil)
-(add-hook 'comint-output-filter-functions 'comint-truncate-buffer)
+(add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SLIME
@@ -261,16 +290,13 @@ otherwise it is enabled."
       (slime-eval-buffer)))
 (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
-
 (defun close-comint-hook ()
   "Automatically close the comint buffer."
-  (let* ((buff (current-buffer))
-         (proc (get-buffer-process buff)))
-    (set-process-sentinel proc
-                          (lambda (process event)
-                            (if (string= event "finished\n")
-                                (kill-buffer buff))))))
-(add-hook 'comint-exec-hook 'close-comint-hook)
+  (set-process-sentinel (get-buffer-process (current-buffer))
+                        (lambda (process event)
+                          (when (string= event "finished\n")
+                            (kill-buffer (current-buffer))))))
+(add-hook 'comint-exec-hook #'close-comint-hook)
 
 ;; Don't use yellow or white in comint. Use orange instead
 (setq ansi-color-names-vector
@@ -575,19 +601,19 @@ list."
   "Open the file given by FILE-NAME in external app.
 The app is chosen from your OS's preference."
   (interactive (list (read-file-name "File: " nil nil t "")))
-  (let ((abs-file-name (expand-file-name file-name)))
-    (cond
-     ((string-equal system-type "windows-nt")
-      (w32-shell-execute "open" (replace-regexp-in-string "/" "\\" abs-file-name t t)))
-
-     ((string-equal system-type "darwin")
-      (shell-command (format "open \"%s\"" abs-file-name)))
-
-     ((string-equal system-type "gnu/linux")
-      (let ((process-connection-type nil))
-        (start-process "" nil "xdg-open" abs-file-name)))
-
-     ((t (error "Unknown system type: %s" system-type))))))
+  (let ((fname (expand-file-name file-name)))
+    (cl-flet ((system-p (sys) (string-equal system-type sys)))
+      (cond ((system-p "windows-nt")
+             (let ((w32-fname (replace-regexp-in-string "/" "\\" fname t t)))
+               (w32-shell-execute "open" w32-fname)))
+            ((system-p "darwin")
+             (shell-command (format "open \"%s\"" fname)))
+            ((system-p "gnu/linux")
+             (let ((process-connection-type nil))
+               (start-process "" nil "xdg-open" fname)))
+            ((t (error "Unknown system type: %s" system-type))))
+      (unless (file-directory-p fname)
+        (recentf-add-file fname)))))
 
 (global-set-key "\C-co" 'open-in-external-app)
 
