@@ -7,7 +7,7 @@
 (require 'package)
 (require 'cl)
 (package-initialize)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+(setf package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 
@@ -17,24 +17,24 @@
 (cl-flet ((disable (mode) (when (fboundp mode) (funcall mode -1))))
   (disable 'menu-bar-mode)
   (disable 'tool-bar-mode)
-  (disable 'scoll-bar-mode))
-(setq use-dialog-box nil)
+  (disable 'scroll-bar-mode))
+(setf use-dialog-box nil)
 
 ;; Better mouse scrolling
-(setq mouse-wheel-scroll-amount '(3 ((shift) . 3))
+(setf mouse-wheel-scroll-amount '(3 ((shift) . 3))
       mouse-wheel-progressive-speed nil
       mouse-wheel-follow-mouse t)
 
 (require 'face-remap)
-(setq text-scale-mode-step 1.1)
+(setf text-scale-mode-step 1.1)
 
-(setq user-full-name "Peter Thompson"
+(setf user-full-name "Peter Thompson"
       user-mail-address "peter.thompson92@gmail.com")
 
 (set-face-attribute 'default nil :height 105)
 
-(setq ring-bell-function 'ignore)
-(setq set-mark-command-repeat-pop t)
+(setf ring-bell-function 'ignore)
+(setf set-mark-command-repeat-pop t)
 
 (require 'autoinsert)
 (auto-insert-mode 1)
@@ -43,15 +43,15 @@
 (setq-default fill-column 79)
 (menu-bar-enable-clipboard)
 (column-number-mode t)
-(setq kill-whole-line t)
+(setf kill-whole-line t)
 (show-paren-mode 1)
 (electric-pair-mode 1)
 (add-to-list 'revert-without-query ".+\\.pdf$")
-(setq sentence-end-double-space t)
-(setq gc-cons-threshold 20000000)       ;Makes GC faster
-(setq redisplay-dont-pause t)           ;Makes redisplay faster
+(setf sentence-end-double-space t)
+(setf gc-cons-threshold 20000000)       ;Makes GC faster
+(setf redisplay-dont-pause t)           ;Makes redisplay faster
 (setq-default indent-tabs-mode nil)
-(setq comment-auto-fill-only-comments t
+(setf comment-auto-fill-only-comments t
       auto-fill-function nil)
 (setq-default indent-tabs-mode nil
               align-default-spacing 2)
@@ -63,7 +63,7 @@
 (setq-default ediff-window-setup-function #'ediff-setup-windows-plain)
 
 (require 'gdb-mi)
-(setq gdb-show-main t)
+(setf gdb-show-main t)
 
 (require 'ido)
 (ido-mode 'buffers)
@@ -76,7 +76,7 @@
                      (other-window (- ,i 1)))))
 
 (let ((backup-dir (expand-file-name (concat user-emacs-directory "backups"))))
-  (setq backup-directory-alist `((".*" . ,backup-dir))
+  (setf backup-directory-alist `((".*" . ,backup-dir))
         auto-save-file-name-transforms `((".*" ,backup-dir t))))
 
 (defun my-increment-number-at-point (amount)
@@ -110,7 +110,7 @@ otherwise it is enabled."
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
 
 (require 'calc)
-(setq math-additional-units
+(setf math-additional-units
       '((GiB "1024 * MiB" "Giga Byte")
         (MiB "1024 * KiB" "Mega Byte")
         (KiB "1024 * B" "Kilo Byte")
@@ -152,17 +152,17 @@ otherwise it is enabled."
 (global-set-key [f11] 'toggle-fullscreen)
 
 (require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+(setf uniquify-buffer-name-style 'post-forward-angle-brackets)
 
 (require 'doc-view)
 (require 'autorevert)
-(setq auto-revert-interval 1)
+(setf auto-revert-interval 1)
 (add-hook 'doc-view-mode-hook #'auto-revert-mode)
-(setq doc-view-resolution 300)
+(setf doc-view-resolution 300)
 
 (require 'recentf)
 (recentf-mode t)
-(setq recentf-max-saved-items 1000)
+(setf recentf-max-saved-items 1000)
 
 (require 'compile)
 
@@ -202,7 +202,7 @@ otherwise it is enabled."
   (grep-override "global --result grep -xi "))
 
 (require 'magit)
-(setq magit-last-seen-setup-instructions "1.4.0")
+(setf magit-last-seen-setup-instructions "1.4.0")
 
 (require 'files)
 (defun my-revert-buffer()
@@ -268,27 +268,29 @@ otherwise it is enabled."
 (require 'shell)
 (let ((shell (executable-find "bash")))
   (when shell
-    (setq explicit-shell-file-name shell)))
+    (setf explicit-shell-file-name shell)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comint
 (require 'comint)
-(setq comint-completion-addsuffix t
+(setf comint-completion-addsuffix t
       comint-completion-autolist t
       comint-input-ignoredups t
       ;; Do not set to non-nil; breaks clisp
       comint-process-echoes nil)
 
 ;; Makes it slightly less slow
-(setq comint-move-point-for-output nil
+(setf comint-move-point-for-output nil
       comint-scroll-show-maximum-output nil)
+
+(setf comint-buffer-maximum-size 10000)
 (add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SLIME
 
 (require 'slime)
-(setq inferior-lisp-program "sbcl")
+(setf inferior-lisp-program "sbcl")
 (slime-setup '(slime-company))
 
 (defun slime-eval-region-dwim ()
@@ -308,9 +310,9 @@ otherwise it is enabled."
 (add-hook 'comint-exec-hook #'close-comint-hook)
 
 ;; Don't use yellow or white in comint. Use orange instead
-(setq ansi-color-names-vector
+(setf ansi-color-names-vector
       ["black" "red" "DarkGreen" "DarkOrange3" "blue" "magenta" "DarkCyan" "dim gray"])
-(setq ansi-color-map (ansi-color-make-color-map))
+(setf ansi-color-map (ansi-color-make-color-map))
 
 (pending-delete-mode 1)
 
@@ -348,7 +350,7 @@ list."
   "* " >
   (skeleton-read "Description: ") & \n & "*" & \n | -2
   >
-  '(setq v1 (point))
+  '(setf v1 (point))
   ("Direction: " "* @param[" str "]" " "
    (skeleton-read "Parameter: ") " "
    (skeleton-read "Description: ")
@@ -401,7 +403,7 @@ list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Python
 ;; (require 'jedi)
-(setq python-shell-interpreter
+(setf python-shell-interpreter
       (cl-flet ((exec-find (program)
                            (when (executable-find program) program)))
         (cond ((exec-find "ipython3"))
@@ -411,7 +413,7 @@ list."
 
 (when (or (string= python-shell-interpreter "ipython3")
           (string= python-shell-interpreter "ipython"))
-  (setq python-shell-interpreter-args  "--matplotlib --classic"
+  (setf python-shell-interpreter-args  "--matplotlib --classic"
         python-shell-completion-setup-code
         "from IPython.core.completerlib import module_completion"
         python-shell-completion-module-string-code
@@ -434,7 +436,7 @@ list."
   (define-key c-mode-map (kbd "C-M-.") 'semantic-symref)
 
   ;; C-style comments
-  (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
+  (setf comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
         comment-start "/* "
         comment-end " */"))
 (add-hook 'c-mode-common-hook #'my-c-mode-hook)
@@ -536,7 +538,7 @@ list."
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
-(setq
+(setf
  ;; Files
  org-default-notes-file (expand-file-name "~/Dropbox/org/notes.org")
 
@@ -572,15 +574,15 @@ list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Spelling
 (require 'rw-hunspell)
-(setq ispell-program-name "hunspell")
-(setq ispell-local-dictionary-alist
+(setf ispell-program-name "hunspell")
+(setf ispell-local-dictionary-alist
       '(
         (nil       "[A-Za-z]" "[^A-Za-z]" "" nil ("-d" "en_US") nil utf-8)
         ("american" "[A-Za-z]" "[^A-Za-z]" "" nil ("-d" "en_US") nil utf-8)))
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dired
-(setq dired-listing-switches "-lAh"
+(setf dired-listing-switches "-lAh"
       dired-dwim-target t
       dired-isearch-filenames 'dwim
       dired-recursive-copies 'always
@@ -601,7 +603,7 @@ list."
 
 
 ;; Use emac's ls program
-(setq ls-lisp-use-insert-directory-program nil)
+(setf ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
 (require 'cl)
@@ -641,7 +643,7 @@ The app is chosen from your OS's preference."
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
 (add-hook 'LaTeX-mode-hook 'reftex-mode)
 
-(setq preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
+(setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
       preview-auto-cache-preamble t
       preview-auto-reveal t
       preview-preserve-counters t
@@ -654,7 +656,7 @@ The app is chosen from your OS's preference."
 ;; Tramp
 
 (require 'tramp)
-(setq password-cache-expiry (* 60 60))
+(setf password-cache-expiry (* 60 60))
 
 (require 'company)
 (require 'company-anaconda)
@@ -663,7 +665,7 @@ The app is chosen from your OS's preference."
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'eldoc-mode)
 (add-to-list 'company-backends 'company-anaconda)
-(setq company-idle-delay 0.3
+(setf company-idle-delay 0.3
       company-minimum-prefix-length 1
       company-show-numbers t
       company-require-match nil)
@@ -679,7 +681,7 @@ The app is chosen from your OS's preference."
 (semantic-mode 1)
 
 (require 'cc-vars)
-(setq c-default-style "k&r"
+(setf c-default-style "k&r"
            c-basic-offset 4)
 
 (c-add-style "my-cc-mode"
