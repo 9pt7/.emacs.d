@@ -253,7 +253,9 @@ otherwise it is enabled."
   (remove-hook 'post-command-hook #'hl-line-highlight t)
   (remove-hook 'pre-command-hook #'hl-line-unhighlight t)
   (add-hook 'post-command-hook #'my-highlight-org-table-line nil t)
-  (add-hook 'pre-command-hook #'my-unhighlight-org-table-line nil t))
+  (add-hook 'pre-command-hook #'my-unhighlight-org-table-line nil t)
+  (hl-line-unhighlight)
+  (my-highlight-org-table-line))
 
 (add-hook 'org-mode-hook #'my-org-table-highlight)
 
@@ -573,12 +575,21 @@ list."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Spelling
+(require 'ispell)
 (require 'rw-hunspell)
-(setf ispell-program-name "hunspell")
-(setf ispell-local-dictionary-alist
-      '(
-        (nil       "[A-Za-z]" "[^A-Za-z]" "" nil ("-d" "en_US") nil utf-8)
-        ("american" "[A-Za-z]" "[^A-Za-z]" "" nil ("-d" "en_US") nil utf-8)))
+(let ((hunspell (executable-find "hunspell")))
+  (when hunspell
+    (setenv "DICTIONARY" "en_US")
+    (add-to-list 'ispell-local-dictionary-alist '("en_US"
+                                                  "[[:alpha:]]"
+                                                  "[^[:alpha:]]"
+                                                  "[']"
+                                                  t
+                                                  ("-d" "en_US")
+                                                  nil
+                                                  iso-8859-1))
+    (setq ispell-program-name hunspell)
+    (ispell-change-dictionary "en_US" t)))
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dired
