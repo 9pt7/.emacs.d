@@ -692,18 +692,18 @@ The app is chosen from your OS's preference."
 (semantic-mode 1)
 
 (require 'cc-vars)
-(setf c-default-style "k&r"
-           c-basic-offset 4)
 
-(c-add-style "my-cc-mode"
-                  '("cc-mode"
-                    (c-offsets-alist . ((innamespace . 0)
-                                        (inline-open . 0)))))
+(c-add-style "my-c-style"
+             '("k&r"
+               (c-offsets-alist . ((innamespace . 0)
+                                   (inline-open . 0)))
+               (c-doc-comment-style . ((java-mode . javadoc)
+                                       (pike-mode . autodoc)
+                                       (c-mode . gtkdoc)
+                                       (c++-mode . gtkdoc)))
+               (c-basic-offset . 4)))
 
-(defun my-cpp-setup()
-  (c-set-style "my-cc-mode"))
-
-(add-hook 'c++-mode-hook #'my-cpp-setup)
+(setf c-default-style "my-c-style")
 
 (c-toggle-auto-newline 1)
 (c-toggle-electric-state 1)
