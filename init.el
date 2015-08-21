@@ -2,10 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'cl)
+
 (setq-local lexical-binding t)
 
 (require 'package)
-(require 'cl)
 (package-initialize)
 (setf package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
@@ -13,7 +14,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
-(require 'cl)
 (cl-flet ((disable (mode) (when (fboundp mode) (funcall mode -1))))
   (disable 'menu-bar-mode)
   (disable 'tool-bar-mode)
@@ -49,7 +49,6 @@
 (add-to-list 'revert-without-query ".+\\.pdf$")
 (setf sentence-end-double-space t)
 (setf gc-cons-threshold 20000000)       ;Makes GC faster
-(setf redisplay-dont-pause t)           ;Makes redisplay faster
 (setq-default indent-tabs-mode nil)
 (setf comment-auto-fill-only-comments t
       auto-fill-function nil)
@@ -57,7 +56,7 @@
               align-default-spacing 2)
 (add-hook 'prog-mode-hook #'turn-on-auto-fill)
 (require 'eldoc)
-(add-hook 'prog-mode-hook #'turn-on-eldoc-mode)
+(add-hook 'prog-mode-hook #'eldoc-mode)
 
 (require 'ediff)
 (setq-default ediff-window-setup-function #'ediff-setup-windows-plain)
@@ -202,7 +201,7 @@ otherwise it is enabled."
   (grep-override "global --result grep -xi "))
 
 (require 'magit)
-(setf magit-last-seen-setup-instructions "1.4.0")
+(defvar magit-last-seen-setup-instructions "1.4.0")
 
 (require 'files)
 (defun my-revert-buffer()
@@ -405,6 +404,7 @@ list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Python
 ;; (require 'jedi)
+(require 'python)
 (setf python-shell-interpreter
       (cl-flet ((exec-find (program)
                            (when (executable-find program) program)))
@@ -418,12 +418,15 @@ list."
   (setf python-shell-interpreter-args  "--matplotlib --classic"
         python-shell-completion-setup-code
         "from IPython.core.completerlib import module_completion"
-        python-shell-completion-module-string-code
+        python-shell-completion-string-code
         "'                                   ;'.join(module_completion('''%s'''))\n"  ;
         python-shell-completion-string-code
         "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
 
 (setq-default comment-inline-offset 2)
+
+;; Flycheck
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -617,8 +620,6 @@ list."
 (setf ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
-(require 'cl)
-
 (defun open-in-external-app (file-name)
   "Open the file given by FILE-NAME in external app.
 The app is chosen from your OS's preference."
@@ -634,8 +635,7 @@ The app is chosen from your OS's preference."
              (let ((process-connection-type nil))
                (start-process "" nil "xdg-open" fname)))
             ((t (error "Unknown system type: %s" system-type))))
-      (unless (file-directory-p fname)
-        (recentf-add-file fname)))))
+      (recentf-add-file fname))))
 
 (global-set-key "\C-co" 'open-in-external-app)
 
@@ -651,6 +651,10 @@ The app is chosen from your OS's preference."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TeX
+(require 'preview)
+(require 'reftex)
+(require 'latex)
+(require 'font-latex)
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
 (add-hook 'LaTeX-mode-hook 'reftex-mode)
 
