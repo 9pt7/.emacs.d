@@ -426,7 +426,30 @@ list."
 (setq-default comment-inline-offset 2)
 
 ;; Flycheck
+(require 'flycheck)
 (add-hook 'after-init-hook #'global-flycheck-mode)
+
+(require 'cc-mode)
+
+(add-hook 'c++-mode-hook
+          (defun my-c++-flycheck-hook ()
+            (flycheck-select-checker 'c/c++-gcc)
+            (setq-local flycheck-clang-language-standard "c++11")
+            (setq-local flycheck-gcc-language-standard "c++11")))
+
+(add-hook 'c-mode-hook
+          (defun my-c-flycheck-hook()
+            (flycheck-select-checker 'c/c++-gcc)
+            (setq-local flycheck-clang-language-standard "gnu11")
+            (setq-local flycheck-gcc-language-standard "gnu11")))
+
+(require 'company-clang)
+(add-hook 'c++-mode-hook
+          (defun my-c++-company-hook ()
+            (setq-local company-clang-arguments '("-std=c++11"))))
+(add-hook 'c-mode-hook
+          (defun my-c-company-hook ()
+            (setq-local company-clang-arguments '("-std=gnu11"))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -438,12 +461,7 @@ list."
   "My C mode hook."
   (eldoc-mode -1)
   (define-key c-mode-map (kbd "M-.") 'semantic-ia-fast-jump)
-  (define-key c-mode-map (kbd "C-M-.") 'semantic-symref)
-
-  ;; C-style comments
-  (setf comment-start-skip "\\(//+\\|/\\*+\\)\\s *"
-        comment-start "/* "
-        comment-end " */"))
+  (define-key c-mode-map (kbd "C-M-.") 'semantic-symref))
 (add-hook 'c-mode-common-hook #'my-c-mode-hook)
 
 (defun my-check-header-guards ()
@@ -534,11 +552,14 @@ list."
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; Org
 (require 'org)
+(require 'flyspell)
 (defun readable-text ()
   "spell checking."
   (flyspell-mode 1))
-(add-hook 'text-mode-hook 'readable-text)
-(add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
+(add-hook 'prog-mode-hook #'flyspell-prog-mode)
+
+(add-hook 'text-mode-hook #'readable-text)
+(add-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
@@ -685,6 +706,7 @@ The app is chosen from your OS's preference."
       company-show-numbers t
       company-require-match nil)
 (add-hook 'prog-mode-hook 'company-mode-on)
+
 
 ;; Finally start emacs server
 (server-start)
