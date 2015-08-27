@@ -271,6 +271,8 @@ otherwise it is enabled."
   (when shell
     (setf explicit-shell-file-name shell)))
 
+(require 'company)
+(add-hook 'comint-mode-hook #'company-mode)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comint
 (require 'comint)
