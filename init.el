@@ -407,23 +407,23 @@ list."
 ;; Python
 ;; (require 'jedi)
 (require 'python)
-(setf python-shell-interpreter
-      (cl-flet ((exec-find (program)
-                           (when (executable-find program) program)))
-        (cond ((exec-find "ipython3"))
-              ((exec-find "ipython"))
-              ((exec-find "python3"))
-              ((exec-find "python")))))
+(setq-default python-shell-interpreter
+              (cl-flet ((exec-find (program)
+                                   (when (executable-find program) program)))
+                (cond ((exec-find "ipython3"))
+                      ((exec-find "ipython"))
+                      ((exec-find "python3"))
+                      ((exec-find "python")))))
 
 (when (or (string= python-shell-interpreter "ipython3")
           (string= python-shell-interpreter "ipython"))
-  (setf python-shell-interpreter-args  "--matplotlib --classic"
-        python-shell-completion-setup-code
-        "from IPython.core.completerlib import module_completion"
-        python-shell-completion-string-code
-        "'                                   ;'.join(module_completion('''%s'''))\n"  ;
-        python-shell-completion-string-code
-        "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
+  (setq-default python-shell-interpreter-args  "--matplotlib --classic"
+                python-shell-completion-setup-code
+                "from IPython.core.completerlib import module_completion"
+                python-shell-completion-string-code
+                "'                                   ;'.join(module_completion('''%s'''))\n"  ;
+                python-shell-completion-string-code
+                "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
 
 (setq-default comment-inline-offset 2)
 
