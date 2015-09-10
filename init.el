@@ -571,30 +571,30 @@ list."
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; Org
 (require 'org)
+(require 'org-capture)
+(require 'org-agenda)
+
 (require 'flyspell)
-(defun readable-text ()
-  "spell checking."
-  (flyspell-mode 1))
+
 (add-hook 'prog-mode-hook #'flyspell-prog-mode)
 
-(add-hook 'text-mode-hook #'readable-text)
+(add-hook 'text-mode-hook #'flyspell-mode)
 (add-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
+(defvar my-org-folder (file-name-as-directory (expand-file-name "~/org/")))
+
 (setf
  ;; Files
- org-default-notes-file (expand-file-name "~/Dropbox/org/notes.org")
+ org-default-notes-file (concat my-org-folder "notes.org")
 
  ;; Go to link on RET
  org-return-follows-link t
 
  ;; Indent text based on outline
  org-startup-indented t
-
- ;; Show time and add not when done
- org-log-done 'note
 
  ;; Start agenda on current day
  org-agenda-start-on-weekday nil
@@ -603,18 +603,13 @@ list."
  org-agenda-todo-ignore-scheduled nil
  org-agenda-todo-ignore-deadlines nil
 
- ;; TODO keywords
- org-todo-keywords '((type "TODO(t)" "READ(r)" "WAITING(w@)" "INPROGRESS(p@)"
-                               "|" "DONE(d)" "CANCELLED(c)"))
- org-todo-keyword-faces '(("WAITING" . "orange")
-                          ("INPROGRESS" . "orange"))
+ org-agenda-files (list (concat my-org-folder "agenda.org"))
 
  ;; Capture templates
  org-capture-templates
-      '(("t" "task" entry (file "~/Dropbox/org/agenda.org")
-         "* TODO %^{Task Name} %^G\n/Entered on %U/\n%?")
-        ("j" "journal" item (file+datetree "~/Dropbox/org/journal.org")
-         "%U %?")))
+ `(("t" "task" entry (file ,(concat my-org-folder "agenda.org"))
+    "* TODO %^{Task Name} %^G\n/Entered on %U/\n%?")
+   ("s" "shopping list" item (file ,(concat my-org-folder "shopping_list.org")) nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Spelling
@@ -776,11 +771,10 @@ The app is chosen from your OS's preference."
  '(TeX-command-extra-options "-shell-escape")
  '(flyspell-issue-welcome-flag nil)
  '(flyspell-persistent-highlight t)
- '(initial-buffer-choice t)
- '(org-agenda-files (quote ("~/Dropbox/org/agenda.org"))))
-                                     (put 'narrow-to-region 'disabled nil)
-                                     (put 'scroll-left 'disabled nil)
-                                     (put 'narrow-to-page 'disabled nil)
+ '(initial-buffer-choice t))
+(put 'narrow-to-region 'disabled nil)
+(put 'scroll-left 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
