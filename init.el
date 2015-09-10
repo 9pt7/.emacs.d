@@ -7,10 +7,28 @@
 (setq-local lexical-binding t)
 
 (require 'package)
-(package-initialize)
 (setf package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+(let ((package-list (list 'magit
+                          'bash-completion
+                          'company
+                          'slime
+                          'slime-company
+                          'flycheck
+                          'rw-hunspell
+                          'auctex
+                          'company-anaconda)))
+
+  (dolist (package package-list)
+    (unless (package-installed-p package)
+      (package-install package))))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
@@ -272,7 +290,6 @@ otherwise it is enabled."
     (setf explicit-shell-file-name shell)))
 
 (require 'company)
-(add-hook 'comint-mode-hook #'company-mode)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comint
 (require 'comint)
