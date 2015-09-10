@@ -28,8 +28,6 @@
     (unless (package-installed-p package)
       (package-install package))))
 
-
-
 ;; Display time on modeline
 (require 'time)
 (setq display-time-default-load-average nil
