@@ -30,6 +30,13 @@
 
 
 
+;; Display time on modeline
+(require 'time)
+(setq display-time-default-load-average nil
+      display-time-24hr-format t
+      display-time-day-and-date t)
+(display-time-mode t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
 (cl-flet ((disable (mode) (when (fboundp mode) (funcall mode -1))))
@@ -579,7 +586,7 @@ list."
 (add-hook 'prog-mode-hook #'flyspell-prog-mode)
 
 (add-hook 'text-mode-hook #'flyspell-mode)
-(add-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
+(remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
@@ -609,6 +616,8 @@ list."
  org-capture-templates
  `(("t" "task" entry (file ,(concat my-org-folder "agenda.org"))
     "* TODO %^{Task Name} %^G\n/Entered on %U/\n%?")
+   ("a" "appointment" entry (file ,(concat my-org-folder "agenda.org"))
+    "* %^{Appointment Name} %^G\n/Entered on %U/\n%?")
    ("s" "shopping list" item (file ,(concat my-org-folder "shopping_list.org")) nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
