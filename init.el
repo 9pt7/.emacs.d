@@ -604,6 +604,8 @@ list."
  ;; Start agenda on current day
  org-agenda-start-on-weekday nil
 
+ org-log-done 'note
+
  ;; Show items with dates in the TODO buffer
  org-agenda-todo-ignore-scheduled nil
  org-agenda-todo-ignore-deadlines nil
