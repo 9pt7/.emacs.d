@@ -97,9 +97,9 @@
                      (select-window (window-at 0 0))
                      (other-window (- ,i 1)))))
 
-(setf backup-directory-alist (cons ".*"
-                                   (expand-file-name (concat user-emacs-directory
-                                                             "backups"))))
+(setf backup-directory-alist (list (cons ".*"
+                                         (expand-file-name (concat user-emacs-directory
+                                                                   "backups")))))
 
 (defun my-increment-number-at-point (amount)
   (interactive "p")
