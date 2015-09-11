@@ -12,3 +12,4 @@ session.*
 semanticdb
 elpa/*
 calc.el
+*#
