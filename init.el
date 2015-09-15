@@ -573,8 +573,8 @@ list."
 
 (require 'cc-mode)
 
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; Org
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Org
 (require 'org)
 (require 'org-capture)
 (require 'org-agenda)
@@ -606,9 +606,18 @@ list."
 
  org-log-done 'note
 
+ ;; Show \alpha, \beta, \gamma... as UTF-8
+ org-pretty-entities t
+
  ;; Show items with dates in the TODO buffer
  org-agenda-todo-ignore-scheduled nil
  org-agenda-todo-ignore-deadlines nil
+
+ org-todo-keywords '((type "TODO(t)" "WAIT(w@/!)""|" "DONE(d@/!)"))
+
+ org-todo-keyword-faces '(("TODO" :foreground "red" :weight bold)
+                          ("WAIT" :foreground "dark orange" :weight bold)
+                          ("DONE" :foreground "forest green" :weight bold))
 
  org-agenda-files (list (concat my-org-folder "agenda.org"))
 
