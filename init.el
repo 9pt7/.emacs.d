@@ -611,6 +611,8 @@ list."
 
  ;; Show \alpha, \beta, \gamma... as UTF-8
  org-pretty-entities t
+ ;; Only enable super/subscripts within {}
+ org-use-sub-superscripts '{}
 
  ;; Show items with dates in the TODO buffer
  org-agenda-todo-ignore-scheduled nil
