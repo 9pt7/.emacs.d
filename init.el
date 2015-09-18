@@ -43,6 +43,9 @@
   (disable 'scroll-bar-mode))
 (setf use-dialog-box nil)
 
+;; Remap ALT to META
+(setq x-alt-keysym 'meta)
+
 ;; Better mouse scrolling
 (setf mouse-wheel-scroll-amount '(3 ((shift) . 3))
       mouse-wheel-progressive-speed nil
