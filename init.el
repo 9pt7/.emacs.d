@@ -589,10 +589,20 @@ list."
 (add-hook 'text-mode-hook #'flyspell-mode)
 (remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
+(defvar my-org-folder (file-name-as-directory (expand-file-name "~/org/")))
+
+(defun my-org-capture ()
+  "Store a note in the agenda file."
+  (interactive)
+  (let* ((agenda-file (concat my-org-folder "agenda.org"))
+         (org-capture-entry `("t" "task" entry (file ,agenda-file) "* %^{Task Name}
+/Entered on %U/
+%?")))
+    (ignore-errors (org-capture))))
+
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cc" 'org-capture)
-(defvar my-org-folder (file-name-as-directory (expand-file-name "~/org/")))
+(global-set-key "\C-cc" 'my-org-capture)
 
 (setf
  ;; Files
