@@ -793,6 +793,11 @@ The app is chosen from your OS's preference."
 
 (add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
 
+;; Needs to be done twice for some reason
+(dotimes (i 2)
+  (set-face-attribute 'default nil :font "Menlo Regular"
+                      :height 140))
+
 (provide '.emacs)
 ;;; .emacs ends here
 
