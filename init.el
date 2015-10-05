@@ -28,6 +28,11 @@
     (unless (package-installed-p package)
       (package-install package))))
 
+;; Unbind suspend when in a separate window
+(when (or (eq window-system 'x)
+          (eq window-system 'ns))
+  (global-unset-key (kbd "C-z")))
+
 ;; Display time on modeline
 (require 'time)
 (setq display-time-default-load-average nil
