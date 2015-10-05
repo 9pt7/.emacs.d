@@ -277,6 +277,8 @@ otherwise it is enabled."
 (defun my-unhighlight-org-table-line ()
   (when (my-in-org-table-p) (hl-line-unhighlight)))
 
+(require 'hl-line)
+
 (defun my-org-table-highlight ()
   (setf hl-line-sticky-flag nil)
   (hl-line-mode 1)
