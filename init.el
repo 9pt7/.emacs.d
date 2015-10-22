@@ -741,6 +741,122 @@ The app is chosen from your OS's preference."
       reftex-cite-format 'natbib
       font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
 
+(defun my-env-IEEEeqnarray (environment)
+  (let ((LaTeX-default-position nil)
+        (LaTeX-default-format "rCl"))
+    (LaTeX-env-array environment)))
+
+(defun my-latex-IEEE-hook ()
+  (LaTeX-add-environments
+   '("IEEEeqnarray" my-env-IEEEeqnarray)
+   '("IEEEeqnarray*" my-env-IEEEeqnarray)))
+
+(add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
+
+(add-to-list 'LaTeX-indent-environment-list
+             '("IEEEeqnarray" LaTeX-indent-tabular))
+(add-to-list 'font-latex-math-environments "IEEEeqnarray")
+(add-to-list 'LaTeX-label-alist '("IEEEeqnarray" . LaTeX-equation-label))
+
+(add-to-list 'LaTeX-indent-environment-list
+             '("IEEEeqnarray*" LaTeX-indent-tabular))
+(add-to-list 'font-latex-math-environments "IEEEeqnarray*")
+(add-to-list 'LaTeX-label-alist '("IEEEeqnarray*" . LaTeX-equation-label))
+
+(require 'texmathp)
+(setq texmathp-tex-commands
+      '(("IEEEeqnarray" env-on)
+        ("IEEEeqnarray*" env-on)))
+(texmathp-compile)
+
+(defvar my-latex-class-completion-list
+  '("article"
+    "proc"
+    "minimal"
+    "report"
+    "book"
+    "slides"
+    "memoir"
+    "letter"
+    "beamer"))
+
+(defvar my-latex-package-list
+  '(("amsmath" . ("centertags"
+                  "tbtags"
+                  "sumlimits"
+                  "nosumlimits"
+                  "intlimits"
+                  "nointlimits"
+                  "namelimits"
+                  "nonamelimits"
+                  "leqno"
+                  "reqno"
+                  "fleqno"))
+    ("amsfonts" . ())
+    ("amssymb" . ())
+    ("amsthm" . ())
+    ("IEEEtrantools" . ())
+    ("bm" . ())
+    ("tikz" . ())
+    ("geometry" . ("letterpaper"
+                   "a5paper"
+                   "b5paper"
+                   "executivepaper"
+                   "legalpaper"
+                   "landscape"
+                   "total="
+                   "margin="))
+    ("graphicx" . ())
+    ("hyperref" . ())
+    ("booktabs" . ())))
+
+(defvar my-latex-option-completion-list
+  '("10pt"
+    "11pt"
+    "12pt"
+    "a4paper"
+    "letterpaper"
+    "a5paper"
+    "b5paper"
+    "executivepaper"
+    "legalpaper"
+    "draft"
+    "twocolumn"
+    "oneside"
+    "twoside"
+    "notitlepage"
+    "titlepage"))
+
+(defvar my-temp)
+
+(setcdr (assoc 'latex-mode auto-insert-alist)
+        '("options, RET: "
+          "\\documentclass["
+          ((completing-read "options: " my-latex-option-completion-list) str & ", " | -2) & -2 & ?\] | -1
+          ?{ (completing-read "class: " my-latex-class-completion-list) "}\n"
+          ((completing-read "package: " (mapcar #'car my-latex-package-list))
+           '(progn
+              (setq my-temp (eval str))
+              nil)
+           "\\usepackage["
+           ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
+           ?{ str "}\n")
+          _ "\n\\begin{document}\n" _
+          "\n\\end{document}"))
+
+(define-skeleton my-insert-latex-package
+  "Insert a latex package"
+  (completing-read "package: " (mapcar #'car my-latex-package-list))
+  '(progn
+     (setq my-temp (eval str))
+     nil)
+  "\\usepackage["
+  ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
+  ?{ str "}\n")
+
+(define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package)
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
