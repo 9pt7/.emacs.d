@@ -344,7 +344,7 @@ otherwise it is enabled."
   (interactive)
   (if (region-active-p)
       (slime-eval-region (region-beginning) (region-end))
-      (slime-eval-buffer)))
+    (slime-eval-buffer)))
 (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
 (defun close-comint-hook ()
@@ -1038,5 +1038,5 @@ The app is chosen from your OS's preference."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-                                     (put 'downcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
