@@ -44,11 +44,11 @@
 (require 'openwith)
 (openwith-mode t)
 (setq openwith-associations
-      '(("\\.pdf\\'"
-         (cond ((string-equal system-type "windows-nt") "open")
-               ((string-equal system-type "darwin") "open")
-               ((string-equal system-type "gnu/linux") "xdg-open")
-               ((t (error "Unknown system type: %s" system-type))))
+      `(("\\.pdf\\'"
+         ,(cond ((string-equal system-type "windows-nt") "open")
+                ((string-equal system-type "darwin") "open")
+                ((string-equal system-type "gnu/linux") "xdg-open")
+                (t (error "Unknown system type: %s" system-type)))
          (file))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
