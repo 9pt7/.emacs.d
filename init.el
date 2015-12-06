@@ -22,6 +22,7 @@
                           'flycheck
                           'rw-hunspell
                           'auctex
+                          'openwith
                           'company-anaconda)))
 
   (dolist (package package-list)
@@ -39,6 +40,16 @@
       display-time-24hr-format t
       display-time-day-and-date t)
 (display-time-mode t)
+
+(require 'openwith)
+(openwith-mode t)
+(setq openwith-associations
+      '(("\\.pdf\\'"
+         (cond ((string-equal system-type "windows-nt") "open")
+               ((string-equal system-type "darwin") "open")
+               ((string-equal system-type "gnu/linux") "xdg-open")
+               ((t (error "Unknown system type: %s" system-type))))
+         (file))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
