@@ -23,6 +23,8 @@
                           'rw-hunspell
                           'auctex
                           'openwith
+                          'diredful
+                          'helm
                           'company-anaconda)))
 
   (dolist (package package-list)
@@ -47,7 +49,7 @@
       `(("\\.pdf\\'"
          ,(cond ((string-equal system-type "windows-nt") "open")
                 ((string-equal system-type "darwin") "open")
-                ((string-equal system-type "gnu/linux") "xdg-open")
+                ((string-equal system-type "gnu/linux") "evince")
                 (t (error "Unknown system type: %s" system-type)))
          (file))))
 
@@ -105,9 +107,6 @@
 
 (require 'gdb-mi)
 (setf gdb-show-main t)
-
-(require 'ido)
-(ido-mode 'buffers)
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
@@ -305,6 +304,9 @@ otherwise it is enabled."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell
 (setenv "PAGER" "cat")
+
+(defadvice pwd (before kill-pwd activate)
+  (kill-new default-directory))
 
 (require 'bash-completion)
 (bash-completion-setup)
@@ -753,6 +755,7 @@ list."
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dired
+(require 'dired-aux)
 (setf dired-listing-switches "-lAh"
       dired-dwim-target t
       dired-isearch-filenames 'dwim
@@ -760,22 +763,29 @@ list."
       dired-recursive-deletes 'always)
 (require 'ibuffer)
 ;; Use Dired x
-;; (require 'dired-x)
-;; (add-hook 'dired-load-hook
-;;        (lambda ()
-;;          (load "dired-x")))
+(require 'dired-x)
+(add-hook 'dired-load-hook
+          (lambda ()
+            (load "dired-x")))
+(nconc completion-ignored-extensions
+       '(".fdb_latexmk" ".synctex.gz" ".fls" ".snm" ".nav" ".out"))
 
 (add-hook 'dired-mode-hook
           (lambda ()
             (toggle-truncate-lines t)))
 
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+
+(require 'diredful)
+(diredful-mode 1)
+
 ;; Macros
 (global-set-key "\C-x(" 'kmacro-start-macro-or-insert-counter)
 
 
-;; Use emac's ls program
-(setf ls-lisp-use-insert-directory-program nil)
+;; Don't use emac's ls program
 (require 'ls-lisp)
+(setf ls-lisp-use-insert-directory-program t)
 
 (defun open-in-external-app (file-name)
   "Open the file given by FILE-NAME in external app.
@@ -824,6 +834,8 @@ The app is chosen from your OS's preference."
       TeX-electric-math '("$" . "$")
       TeX-electric-sub-and-superscript t
       reftex-cite-format 'natbib
+      reftex-label-alist '(("IEEEeqnarray" ?e "eq:" "~(\\ref{%s})" nil nil)
+                           ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
       font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
 
 (defun my-env-IEEEeqnarray (environment)
@@ -838,20 +850,13 @@ The app is chosen from your OS's preference."
 
 (add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
 
-(add-to-list 'LaTeX-indent-environment-list
-             '("IEEEeqnarray" LaTeX-indent-tabular))
-(add-to-list 'font-latex-math-environments "IEEEeqnarray")
-(add-to-list 'LaTeX-label-alist '("IEEEeqnarray" . LaTeX-equation-label))
-
-(add-to-list 'LaTeX-indent-environment-list
-             '("IEEEeqnarray*" LaTeX-indent-tabular))
-(add-to-list 'font-latex-math-environments "IEEEeqnarray*")
-(add-to-list 'LaTeX-label-alist '("IEEEeqnarray*" . LaTeX-equation-label))
-
 (require 'texmathp)
-(setq texmathp-tex-commands
-      '(("IEEEeqnarray" env-on)
-        ("IEEEeqnarray*" env-on)))
+(dolist (math-env '("IEEEeqnarray" "IEEEeqnarray*"))
+  (add-to-list 'LaTeX-indent-environment-list `(,math-env LaTeX-indent-tabular))
+  (add-to-list 'font-latex-math-environments math-env)
+  (add-to-list 'LaTeX-label-alist `(,math-env . LaTeX-equation-label))
+  (add-to-list 'reftex-label-alist `(,math-env ?e "eq:" "~(\\ref{%s})" t nil))
+  (add-to-list 'texmathp-tex-commands `(,math-env env-on)))
 (texmathp-compile)
 
 (defvar my-latex-class-completion-list
@@ -882,6 +887,13 @@ The app is chosen from your OS's preference."
     ("amsthm" . ())
     ("IEEEtrantools" . ())
     ("bm" . ())
+    ("natbib" . ("square"
+                 "super"
+                 "sort"
+                 "sort&compress"
+                 "compress"
+                 "comma"
+                 "numbers"))
     ("tikz" . ())
     ("geometry" . ("letterpaper"
                    "a5paper"
@@ -952,6 +964,20 @@ The app is chosen from your OS's preference."
 (define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package)
 
 
+(require 'helm)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(global-set-key (kbd "C-c i") #'helm-mini)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(require 'helm-mode)
+(setq helm-completing-read-handlers-alist
+      '((describe-function . helm-completing-read-symbols)
+        (describe-variable . helm-completing-read-symbols)
+        (completion-at-point . nil))
+      helm-mode-handle-completion-in-region nil)
+(helm-mode 1)
+
+(require 'ido)
+(ido-mode 'buffers)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
