@@ -838,6 +838,21 @@ The app is chosen from your OS's preference."
                            ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
       font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
 
+(setq LaTeX-font-list
+      '((?\C-a ""              ""  "\\mathcal{"    "}")
+        (?\C-b "\\textbf{"     "}" "\\bm{"     "}")  ;Use bm
+        (?\C-c "\\textsc{"     "}")
+        (?\C-e "\\emph{"       "}")
+        (?\C-f "\\textsf{"     "}" "\\mathsf{"     "}")
+        (?\C-i "\\textit{"     "}" "\\mathit{"     "}")
+        (?\C-m "\\textmd{"     "}")
+        (?\C-n "\\textnormal{" "}" "\\mathnormal{" "}")
+        (?\C-r "\\textrm{"     "}" "\\mathrm{"     "}")
+        (?\C-s "\\textsl{"     "}" "\\mathbb{"     "}")
+        (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
+        (?\C-u "\\textup{"     "}")
+        (?\C-d "" "" t)))
+
 (defun my-env-IEEEeqnarray (environment)
   (let ((LaTeX-default-position nil)
         (LaTeX-default-format "rCl"))
