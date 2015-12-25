@@ -732,11 +732,13 @@ The app is chosen from your OS's preference."
 (require 'font-latex)
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
 (add-hook 'LaTeX-mode-hook 'reftex-mode)
+(add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
 
 (setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
       preview-auto-cache-preamble t
-      preview-auto-reveal t
+      preview-auto-reveal nil
       preview-preserve-counters t
+      preview-image-type 'tiff
       TeX-PDF-mode t
       reftex-cite-format 'natbib
       font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
