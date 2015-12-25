@@ -751,7 +751,25 @@ The app is chosen from your OS's preference."
 (defun my-latex-IEEE-hook ()
   (LaTeX-add-environments
    '("IEEEeqnarray" my-env-IEEEeqnarray)
-   '("IEEEeqnarray*" my-env-IEEEeqnarray)))
+   '("IEEEeqnarray*" my-env-IEEEeqnarray)
+   "matrix"
+   "bmatrix"
+   "Bmatrix"
+   "pmatrix"
+   "Pmatrix"
+   "vmatrix"
+   "Vmatrix"
+   "tikzpicture"
+   "smallmatrix"))
+
+(add-to-list 'LaTeX-indent-environment-list '("matrix"))
+(add-to-list 'LaTeX-indent-environment-list '("bmatrix"))
+(add-to-list 'LaTeX-indent-environment-list '("Bmatrix"))
+(add-to-list 'LaTeX-indent-environment-list '("pmatrix"))
+(add-to-list 'LaTeX-indent-environment-list '("Pmatrix"))
+(add-to-list 'LaTeX-indent-environment-list '("vmatrix"))
+(add-to-list 'LaTeX-indent-environment-list '("Vmatrix"))
+(add-to-list 'LaTeX-indent-environment-list '("smallmatrix"))
 
 (add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
 
@@ -800,6 +818,25 @@ The app is chosen from your OS's preference."
     ("IEEEtrantools" . ())
     ("bm" . ())
     ("tikz" . ())
+    ("natbib" . ("round"
+                 "square"
+                 "curly"
+                 "angle"
+                 "semicolon"
+                 "colon"
+                 "comma"
+                 "authoryear"
+                 "numbers"
+                 "super"
+                 "sort"
+                 "sort&compress"
+                 "compress"
+                 "longnamesfirst"
+                 "sectionbib"
+                 "nonamebreak"
+                 "merge"
+                 "elide"
+                 "mcite"))
     ("geometry" . ("letterpaper"
                    "a5paper"
                    "b5paper"
@@ -810,6 +847,7 @@ The app is chosen from your OS's preference."
                    "margin="))
     ("graphicx" . ())
     ("hyperref" . ())
+    ("tabularx" . ())
     ("booktabs" . ())))
 
 (defvar my-latex-option-completion-list
