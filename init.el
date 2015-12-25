@@ -22,6 +22,9 @@
                           'flycheck
                           'rw-hunspell
                           'auctex
+                          'openwith
+                          'diredful
+                          'helm
                           'company-anaconda)))
 
   (dolist (package package-list)
@@ -39,6 +42,16 @@
       display-time-24hr-format t
       display-time-day-and-date t)
 (display-time-mode t)
+
+(require 'openwith)
+(openwith-mode t)
+(let ((open-program (case system-type
+                      ('windows-nt "open")
+                      ('darwin "open")
+                      ('gnu/linux "xdg-open")
+                      (t (error "Unknown system type: %s" system-type))))
+      (extensions '("\\.pdf\\'" "\\.mp3\\'" "\\.flac\\'" "\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'")))
+  (setq openwith-associations (mapcar (lambda (ext) (list ext open-program '(file))) extensions)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
@@ -94,9 +107,6 @@
 
 (require 'gdb-mi)
 (setf gdb-show-main t)
-
-(require 'ido)
-(ido-mode 'buffers)
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
@@ -295,6 +305,9 @@ otherwise it is enabled."
 ;; Shell
 (setenv "PAGER" "cat")
 
+(defadvice pwd (before kill-pwd activate)
+  (kill-new default-directory))
+
 (require 'bash-completion)
 (bash-completion-setup)
 
@@ -333,7 +346,7 @@ otherwise it is enabled."
   (interactive)
   (if (region-active-p)
       (slime-eval-region (region-beginning) (region-end))
-      (slime-eval-buffer)))
+    (slime-eval-buffer)))
 (define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
 
 (defun close-comint-hook ()
@@ -597,6 +610,7 @@ list."
 (remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
 (defvar my-org-folder (file-name-as-directory (expand-file-name "~/org/")))
+(defvar my-org-doc-file (expand-file-name "~/doc/doc.org"))
 
 (defun my-org-capture ()
   "Store a note in the agenda file."
@@ -609,7 +623,69 @@ list."
 
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cc" 'my-org-capture)
+(global-set-key "\C-cc" 'org-capture)
+
+(defvar my-capture-temp nil)
+
+(defun my-parse-bibtex (bibtex-string)
+  (string-match "\\@\\(.*\\){\\(.*\\),\\(\\(?:.\\|\n\\)*\\)}" bibtex-string)
+  (let* ((doc-type (match-string 1 bibtex-string))
+         (doc-ref (match-string 2 bibtex-string))
+         (doc-params (match-string 3 bibtex-string))
+         (doc-param-alist ())
+         (param-remain doc-params)
+         (properties))
+    (while (string-match
+            "\\(?:.\\|\n\\)*?\\([a-zA-Z]+\\)={\\(.*?\\)}\\(\\(?:.\\|\n\\)*\\)"
+            param-remain)
+      (let ((key (match-string 1 param-remain))
+            (val (match-string 2 param-remain)))
+        (push (cons key val) doc-param-alist)
+        (setq param-remain (match-string 3 param-remain))))
+    (setq doc-param-alist (nreverse doc-param-alist))
+    (list doc-type doc-ref doc-param-alist)))
+
+(defun my-make-property-string (property-alist)
+  (with-temp-buffer
+    (insert (apply #'concat
+                   (mapcar #'(lambda (key-val)
+                               (concat ":" (upcase (car key-val)) ": " (cdr key-val) "\n"))
+                           property-alist)))
+    (org-indent-region (point-min) (point-max))
+    (org-indent-remove-properties-from-string (buffer-string))))
+
+(defvar my-property-string nil)
+(defvar my-doc-folder (expand-file-name "~/doc/"))
+(defvar my-bibtex-string nil)
+
+(defun my-get-doc-info ()
+  (let* ((file-name (expand-file-name (read-file-name "File Name: "
+                                                      nil
+                                                      nil
+                                                      t)))
+         (bibtex-string (read-string "BibTeX: "))
+         (parse-result (my-parse-bibtex bibtex-string))
+         (doc-type (first parse-result))
+         (doc-ref (second parse-result))
+         (doc-param-alist (third parse-result))
+         (title (or (cdr (assoc "title" doc-param-alist))
+                    (read-string "Title: "
+                                 (file-name-base file-name))))
+         ;; (new-file-name (expand-file-name (concat my-doc-folder
+         ;;                                          doc-ref
+         ;;                                          (file-name-extension file-name t))))
+         )
+    ;; (copy-file file-name new-file-name)
+    ;; (push (cons "file_link" (concat "file:" new-file-name)) doc-param-alist)
+    (push (cons "file_link" (concat "file:" file-name)) doc-param-alist)
+    (setq my-property-string (my-make-property-string doc-param-alist))
+    (setq my-bibtex-string
+          (replace-regexp-in-string "\\`\[ \t\n\]*"
+                                    ""
+                                    (replace-regexp-in-string "\[ \t\n\]*\\'"
+                                                              "\n"
+                                                              bibtex-string)))
+    title))
 
 (setf
  ;; Files
@@ -643,13 +719,21 @@ list."
 
  org-agenda-files (list (concat my-org-folder "agenda.org"))
 
+
+
  ;; Capture templates
  org-capture-templates
  `(("t" "task" entry (file ,(concat my-org-folder "agenda.org"))
     "* TODO %^{Task Name} %^G\n/Entered on %U/\n%?")
-   ("a" "appointment" entry (file ,(concat my-org-folder "agenda.org"))
-    "* %^{Appointment Name} %^G\n/Entered on %U/\n%?")
-   ("s" "shopping list" item (file ,(concat my-org-folder "shopping_list.org")) nil)))
+   ("d" "document" entry (file ,my-org-doc-file)
+    "* %(my-get-doc-info) %^G
+:PROPERTIES:
+:DATE_ADDED: %U
+%(eval my-property-string):END:
+:BIBTEX:
+%(eval my-bibtex-string):END:
+
+%?")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Spelling
@@ -671,6 +755,7 @@ list."
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dired
+(require 'dired-aux)
 (setf dired-listing-switches "-lAh"
       dired-dwim-target t
       dired-isearch-filenames 'dwim
@@ -678,22 +763,29 @@ list."
       dired-recursive-deletes 'always)
 (require 'ibuffer)
 ;; Use Dired x
-;; (require 'dired-x)
-;; (add-hook 'dired-load-hook
-;;        (lambda ()
-;;          (load "dired-x")))
+(require 'dired-x)
+(add-hook 'dired-load-hook
+          (lambda ()
+            (load "dired-x")))
+(nconc completion-ignored-extensions
+       '(".fdb_latexmk" ".synctex.gz" ".fls" ".snm" ".nav" ".out"))
 
 (add-hook 'dired-mode-hook
           (lambda ()
             (toggle-truncate-lines t)))
 
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+
+(require 'diredful)
+(diredful-mode 1)
+
 ;; Macros
 (global-set-key "\C-x(" 'kmacro-start-macro-or-insert-counter)
 
 
-;; Use emac's ls program
-(setf ls-lisp-use-insert-directory-program nil)
+;; Don't use emac's ls program
 (require 'ls-lisp)
+(setf ls-lisp-use-insert-directory-program t)
 
 (defun open-in-external-app (file-name)
   "Open the file given by FILE-NAME in external app.
@@ -732,7 +824,7 @@ The app is chosen from your OS's preference."
 (require 'font-latex)
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
 (add-hook 'LaTeX-mode-hook 'reftex-mode)
-(add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
+(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
 
 (setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
       preview-auto-cache-preamble t
@@ -740,8 +832,27 @@ The app is chosen from your OS's preference."
       preview-preserve-counters t
       preview-image-type 'tiff
       TeX-PDF-mode t
+      TeX-electric-math '("$" . "$")
+      TeX-electric-sub-and-superscript t
       reftex-cite-format 'natbib
+      reftex-label-alist '(("IEEEeqnarray" ?e "eq:" "~(\\ref{%s})" nil nil)
+                           ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
       font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
+
+(setq LaTeX-font-list
+      '((?\C-a ""              ""  "\\mathcal{"    "}")
+        (?\C-b "\\textbf{"     "}" "\\bm{"     "}")  ;Use bm
+        (?\C-c "\\textsc{"     "}")
+        (?\C-e "\\emph{"       "}")
+        (?\C-f "\\textsf{"     "}" "\\mathsf{"     "}")
+        (?\C-i "\\textit{"     "}" "\\mathit{"     "}")
+        (?\C-m "\\textmd{"     "}")
+        (?\C-n "\\textnormal{" "}" "\\mathnormal{" "}")
+        (?\C-r "\\textrm{"     "}" "\\mathrm{"     "}")
+        (?\C-s "\\textsl{"     "}" "\\mathbb{"     "}")
+        (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
+        (?\C-u "\\textup{"     "}")
+        (?\C-d "" "" t)))
 
 (defun my-env-IEEEeqnarray (environment)
   (let ((LaTeX-default-position nil)
@@ -773,20 +884,13 @@ The app is chosen from your OS's preference."
 
 (add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
 
-(add-to-list 'LaTeX-indent-environment-list
-             '("IEEEeqnarray" LaTeX-indent-tabular))
-(add-to-list 'font-latex-math-environments "IEEEeqnarray")
-(add-to-list 'LaTeX-label-alist '("IEEEeqnarray" . LaTeX-equation-label))
-
-(add-to-list 'LaTeX-indent-environment-list
-             '("IEEEeqnarray*" LaTeX-indent-tabular))
-(add-to-list 'font-latex-math-environments "IEEEeqnarray*")
-(add-to-list 'LaTeX-label-alist '("IEEEeqnarray*" . LaTeX-equation-label))
-
 (require 'texmathp)
-(setq texmathp-tex-commands
-      '(("IEEEeqnarray" env-on)
-        ("IEEEeqnarray*" env-on)))
+(dolist (math-env '("IEEEeqnarray" "IEEEeqnarray*"))
+  (add-to-list 'LaTeX-indent-environment-list `(,math-env LaTeX-indent-tabular))
+  (add-to-list 'font-latex-math-environments math-env)
+  (add-to-list 'LaTeX-label-alist `(,math-env . LaTeX-equation-label))
+  (add-to-list 'reftex-label-alist `(,math-env ?e "eq:" "~(\\ref{%s})" t nil))
+  (add-to-list 'texmathp-tex-commands `(,math-env env-on)))
 (texmathp-compile)
 
 (defvar my-latex-class-completion-list
@@ -817,6 +921,13 @@ The app is chosen from your OS's preference."
     ("amsthm" . ())
     ("IEEEtrantools" . ())
     ("bm" . ())
+    ("natbib" . ("square"
+                 "super"
+                 "sort"
+                 "sort&compress"
+                 "compress"
+                 "comma"
+                 "numbers"))
     ("tikz" . ())
     ("natbib" . ("round"
                  "square"
@@ -881,8 +992,18 @@ The app is chosen from your OS's preference."
            "\\usepackage["
            ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
            ?{ str "}\n")
-          _ "\n\\begin{document}\n" _
-          "\n\\end{document}"))
+          "\n"
+          "\\title{" (let ((title (read-string "title: ")))
+                       (setq v1 (not (string-empty-p title)))
+                       title) & "}\n" | -7
+                       "\\author{" (when v1
+                                     (read-string "author: " user-full-name)) & "}\n" | -8
+                                     _ "\n\\begin{document}\n\n"
+                                     (if v1
+                                         "\\maketitle\n\n"
+                                       "") _
+                                       -
+                                       "\n\n\\end{document}"))
 
 (define-skeleton my-insert-latex-package
   "Insert a latex package"
@@ -897,6 +1018,20 @@ The app is chosen from your OS's preference."
 (define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package)
 
 
+(require 'helm)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(global-set-key (kbd "C-c i") #'helm-mini)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(require 'helm-mode)
+(setq helm-completing-read-handlers-alist
+      '((describe-function . helm-completing-read-symbols)
+        (describe-variable . helm-completing-read-symbols)
+        (completion-at-point . nil))
+      helm-mode-handle-completion-in-region nil)
+(helm-mode 1)
+
+(require 'ido)
+(ido-mode 'buffers)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
@@ -945,21 +1080,21 @@ The app is chosen from your OS's preference."
 (c-toggle-electric-state 1)
 
 (setq-default c-cleanup-list
-                   '(brace-else-brace
-                     brace-elseif-brace
-                     brace-catch-brace
-                     empty-defun-braces
-                     one-liner-defun
-                     defun-close-semi
-                     list-close-comma
-                     scope-operator))
+              '(brace-else-brace
+                brace-elseif-brace
+                brace-catch-brace
+                empty-defun-braces
+                one-liner-defun
+                defun-close-semi
+                list-close-comma
+                scope-operator))
 
 (add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
 
 ;; Needs to be done twice for some reason
-(dotimes (i 2)
-  (set-face-attribute 'default nil :font "Menlo Regular"
-                      :height 140))
+;; (dotimes (i 2)
+;;   (set-face-attribute 'default nil :font "Menlo Regular"
+;;                       :height 140))
 
 (provide '.emacs)
 ;;; .emacs ends here
@@ -983,5 +1118,5 @@ The app is chosen from your OS's preference."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-                                     (put 'downcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
