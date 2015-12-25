@@ -45,13 +45,12 @@
 
 (require 'openwith)
 (openwith-mode t)
-(setq openwith-associations
-      `(("\\.pdf\\'"
-         ,(cond ((string-equal system-type "windows-nt") "open")
-                ((string-equal system-type "darwin") "open")
-                ((string-equal system-type "gnu/linux") "evince")
-                (t (error "Unknown system type: %s" system-type)))
-         (file))))
+(let ((open-program (cond ((string-equal system-type "windows-nt") "open")
+                          ((string-equal system-type "darwin") "open")
+                          ((string-equal system-type "gnu/linux") "xdg-open")
+                          (t (error "Unknown system type: %s" system-type))))
+      (extensions '("\\.pdf\\'" "\\.mp3\\'" "\\.flac\\'" "\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'")))
+  (setq openwith-associations (mapcar (lambda (ext) (list ext open-program '(file))) extensions)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
