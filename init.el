@@ -87,7 +87,7 @@
               align-default-spacing 2)
 (add-hook 'prog-mode-hook #'turn-on-auto-fill)
 (require 'eldoc)
-(add-hook 'prog-mode-hook #'eldoc-mode)
+(add-hook 'c-mode-hook #'eldoc-mode)
 
 (require 'ediff)
 (setq-default ediff-window-setup-function #'ediff-setup-windows-plain)
