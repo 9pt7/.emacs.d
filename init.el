@@ -25,11 +25,22 @@
                           'openwith
                           'diredful
                           'helm
+                          'exec-path-from-shell
                           'company-anaconda)))
 
   (dolist (package package-list)
     (unless (package-installed-p package)
       (package-install package))))
+
+(require 'exec-path-from-shell)
+(when (memq window-system '(mac ns))
+  (setq exec-path-from-shell-variables '("PATH"
+                                         "MANPATH"
+                                         "DICTIONARY"))
+  ;; Need LANG for spell check (not initialized in launcher env)
+  (setenv "LANG" "en_CA.UTF-8")
+  (exec-path-from-shell-initialize))
+
 
 ;; Unbind suspend when in a separate window
 (when (or (eq window-system 'x)
@@ -480,7 +491,10 @@ list."
 
 (add-hook 'c++-mode-hook
           (defun my-c++-flycheck-hook ()
-            (flycheck-select-checker 'c/c++-gcc)
+            ;; Use clang checker on OS-X
+            (flycheck-select-checker (case system-type
+                                       ('darwin 'c/c++-clang)
+                                       (t 'c/c++-gcc)))
             (setq-local flycheck-clang-language-standard "c++11")
             (setq-local flycheck-gcc-language-standard "c++11")))
 
@@ -502,13 +516,14 @@ list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
 
-
+(current-local-map)
+c++-mode-map
 (require 'cc-mode)
 (defun my-c-mode-hook ()
   "My C mode hook."
   (eldoc-mode -1)
-  (define-key c-mode-map (kbd "M-.") 'semantic-ia-fast-jump)
-  (define-key c-mode-map (kbd "C-M-.") 'semantic-symref))
+  (define-key (current-local-map) (kbd "M-.") #'semantic-ia-fast-jump)
+  (define-key (current-local-map) (kbd "C-M-.") #'semantic-symref))
 (add-hook 'c-mode-common-hook #'my-c-mode-hook)
 
 (defun my-check-header-guards ()
@@ -779,6 +794,14 @@ list."
 (require 'diredful)
 (diredful-mode 1)
 
+
+(setq dired-omit-files (mapconcat #'identity
+                                  '("^\\.DS_Store$"
+                                    "^\\.localized$"
+                                    "^\\.com.apple.timemachine.supported$")
+                                  "\\|"))
+(add-hook 'dired-mode-hook #'dired-omit-mode)
+
 ;; Macros
 (global-set-key "\C-x(" 'kmacro-start-macro-or-insert-counter)
 
@@ -1044,7 +1067,8 @@ The app is chosen from your OS's preference."
 (require 'slime-company)
 (add-hook 'python-mode-hook 'company-mode)
 (add-hook 'python-mode-hook 'anaconda-mode)
-(add-hook 'python-mode-hook 'eldoc-mode)
+;; eldoc doesn't play well with flycheck
+;; (add-hook 'python-mode-hook 'eldoc-mode)
 (add-to-list 'company-backends 'company-anaconda)
 (setf company-idle-delay 0.3
       company-minimum-prefix-length 1
@@ -1059,7 +1083,8 @@ The app is chosen from your OS's preference."
 ;; (setenv "PAGER" "cat /dev/stdin > /tmp/epage; emacsclient -n /tmp/epage")
 
 (require 'semantic)
-(global-semantic-idle-summary-mode 1)
+;; Does not work well with flycheck
+;; (global-semantic-idle-summary-mode 1)
 (semantic-mode 1)
 
 (require 'cc-vars)
