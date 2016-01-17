@@ -315,6 +315,7 @@ otherwise it is enabled."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell
 (setenv "PAGER" "cat")
+(setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name user-emacs-directory) "bin"))
 
 (defadvice pwd (before kill-pwd activate)
   (kill-new default-directory))
