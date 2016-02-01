@@ -329,6 +329,11 @@ otherwise it is enabled."
   (when shell
     (setf explicit-shell-file-name shell)))
 
+(defun my-comint-disable-echoing ()
+  (setq comint-process-echoes t))
+
+(add-hook 'shell-mode-hook #'my-comint-disable-echoing)
+
 (require 'company)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comint
