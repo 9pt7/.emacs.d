@@ -1127,6 +1127,24 @@ The app is chosen from your OS's preference."
 ;;   (set-face-attribute 'default nil :font "Menlo Regular"
 ;;                       :height 140))
 
+;; (diredful-apply (mapconcat (lambda (file-regexp)
+;;                              (concat "\\(?:" file-regexp "\\)"))
+;;                            (remove-if-not #'stringp
+;;                                           (mapcar #'car auto-mode-alist))
+;;                            "\\|")
+;;                 font-lock-comment-face nil t)
+
+;; (add-to-list 'dired-font-lock-keywords
+;;              (list
+;;               (concat "\\("
+;;                       (mapconcat (lambda (file-regexp)
+;;                                    (concat "\\(?:" file-regexp "\\)"))
+;;                                  (remove-if-not #'stringp
+;;                                                 (mapcar #'car auto-mode-alist))
+;;                                  "\\|")
+;;                       "\\)")
+;;               '(".+" (dired-move-to-filename) nil (0 dired-ignored-face))))
+
 (provide '.emacs)
 ;;; .emacs ends here
 
