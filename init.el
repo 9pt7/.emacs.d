@@ -54,6 +54,9 @@
       display-time-day-and-date t)
 (display-time-mode t)
 
+(require 'man)
+(setq Man-notify-method 'pushy)
+
 (require 'openwith)
 (openwith-mode t)
 (let ((open-program (case system-type
