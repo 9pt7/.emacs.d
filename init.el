@@ -806,7 +806,7 @@ c++-mode-map
                                     "^\\.localized$"
                                     "^\\.com.apple.timemachine.supported$")
                                   "\\|"))
-(add-hook 'dired-mode-hook #'dired-omit-mode)
+;; (add-hook 'dired-mode-hook #'dired-omit-mode)
 
 ;; Macros
 (global-set-key "\C-x(" 'kmacro-start-macro-or-insert-counter)
@@ -882,6 +882,15 @@ The app is chosen from your OS's preference."
         (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
         (?\C-u "\\textup{"     "}")
         (?\C-d "" "" t)))
+
+(defun my-env-frame (environment)
+  (let ((LaTeX-default-position nil)
+        (LaTeX-default-format "rCl"))
+    (LaTeX-env-label environment)))
+
+(defun my-latex-frame-hook ()
+  (LaTeX-add-environments
+   '("frame" my-env-frame)))
 
 (defun my-env-IEEEeqnarray (environment)
   (let ((LaTeX-default-position nil)
