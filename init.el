@@ -1126,15 +1126,15 @@ The app is chosen from your OS's preference."
 (add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
 
 ;; Fix redraw error in virtualbox
-(defun my-scroll-hook (window pos)
-  (redraw-display))
+;; (defun my-scroll-hook (window pos)
+;;   (redraw-display))
 
-(defun my-window-size-hook (frame)
-  (redraw-display))
+;; (defun my-window-size-hook (frame)
+;;   (redraw-display))
 
-(add-to-list 'window-scroll-functions #'my-scroll-hook)
-(add-hook 'window-configuration-change-hook #'redraw-display)
-(add-to-list 'window-size-change-functions #'my-window-size-hook)
+;; (add-to-list 'window-scroll-functions #'my-scroll-hook)
+;; (add-hook 'window-configuration-change-hook #'redraw-display)
+;; (remove-to-list 'window-size-change-functions #'my-window-size-hook)
 
 ;; Needs to be done twice for some reason
 ;; (dotimes (i 2)
