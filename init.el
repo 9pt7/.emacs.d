@@ -1,3 +1,4 @@
+
 ;;; .emacs -- My emacs config file
 ;;; Commentary:
 ;;; Code:
@@ -31,6 +32,10 @@
   (dolist (package package-list)
     (unless (package-installed-p package)
       (package-install package))))
+
+(set-default-font "Droid Sans Mono 11")
+(require 'alect-themes)
+(alect-create-theme dark)
 
 (require 'exec-path-from-shell)
 (when (memq window-system '(mac ns))
@@ -272,7 +277,7 @@ otherwise it is enabled."
 (global-set-key (kbd "\C-cf") #'recentf-open-files)
 (global-set-key (kbd "\C-cg") #'magit-status)
 (global-set-key (kbd "\C-cb") #'grep-global)
-(global-set-key (kbd "\C-cp") #'grep)
+(global-set-key (kbd "\C-cq") #'grep)
 (global-set-key (kbd "\C-cv") #'my-revert-buffer)
 
 
@@ -451,6 +456,10 @@ list."
 (global-set-key (kbd "\C-c;") 'my-doxygen-variable)
 
 
+(require 'asm-mode)
+(setq asm-comment-char ?\@)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SQL
 (require 'sql)
@@ -504,8 +513,8 @@ list."
             (flycheck-select-checker (case system-type
                                        ('darwin 'c/c++-clang)
                                        (t 'c/c++-gcc)))
-            (setq-local flycheck-clang-language-standard "c++11")
-            (setq-local flycheck-gcc-language-standard "c++11")))
+            (setq-local flycheck-clang-language-standard "c++14")
+            (setq-local flycheck-gcc-language-standard "c++14")))
 
 (add-hook 'c-mode-hook
           (defun my-c-flycheck-hook()
@@ -1058,8 +1067,8 @@ The app is chosen from your OS's preference."
 
 (define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package)
 
-
 (require 'helm)
+(global-set-key (kbd "C-x C-w") #'write-file)
 (global-set-key (kbd "C-x C-f") #'helm-find-files)
 (global-set-key (kbd "C-c i") #'helm-mini)
 (global-set-key (kbd "M-x") #'helm-M-x)
@@ -1071,8 +1080,8 @@ The app is chosen from your OS's preference."
       helm-mode-handle-completion-in-region nil)
 (helm-mode 1)
 
-(require 'ido)
-(ido-mode 'buffers)
+(require 'projectile)
+(projectile-global-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
@@ -1115,6 +1124,8 @@ The app is chosen from your OS's preference."
                                        (pike-mode . autodoc)
                                        (c-mode . gtkdoc)
                                        (c++-mode . gtkdoc)))
+               (comment-start . "/* ")
+               (comment-end . " */")
                (c-basic-offset . 4)))
 
 (setf c-default-style "my-c-style")
@@ -1177,6 +1188,10 @@ The app is chosen from your OS's preference."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(TeX-command-extra-options "-shell-escape")
+ '(custom-safe-themes
+   (quote
+    ("04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "a0feb1322de9e26a4d209d1cfa236deaf64662bb604fa513cca6a057ddf0ef64" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5dc0ae2d193460de979a463b907b4b2c6d2c9c4657b2e9e66b8898d2592e3de5" "790e74b900c074ac8f64fa0b610ad05bcfece9be44e8f5340d2d94c1e47538de" "a800120841da457aa2f86b98fb9fd8df8ba682cebde033d7dbf8077c1b7d677a" "32e3693cd7610599c59997fee36a68e7dd34f21db312a13ff8c7e738675b6dfc" "3fd0fda6c3842e59f3a307d01f105cce74e1981c6670bb17588557b4cebfe1a7" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "b747fb36e99bc7f497248eafd6e32b45613ee086da74d1d92a8da59d37b9a829" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" default)))
+ '(ede-project-directories (quote ("/home/prt/workspace/tooling")))
  '(flyspell-issue-welcome-flag nil)
  '(flyspell-persistent-highlight t)
  '(initial-buffer-choice t))
