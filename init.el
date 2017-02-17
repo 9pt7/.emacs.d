@@ -510,15 +510,15 @@ list."
 (add-hook 'c++-mode-hook
           (defun my-c++-flycheck-hook ()
             ;; Use clang checker on OS-X
-            (flycheck-select-checker (case system-type
-                                       ('darwin 'c/c++-clang)
-                                       (t 'c/c++-gcc)))
+            ;; (flycheck-select-checker (case system-type
+            ;;                            ('darwin 'c/c++-clang)
+            ;;                            (t 'c/c++-gcc)))
             (setq-local flycheck-clang-language-standard "c++14")
             (setq-local flycheck-gcc-language-standard "c++14")))
 
 (add-hook 'c-mode-hook
           (defun my-c-flycheck-hook()
-            (flycheck-select-checker 'c/c++-gcc)
+            ;; (flycheck-select-checker 'c/c++-gcc)
             (setq-local flycheck-clang-language-standard "gnu11")
             (setq-local flycheck-gcc-language-standard "gnu11")))
 
@@ -529,6 +529,30 @@ list."
 (add-hook 'c-mode-hook
           (defun my-c-company-hook ()
             (setq-local company-clang-arguments '("-std=gnu11"))))
+
+(require 'irony)
+(require 'flycheck-irony)
+(require 'company-irony)
+
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'objc-mode-hook 'irony-mode)
+
+;; replace the `completion-at-point' and `complete-symbol' bindings in
+;; irony-mode's buffers by irony-mode's function
+(defun my-irony-mode-hook ()
+  (define-key irony-mode-map [remap completion-at-point]
+    'irony-completion-at-point-async)
+  (define-key irony-mode-map [remap complete-symbol]
+    'irony-completion-at-point-async))
+(add-hook 'irony-mode-hook 'my-irony-mode-hook)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+(eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-irony))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
