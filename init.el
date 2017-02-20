@@ -41,6 +41,7 @@
   (setenv "LANG" "en_CA.UTF-8")
   (exec-path-from-shell-initialize))
 
+(global-set-key (kbd "s-s") #'dabbrev-expand)
 
 ;; Unbind suspend when in a separate window
 (when (or (eq window-system 'x)
@@ -495,28 +496,34 @@ list."
 
 (require 'cc-mode)
 
-(add-hook 'c++-mode-hook
-          (defun my-c++-flycheck-hook ()
-            ;; Use clang checker on OS-X
-            (flycheck-select-checker (case system-type
-                                       ('darwin 'c/c++-clang)
-                                       (t 'c/c++-gcc)))
-            (setq-local flycheck-clang-language-standard "c++11")
-            (setq-local flycheck-gcc-language-standard "c++11")))
+;; (add-hook 'c++-mode-hook
+;;           (defun my-c++-flycheck-hook ()
+;;             ;; Use clang checker on OS-X
+;;             (setq flycheck-clang-language-standard "c++14"
+;;                   flycheck-gcc-language-standard "c++14")
+;;             (flycheck-select-checker (case system-type
+;;                                        ('darwin 'c/c++-clang)
+;;                                        (t 'c/c++-gcc)))))
 
-(add-hook 'c-mode-hook
-          (defun my-c-flycheck-hook()
-            (flycheck-select-checker 'c/c++-gcc)
-            (setq-local flycheck-clang-language-standard "gnu11")
-            (setq-local flycheck-gcc-language-standard "gnu11")))
+;; (add-hook 'c-mode-hook
+;;           (defun my-c-flycheck-hook()
+;;             (setq flycheck-clang-language-standard "gnu11"
+;;                   flycheck-gcc-language-standard "gnu11")
+;;             (flycheck-select-checker (case system-type
+;;                                        ('darwin 'c/c++-clang)
+;;                                        (t 'c/c++-gcc)))))
 
 (require 'company-clang)
 (add-hook 'c++-mode-hook
           (defun my-c++-company-hook ()
-            (setq-local company-clang-arguments '("-std=c++11"))))
+            (setq-local company-clang-arguments '("-std=c++11")
+            (setq-local flycheck-clang-language-standard "c++14")
+            (setq-local flycheck-gcc-language-standard "c++14"))))
 (add-hook 'c-mode-hook
           (defun my-c-company-hook ()
-            (setq-local company-clang-arguments '("-std=gnu11"))))
+            (setq-local company-clang-arguments '("-std=gnu11"))
+            (setq-local flycheck-clang-language-standard "c++14")
+            (setq-local flycheck-gcc-language-standard "c++14")))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1061,6 +1068,31 @@ The app is chosen from your OS's preference."
 
 (require 'ido)
 (ido-mode 'buffers)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Irony
+(require 'irony)
+(require 'flycheck-irony)
+(require 'company-irony)
+
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'objc-mode-hook 'irony-mode)
+
+;; replace the `completion-at-point' and `complete-symbol' bindings in
+;; irony-mode's buffers by irony-mode's function
+(defun my-irony-mode-hook ()
+  (define-key irony-mode-map [remap completion-at-point]
+    'irony-completion-at-point-async)
+  (define-key irony-mode-map [remap complete-symbol]
+    'irony-completion-at-point-async))
+(add-hook 'irony-mode-hook #'my-irony-mode-hook)
+(add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options)
+
+(eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+(eval-after-load 'company
+  '(add-to-list 'company-backends #'company-irony))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
