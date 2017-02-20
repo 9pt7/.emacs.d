@@ -19,3 +19,4 @@ image-dired
 irony
 projectile-bookmarks.eld
 projectile.cache
+flycheck_init.el
