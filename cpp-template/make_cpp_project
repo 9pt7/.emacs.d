@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+template_dir=$(pwd -P)/$(dirname "$BASH_SOURCE")
+
+mkdir $1
+cd $1
+mkdir build
+mkdir test
+mkdir inc
+git init
+echo 'build/' >> .gitignore
+git submodule add https://github.com/google/googletest
+sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
+cp "$template_dir/main.cc" .
+cp "$template_dir/test.cc" test/
+gtags
+touch README
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
+make
