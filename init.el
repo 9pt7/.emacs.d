@@ -127,6 +127,7 @@
 
 (require 'gdb-mi)
 (setf gdb-show-main t)
+(setq gdb-many-windows t)
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
