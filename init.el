@@ -53,6 +53,26 @@
           (eq window-system 'ns))
   (global-unset-key (kbd "C-z")))
 
+;; Restore marker location after jumping to a register
+(defun save-all-markers-advice (orig-fun &rest args)
+  (let ((markers (save-current-buffer
+                   (map 'list (lambda (buffer)
+                                (set-buffer buffer)
+                                (point-marker))
+                        (buffer-list))))
+        (ret (apply orig-fun args)))
+    (save-current-buffer
+      (mapc (lambda (marker)
+              (condition-case nil
+                  (progn
+                    (set-buffer (marker-buffer marker))
+                    (goto-char marker)
+                    (recenter))
+                (error nil)))
+            markers))
+    ret))
+(advice-add 'jump-to-register :around #'save-all-markers-advice)
+
 ;; Display time on modeline
 (require 'time)
 (setq display-time-default-load-average nil
