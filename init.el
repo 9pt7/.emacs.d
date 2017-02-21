@@ -55,21 +55,16 @@
 
 ;; Restore marker location after jumping to a register
 (defun save-all-markers-advice (orig-fun &rest args)
-  (let ((markers (save-current-buffer
-                   (map 'list (lambda (buffer)
-                                (set-buffer buffer)
-                                (point-marker))
-                        (buffer-list))))
+  (let ((points (save-current-buffer
+                  (map 'list (lambda (buffer)
+                               (set-buffer buffer)
+                               (cons buffer (point)))
+                       (buffer-list))))
         (ret (apply orig-fun args)))
-    (save-current-buffer
-      (mapc (lambda (marker)
-              (condition-case nil
-                  (progn
-                    (set-buffer (marker-buffer marker))
-                    (goto-char marker)
-                    (recenter))
-                (error nil)))
-            markers))
+    (mapc (lambda (window)
+            (let ((buffer-point (cdr (assoc (window-buffer window) points))))
+              (when buffer-point (set-window-point window buffer-point))))
+          (window-list))
     ret))
 (advice-add 'jump-to-register :around #'save-all-markers-advice)
 
