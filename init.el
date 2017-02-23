@@ -23,7 +23,6 @@
                           'flycheck
                           'rw-hunspell
                           'auctex
-                          'openwith
                           'diredful
                           'helm
                           'exec-path-from-shell
@@ -78,15 +77,10 @@
 (require 'man)
 (setq Man-notify-method 'pushy)
 
-(require 'openwith)
-(openwith-mode t)
-(let ((open-program (case system-type
-                      ('windows-nt "open")
-                      ('darwin "open")
-                      ('gnu/linux "xdg-open")
-                      (t (error "Unknown system type: %s" system-type))))
-      (extensions '("\\.pdf\\'" "\\.mp3\\'" "\\.flac\\'" "\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'")))
-  (setq openwith-associations (mapcar (lambda (ext) (list ext open-program '(file))) extensions)))
+(require 'pdf-tools)
+(require 'pdf-view)
+(add-to-list 'auto-mode-alist '("\\.\\(?:pdf\\|PDF\\)\\'" . pdf-view-mode))
+(add-hook #'pdf-view-mode-hook #'pdf-tools-enable-minor-modes)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; General
