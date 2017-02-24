@@ -2,7 +2,7 @@
 
 set -e
 
-template_dir=$(pwd -P)/$(dirname "$BASH_SOURCE")
+template_dir=$(dirname "$BASH_SOURCE")
 
 mkdir $1
 cd $1
