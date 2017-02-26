@@ -9,6 +9,7 @@ cd $1
 mkdir build
 mkdir test
 mkdir inc
+mkdir doc
 git init
 echo 'build/' >> .gitignore
 git submodule add https://github.com/google/googletest
@@ -17,6 +18,13 @@ cp "$template_dir/main.cc" .
 cp "$template_dir/test.cc" test/
 gtags
 touch README
+doxygen -g - | \
+    sed -e "s/\(PROJECT_NAME *=\).*/\1 \"$1\"/g" \
+        -e "s/\(OUTPUT_DIRECTORY *=\).*/\1 doc/g" \
+        -e "s/\(INPUT *=\).*/\1 . .\/inc .\/test/g" \
+        -e "s/\(QT_AUTOBRIEF *=\).*/\1 YES/g" \
+        > Doxyfile
+doxygen
 cd build
 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
 make
