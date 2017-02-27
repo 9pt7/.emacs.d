@@ -23,6 +23,7 @@ doxygen -g - | \
         -e "s/\(OUTPUT_DIRECTORY *=\).*/\1 doc/g" \
         -e "s/\(INPUT *=\).*/\1 . .\/inc .\/test/g" \
         -e "s/\(QT_AUTOBRIEF *=\).*/\1 YES/g" \
+        -e "s/\(JAVADOC_AUTOBRIEF *=\).*/\1 YES/g" \
         > Doxyfile
 doxygen
 cd build
