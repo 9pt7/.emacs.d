@@ -35,6 +35,9 @@
 (set-default-font "Droid Sans Mono 11")
 (require 'alect-themes)
 (alect-create-theme dark)
+(custom-theme-set-faces
+ 'alect-dark
+ '(flyspell-incorrect  ((t (:underline (:color "red" :style wave))))))
 
 (require 'exec-path-from-shell)
 (when (memq window-system '(mac ns))
