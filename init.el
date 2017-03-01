@@ -32,6 +32,8 @@
     (unless (package-installed-p package)
       (package-install package))))
 
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
+
 (set-default-font "Droid Sans Mono 11")
 (require 'alect-themes)
 (alect-create-theme dark)
@@ -1187,12 +1189,13 @@ The app is chosen from your OS's preference."
                (c-doc-comment-style . ((java-mode . javadoc)
                                        (pike-mode . autodoc)
                                        (c-mode . gtkdoc)
-                                       (c++-mode . gtkdoc)))
-               (comment-start . "/* ")
-               (comment-end . " */")
+                                       (c++-mode . nil)))
                (c-basic-offset . 4)))
 
 (setf c-default-style "my-c-style")
+
+(require 'c++-doxygen-mode)
+(add-hook 'c++-mode-hook #'c++-doxygen-mode)
 
 (c-toggle-auto-newline 1)
 (c-toggle-electric-state 1)
