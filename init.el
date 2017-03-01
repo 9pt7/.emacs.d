@@ -32,7 +32,8 @@
     (unless (package-installed-p package)
       (package-install package))))
 
-(set-default-font "Droid Sans Mono 11")
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
+
 (require 'alect-themes)
 (alect-create-theme dark)
 (custom-theme-set-faces
@@ -55,8 +56,9 @@
           (eq window-system 'ns))
   (global-unset-key (kbd "C-z")))
 
-;; Restore marker location after jumping to a register
 (defun save-all-markers-advice (orig-fun &rest args)
+  "Restore marker location after jumping to a register.
+Advise around ORIG-FUN called with ARGS."
   (let ((points (save-current-buffer
                   (map 'list (lambda (buffer)
                                (set-buffer buffer)
@@ -152,15 +154,6 @@
                                          (expand-file-name (concat user-emacs-directory
                                                                    "backups")))))
 
-(defun my-increment-number-at-point (amount)
-  (interactive "p")
-  (save-excursion
-    (skip-chars-backward "0123456789")
-    (unless (looking-at "[0123456789]+")
-      (error "No number at point"))
-    (replace-match (number-to-string (+ amount (string-to-number (match-string 0)))))))
-(global-set-key (kbd "\C-c +") #'my-increment-number-at-point)
-
 ;; Swap keys for regex and regular isearch/replace
 (global-set-key (kbd "\C-s") #'isearch-forward-regexp)
 (global-set-key (kbd "\C-r") #'isearch-backward-regexp)
@@ -182,7 +175,7 @@ otherwise it is enabled."
 
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
 
-(require 'calc)
+(require 'calc-units)
 (setf math-additional-units
       '((GiB "1024 * MiB" "Giga Byte")
         (MiB "1024 * KiB" "Mega Byte")
@@ -192,37 +185,6 @@ otherwise it is enabled."
         (Mib "1024 * Kib" "Mega Bit")
         (Kib "1024 * b" "Kilo Bit")
         (b "B / 8" "Bit")))
-
-(defun my-fit-text-to-window (max-size)
-  ;; After saving current window configuration, split frame horizontally and
-  ;; decrease text size until the number of columns in the window is greater
-  ;; than 80.
-  (let ((frameset (frameset-save (list (selected-frame)))))
-    (delete-other-windows)
-    (split-window-horizontally)
-    (cl-labels
-        ((fix-text-size (start-size)
-                        (set-face-attribute 'default nil :height start-size)
-                        (if (< (window-body-width) 80)
-                            (fix-text-size (- start-size 5))
-                          start-size)))
-      (let ((text-size (fix-text-size max-size)))
-        (frameset-restore frameset)
-        (set-face-attribute 'default nil :height text-size)
-        text-size))))
-
-
-(defun toggle-fullscreen ()
-  "Toggle full screen on X11"
-  (interactive)
-  (when (eq window-system 'x)
-    (set-frame-parameter
-     nil 'fullscreen
-     (when (not (frame-parameter nil 'fullscreen)) 'fullboth))
-    (when (frame-parameter nil 'fullscreen)
-      (my-fit-text-to-window 130))))
-
-(global-set-key [f11] 'toggle-fullscreen)
 
 (require 'uniquify)
 (setf uniquify-buffer-name-style 'post-forward-angle-brackets)
@@ -402,73 +364,6 @@ otherwise it is enabled."
 (setf ansi-color-map (ansi-color-make-color-map))
 
 (pending-delete-mode 1)
-
-(defun my-param-format (str)
-  "Create @param statements for the parameters in `str'. It is
-assumed that `str' is contained within the function argument
-list."
-  (let ((param-regexp
-         "\\(\\_<\\(?:\\(?:\\s_\\)\\|\\(?:\\sw\\)\\)+\\_>\\)\\s-*\\(?:\\[.*\\]\\s-*\\)?\\(,\\|$\\)"))
-    (when (string-match param-regexp str)
-      (concat " * @param[in] " (match-string 1 str) "\n"
-              (my-param-format (substring str (match-end 0)))))))
-
-(defun my-function-format (str)
-  (when (string-match "\\(.*\\)\\(\\_<.*\\)(\\(.*\\))" str)
-    (let ((qualifiers (match-string 1 str))
-          (name (match-string 2 str))
-          (param-list (match-string 3 str)))
-      (concat (my-param-format param-list)
-              (when (not (string-match "\\_<void\\_>" qualifiers))
-                " * @return\n")))))
-
-(defun my-doc-align (str)
-  (with-temp-buffer
-    (insert str)
-    (align-regexp (point-min) (point-max) "\\* @param\\[.*?\\]\\(\\s-*\\)\\_<.*?\\_>" 1 1)
-    (align-regexp (point-min) (point-max) "\\(?:\\(?:\\* @param\\[.*?\\]\\s-*\\_<.*?\\_>\\)\\|\\(?:* @return\\)\\)\\(\\ *\\)" 1 2)
-    (delete-trailing-whitespace (point-min) (point-max))
-    (buffer-string)))
-
-(define-skeleton my-doxygen-function
-  "Insert a doxygen comment for a function."
-  nil
-  "/**" \n
-  "* " >
-  (skeleton-read "Description: ") & \n & "*" & \n | -2
-  >
-  '(setf v1 (point))
-  ("Direction: " "* @param[" str "]" " "
-   (skeleton-read "Parameter: ") " "
-   (skeleton-read "Description: ")
-   \n
-   '(align-regexp v1 (point) "\\* @param\\[.*?\\]\\(\\s-*\\)\\_<" 1 1)
-   '(align-regexp v1 (point) "\\* @param\\[.*?\\]\\s-*\\_<.*?\\_>\\( *\\)" 1 2))
-  "* @return " >
-  (skeleton-read "Return: ") & \n | -10
-  resume:
-  "*/" >)
-
-(define-skeleton my-doxygen-function-sans-params
-  "Insert a doxygen comment for a function."
-  nil
-  "/**" \n
-  "* " > - \n
-  "*" \n
-  "* @return " >
-  (skeleton-read "Return: ") & \n | -10
-  resume:
-  "*/" >)
-
-(defun my-doxygen-variable ()
-  (interactive)
-  (let ((comment-start "/**< ")
-        (comment-end " */"))
-    (comment-dwim nil)))
-
-(global-set-key (kbd "\C-c M-;") 'my-doxygen-function)
-(global-set-key (kbd "\C-c;") 'my-doxygen-variable)
-
 
 (require 'asm-mode)
 (setq asm-comment-char ?\@)
@@ -1192,16 +1087,13 @@ The app is chosen from your OS's preference."
                (c-doc-comment-style . ((java-mode . javadoc)
                                        (pike-mode . autodoc)
                                        (c-mode . gtkdoc)
-                                       (c++-mode . javadoc)))
-               (c-comment-prefix-regexp . ((pike-mode . "//+!?\\|\\**")
-                                           (awk-mode . "#+")
-                                           (c++-mode . "//+!?\\|\\**")
-                                           (other . "//+\\|\\**")))
-               (comment-start . "/* ")
-               (comment-end . " */")
+                                       (c++-mode . nil)))
                (c-basic-offset . 4)))
 
 (setf c-default-style "my-c-style")
+
+(require 'c++-doxygen-mode)
+(add-hook 'c++-mode-hook #'c++-doxygen-mode)
 
 (c-toggle-auto-newline 1)
 (c-toggle-electric-state 1)
@@ -1267,7 +1159,10 @@ The app is chosen from your OS's preference."
  '(ede-project-directories (quote ("/home/prt/workspace/tooling")))
  '(flyspell-issue-welcome-flag nil)
  '(flyspell-persistent-highlight t)
- '(initial-buffer-choice t))
+ '(initial-buffer-choice t)
+ '(package-selected-packages
+   (quote
+    (cmake-mode slime-company rw-hunspell pdf-tools openwith monokai-theme magit llvm-mode helm-projectile flycheck-irony exec-path-from-shell diredful company-irony company-anaconda bash-completion auctex alect-themes))))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
