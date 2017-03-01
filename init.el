@@ -582,8 +582,9 @@ c++-mode-map
 (defun my-c-mode-hook ()
   "My C mode hook."
   (eldoc-mode -1)
-  (define-key (current-local-map) (kbd "M-.") #'semantic-ia-fast-jump)
-  (define-key (current-local-map) (kbd "C-M-.") #'semantic-symref))
+  ;; (define-key (current-local-map) (kbd "M-.") #'semantic-ia-fast-jump)
+  ;; (define-key (current-local-map) (kbd "C-M-.") #'semantic-symref)
+  )
 (add-hook 'c-mode-common-hook #'my-c-mode-hook)
 
 (defun my-check-header-guards ()
@@ -680,6 +681,7 @@ c++-mode-map
 (require 'flyspell)
 
 (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+
 
 (add-hook 'text-mode-hook #'flyspell-mode)
 (remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
@@ -1190,7 +1192,11 @@ The app is chosen from your OS's preference."
                (c-doc-comment-style . ((java-mode . javadoc)
                                        (pike-mode . autodoc)
                                        (c-mode . gtkdoc)
-                                       (c++-mode . gtkdoc)))
+                                       (c++-mode . javadoc)))
+               (c-comment-prefix-regexp . ((pike-mode . "//+!?\\|\\**")
+                                           (awk-mode . "#+")
+                                           (c++-mode . "//+!?\\|\\**")
+                                           (other . "//+\\|\\**")))
                (comment-start . "/* ")
                (comment-end . " */")
                (c-basic-offset . 4)))
@@ -1266,11 +1272,12 @@ The app is chosen from your OS's preference."
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 
+
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
+ '(flyspell-incorrect ((t (:underline (:color "red" :style wave))))))
