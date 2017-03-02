@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+template_dir=~/.emacs.d/cpp-lib-template
+
+cp -rT $template_dir $1
+cd $1
+sed -e "s/__LIB_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
+mkdir include/$1
+touch include/$1/$1.hpp
+touch src/$1.cc
+touch test/$1test.cc

@@ -2,19 +2,28 @@
 
 set -e
 
-template_dir=~/.emacs.d/cpp-template
+template_dir=~/.emacs.d/cpp-project-template
+server=alpha
 
-mkdir $1
+cp -rT $template_dir $1
 cd $1
-cp -r $template_dir/* .
 git init
-git submodule add https://github.com/google/googletest
+
 sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
 gtags
+
+ssh $server <<EOF
+ git init --bare $1.git
+EOF
+
+git submodule add https://github.com/google/googletest
+
+git remote add origin $server:$1.git
 
 doxygen_set() {
     echo "s~\($1 *=\).*~\1 $2~g"
 }
+
 doxygen -g - | \
     sed -e "$(doxygen_set PROJECT_NAME \"$1\")" \
         -e "$(doxygen_set OUTPUT_DIRECTORY doc)" \
@@ -26,6 +35,11 @@ doxygen -g - | \
         -e "$(doxygen_set BUILTIN_STL_SUPPORT YES)" \
         > Doxyfile
 doxygen
+
+git add -A
+git commit -m "Initial commit"
+git push --set-upstream origin master
+
 cd build
 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
 make

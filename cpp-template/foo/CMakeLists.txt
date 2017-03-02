@@ -1,6 +1,0 @@
-file(GLOB SRC_FILES src/*.cc)
-file(GLOB TEST_FILES test/*.cc)
-include_directories(inc)
-add_library(foo ${SRC_FILES})
-add_executable(footest ${SRC_FILES} ${TEST_FILES})
-target_link_libraries(footest gtest gmock gmock_main)
