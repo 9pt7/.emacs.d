@@ -1,0 +1,6 @@
+file(GLOB SRC_FILES src/*.cc)
+file(GLOB TEST_FILES test/*.cc)
+include_directories(include)
+add_library(__LIB_NAME__ ${SRC_FILES})
+add_executable(__LIB_NAME__test ${SRC_FILES} ${TEST_FILES})
+target_link_libraries(__LIB_NAME__test gtest gmock gmock_main)
