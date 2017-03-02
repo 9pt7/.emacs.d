@@ -199,24 +199,9 @@ otherwise it is enabled."
 (recentf-mode t)
 (setf recentf-max-saved-items 1000)
 
-(require 'compile)
-
-(defun my-compile ()
-  "Call `compile' interactively from a chosen directory."
-  (interactive)
-  (let ((default-directory
-          (read-directory-name
-           "Compilation directory: "
-           ;; Use current compilation directory if the default directory is a
-           ;; subdirectory
-           (if (and compilation-directory
-                    (locate-dominating-file default-directory
-                                            (lambda (dir)
-                                              (file-equal-p dir
-                                                            compilation-directory))))
-               compilation-directory
-             default-directory))))
-    (call-interactively #'compile)))
+(require 'my-compile)
+(global-set-key (kbd "\C-cr") #'recompile)
+(global-set-key (kbd "\C-cx") #'my-compile)
 
 (require 'grep)
 (let ((ack-cmd (cond ((executable-find "ack-grep") "ack-grep")
@@ -246,8 +231,6 @@ otherwise it is enabled."
   (revert-buffer nil t))
 
 (global-set-key (kbd "\C-cs") #'shell)
-(global-set-key (kbd "\C-cr") #'recompile)
-(global-set-key (kbd "\C-cx") #'my-compile)
 (global-set-key (kbd "\C-cd") #'gdb)
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "\C-cf") #'recentf-open-files)
