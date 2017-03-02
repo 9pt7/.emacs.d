@@ -1,1 +1,1 @@
-emacsclient -n -eval "(man \"$1\")" > /dev/null
+emacsclient -n -eval "(man \"$@\")" > /dev/null
