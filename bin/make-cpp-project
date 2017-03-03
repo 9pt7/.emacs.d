@@ -5,7 +5,12 @@ set -e
 template_dir=~/.emacs.d/cpp-project-template
 server=alpha
 
-cp -rT $template_dir $1
+if [ -d "$1" ]; then
+    >2& echo "Directory already exists."
+    exit 1;
+fi
+
+cp -nrT $template_dir $1
 cd $1
 git init
 
