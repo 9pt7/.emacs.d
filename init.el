@@ -353,6 +353,26 @@ otherwise it is enabled."
 
 (require 'cc-mode)
 
+(defun transform-to-mock-methods ()
+  "Transform method declarations in active region to mocks."
+  (interactive)
+  (save-restriction
+    (narrow-to-region (point) (mark))
+    (goto-char (point-min))
+    (while (search-forward-regexp "virtual\s+\\(\\(?:\\sw\\|\\s_\\)+\\)\s+\\(\\(?:\\sw\\|\\s_\\)+\\)\\(([^\n]*)\\)\s*\\(const\\)?\\(?:\s*=\s*0\\)?;$" nil t)
+      (replace-match
+       (concat (if (match-string 4)
+                   "MOCK_CONST_METHOD"
+                 "MOCK_METHOD")
+               "("
+               (match-string 2)
+               ", "
+               (match-string 1)
+               (match-string 3)
+               ");")
+       nil
+       t))))
+
 (add-hook 'c++-mode-hook
           (defun my-c++-flycheck-hook ()
             ;; Use clang checker on OS-X
