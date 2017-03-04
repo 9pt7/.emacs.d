@@ -109,7 +109,6 @@ Advise around ORIG-FUN called with ARGS."
 
 (require 'autoinsert)
 (auto-insert-mode 1)
-
 (setq-default require-final-newline t)
 (setq-default fill-column 79)
 (menu-bar-enable-clipboard)
@@ -117,7 +116,7 @@ Advise around ORIG-FUN called with ARGS."
 (setf kill-whole-line t)
 (show-paren-mode 1)
 (electric-pair-mode 1)
-(add-to-list 'revert-without-query ".+\\.pdf$")
+(add-to-list 'revert-without-query ".+\\.\\(?:pdf\\|PDF\\)$")
 (setf sentence-end-double-space t)
 (setf gc-cons-threshold 20000000)       ;Makes GC faster
 (setq-default indent-tabs-mode nil)
@@ -233,51 +232,13 @@ otherwise it is enabled."
 (global-set-key (kbd "\C-cv") #'my-revert-buffer)
 
 
-(require 'org-bibtex)
-(defun my-org-bibtex-transfer ()
-  "Read Bibtex entry when in Bibtex mode, paste when in org mode."
-  (interactive)
-  (cond ((eq major-mode 'bibtex-mode) (org-bibtex-read))
-        ((eq major-mode 'org-mode) (org-bibtex-write))
-        (t (message "Need to be in bibtex-mode or org-mode."))))
-
-(defun my-in-org-table-p ()
-  (cl-labels ((context-in-table-p (context)
-                                  (let ((type (org-element-type context)))
-                                    (or (eq type 'table)
-                                        (eq type 'table-cell)
-                                        (eq type 'table-row)
-                                        (let ((parent (org-element-property :parent context)))
-                                          (when parent
-                                            (context-in-table-p parent)))))))
-    (context-in-table-p (org-element-context))))
-
-(defun my-highlight-org-table-line ()
-  (when (my-in-org-table-p) (hl-line-highlight)))
-
-(defun my-unhighlight-org-table-line ()
-  (when (my-in-org-table-p) (hl-line-unhighlight)))
-
-(require 'hl-line)
-
-(defun my-org-table-highlight ()
-  (setf hl-line-sticky-flag nil)
-  (hl-line-mode 1)
-  (remove-hook 'post-command-hook #'hl-line-highlight t)
-  (remove-hook 'pre-command-hook #'hl-line-unhighlight t)
-  (add-hook 'post-command-hook #'my-highlight-org-table-line nil t)
-  (add-hook 'pre-command-hook #'my-unhighlight-org-table-line nil t)
-  (hl-line-unhighlight)
-  (my-highlight-org-table-line))
-
-(add-hook 'org-mode-hook #'my-org-table-highlight)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell
 (setenv "PAGER" "cat")
 (setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name user-emacs-directory) "bin"))
 
 (defadvice pwd (before kill-pwd activate)
+  "Place working directory in kill ring when calling `pwd'."
   (kill-new default-directory))
 
 (require 'bash-completion)
@@ -423,19 +384,18 @@ otherwise it is enabled."
 (require 'flycheck-irony)
 (require 'company-irony)
 
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
+(add-hook 'c++-mode-hook #'irony-mode)
+(add-hook 'c-mode-hook #'irony-mode)
+(add-hook 'objc-mode-hook #'irony-mode)
 
-;; replace the `completion-at-point' and `complete-symbol' bindings in
-;; irony-mode's buffers by irony-mode's function
 (defun my-irony-mode-hook ()
+  "Use irony mode's `completion-at-point' and `complete-symbol'."
   (define-key irony-mode-map [remap completion-at-point]
     'irony-completion-at-point-async)
   (define-key irony-mode-map [remap complete-symbol]
     'irony-completion-at-point-async))
-(add-hook 'irony-mode-hook 'my-irony-mode-hook)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+(add-hook 'irony-mode-hook #'my-irony-mode-hook)
+(add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options)
 
 (eval-after-load 'flycheck
   '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
@@ -443,20 +403,12 @@ otherwise it is enabled."
 (eval-after-load 'company
   '(add-to-list 'company-backends 'company-irony))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
 
 (current-local-map)
 c++-mode-map
 (require 'cc-mode)
-(defun my-c-mode-hook ()
-  "My C mode hook."
-  (eldoc-mode -1)
-  ;; (define-key (current-local-map) (kbd "M-.") #'semantic-ia-fast-jump)
-  ;; (define-key (current-local-map) (kbd "C-M-.") #'semantic-symref)
-  )
-(add-hook 'c-mode-common-hook #'my-c-mode-hook)
 
 (defun my-check-header-guards ()
   "Make sure header guard defines match filename."
@@ -485,7 +437,7 @@ c++-mode-map
 ;; Fix c++ enum
 
 (defun inside-class-enum-p (pos)
-  "Checks if POS is within the braces of a C++ \"enum class\"."
+  "Check if POS is within the braces of a C++ enum class."
   (save-excursion
     (goto-char pos)
     (beginning-of-line)
@@ -517,9 +469,9 @@ c++-mode-map
   (add-to-list 'c-offsets-alist
                '(statement-cont . align-enum-class-closing-brace)))
 
-(add-hook 'c++-mode-hook 'fix-enum-class)
+(add-hook 'c++-mode-hook #'fix-enum-class)
 
-(defun my/update-gtags ()
+(defun my-update-gtags ()
   "Update gtags for the current buffer file."
   (interactive)
   (cl-flet ((call (prog &rest args)
@@ -532,16 +484,14 @@ c++-mode-map
       (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
       (call "global" "-u"))))
 
-(defun my/update-gtags-on-save-hook ()
-  "Update GTAGS for the current file."
+(defun my-update-gtags-on-save-hook ()
+  "Update gtags for the current file."
   (when (or (equal major-mode 'c++-mode)
             (equal major-mode 'c-mode))
-    (my/update-gtags)))
+    (my-update-gtags)))
 
-(add-hook 'after-save-hook #'my/update-gtags-on-save-hook)
+(add-hook 'after-save-hook #'my-update-gtags-on-save-hook)
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
-
-(require 'cc-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Org
