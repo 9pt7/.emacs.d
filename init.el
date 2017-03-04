@@ -72,13 +72,6 @@ Advise around ORIG-FUN called with ARGS."
     ret))
 (advice-add 'jump-to-register :around #'save-all-markers-advice)
 
-;; Display time on modeline
-(require 'time)
-(setq display-time-default-load-average nil
-      display-time-24hr-format t
-      display-time-day-and-date t)
-(display-time-mode t)
-
 (require 'man)
 (setq Man-notify-method 'pushy)
 
