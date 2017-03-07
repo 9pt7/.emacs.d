@@ -1145,7 +1145,7 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (cmake-mode slime-company rw-hunspell pdf-tools openwith monokai-theme magit llvm-mode helm-projectile flycheck-irony exec-path-from-shell diredful company-irony company-anaconda bash-completion auctex alect-themes))))
+    (diminish cmake-mode slime-company rw-hunspell pdf-tools openwith monokai-theme magit llvm-mode helm-projectile flycheck-irony exec-path-from-shell diredful company-irony company-anaconda bash-completion auctex alect-themes))))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
