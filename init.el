@@ -3,20 +3,23 @@
 ;;; Commentary:
 ;;; Code:
 
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
+
 (require 'cl)
 
 (setq-local lexical-binding t)
 
 (require 'package)
 (setf package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+			 ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
-
-(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
-
+(unless (package-installed-p 'use-package)
+    (package-install 'use-package))
 (require 'use-package)
+
 (use-package bash-completion
   :ensure t)
 (use-package company
@@ -733,213 +736,217 @@ The app is chosen from your OS's preference."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TeX
-(require 'preview)
-(require 'reftex)
-(require 'latex)
-(require 'font-latex)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-(add-hook 'LaTeX-mode-hook 'reftex-mode)
-(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+(use-package tex
+  :ensure auctex
+  :config
+  (require 'preview)
+  (require 'reftex)
+  (require 'latex)
+  (require 'font-latex)
+  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook #'reftex-mode)
+  (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
 
-(setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
-      preview-auto-cache-preamble t
-      preview-auto-reveal nil
-      preview-preserve-counters t
-      preview-image-type 'tiff
-      TeX-PDF-mode t
-      TeX-electric-math '("$" . "$")
-      TeX-electric-sub-and-superscript t
-      reftex-cite-format 'natbib
-      reftex-label-alist '(("IEEEeqnarray" ?e "eq:" "~(\\ref{%s})" nil nil)
-                           ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
-      font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
+  (setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
+        preview-auto-cache-preamble t
+        preview-auto-reveal nil
+        preview-preserve-counters t
+        preview-image-type 'tiff
+        TeX-PDF-mode t
+        TeX-electric-math '("$" . "$")
+        TeX-electric-sub-and-superscript t
+        reftex-cite-format 'natbib
+        reftex-label-alist '(("IEEEeqnarray" ?e "eq:" "~(\\ref{%s})" nil nil)
+                             ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
+        font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
 
-(setq LaTeX-font-list
-      '((?\C-a ""              ""  "\\mathcal{"    "}")
-        (?\C-b "\\textbf{"     "}" "\\bm{"     "}")  ;Use bm
-        (?\C-c "\\textsc{"     "}")
-        (?\C-e "\\emph{"       "}")
-        (?\C-f "\\textsf{"     "}" "\\mathsf{"     "}")
-        (?\C-i "\\textit{"     "}" "\\mathit{"     "}")
-        (?\C-m "\\textmd{"     "}")
-        (?\C-n "\\textnormal{" "}" "\\mathnormal{" "}")
-        (?\C-r "\\textrm{"     "}" "\\mathrm{"     "}")
-        (?\C-s "\\textsl{"     "}" "\\mathbb{"     "}")
-        (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
-        (?\C-u "\\textup{"     "}")
-        (?\C-d "" "" t)))
+  (setq LaTeX-font-list
+        '((?\C-a ""              ""  "\\mathcal{"    "}")
+          (?\C-b "\\textbf{"     "}" "\\bm{"     "}") ;Use bm
+          (?\C-c "\\textsc{"     "}")
+          (?\C-e "\\emph{"       "}")
+          (?\C-f "\\textsf{"     "}" "\\mathsf{"     "}")
+          (?\C-i "\\textit{"     "}" "\\mathit{"     "}")
+          (?\C-m "\\textmd{"     "}")
+          (?\C-n "\\textnormal{" "}" "\\mathnormal{" "}")
+          (?\C-r "\\textrm{"     "}" "\\mathrm{"     "}")
+          (?\C-s "\\textsl{"     "}" "\\mathbb{"     "}")
+          (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
+          (?\C-u "\\textup{"     "}")
+          (?\C-d "" "" t)))
 
-(defun my-env-frame (environment)
-  (let ((LaTeX-default-position nil)
-        (LaTeX-default-format "rCl"))
-    (LaTeX-env-label environment)))
+  (defun my-env-frame (environment)
+    (let ((LaTeX-default-position nil)
+          (LaTeX-default-format "rCl"))
+      (LaTeX-env-label environment)))
 
-(defun my-latex-frame-hook ()
-  (LaTeX-add-environments
-   '("frame" my-env-frame)))
+  (defun my-latex-frame-hook ()
+    (LaTeX-add-environments
+     '("frame" my-env-frame)))
 
-(defun my-env-IEEEeqnarray (environment)
-  (let ((LaTeX-default-position nil)
-        (LaTeX-default-format "rCl"))
-    (LaTeX-env-array environment)))
+  (defun my-env-IEEEeqnarray (environment)
+    (let ((LaTeX-default-position nil)
+          (LaTeX-default-format "rCl"))
+      (LaTeX-env-array environment)))
 
-(defun my-latex-IEEE-hook ()
-  (LaTeX-add-environments
-   '("IEEEeqnarray" my-env-IEEEeqnarray)
-   '("IEEEeqnarray*" my-env-IEEEeqnarray)
-   "matrix"
-   "bmatrix"
-   "Bmatrix"
-   "pmatrix"
-   "Pmatrix"
-   "vmatrix"
-   "Vmatrix"
-   "tikzpicture"
-   "smallmatrix"))
+  (defun my-latex-IEEE-hook ()
+    (LaTeX-add-environments
+     '("IEEEeqnarray" my-env-IEEEeqnarray)
+     '("IEEEeqnarray*" my-env-IEEEeqnarray)
+     "matrix"
+     "bmatrix"
+     "Bmatrix"
+     "pmatrix"
+     "Pmatrix"
+     "vmatrix"
+     "Vmatrix"
+     "tikzpicture"
+     "smallmatrix"))
 
-(add-to-list 'LaTeX-indent-environment-list '("matrix"))
-(add-to-list 'LaTeX-indent-environment-list '("bmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("Bmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("pmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("Pmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("vmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("Vmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("smallmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("matrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("bmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("Bmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("pmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("Pmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("vmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("Vmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("smallmatrix"))
 
-(add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
+  (add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
 
-(require 'texmathp)
-(dolist (math-env '("IEEEeqnarray" "IEEEeqnarray*"))
-  (add-to-list 'LaTeX-indent-environment-list `(,math-env LaTeX-indent-tabular))
-  (add-to-list 'font-latex-math-environments math-env)
-  (add-to-list 'LaTeX-label-alist `(,math-env . LaTeX-equation-label))
-  (add-to-list 'reftex-label-alist `(,math-env ?e "eq:" "~(\\ref{%s})" t nil))
-  (add-to-list 'texmathp-tex-commands `(,math-env env-on)))
-(texmathp-compile)
+  (require 'texmathp)
+  (dolist (math-env '("IEEEeqnarray" "IEEEeqnarray*"))
+    (add-to-list 'LaTeX-indent-environment-list `(,math-env LaTeX-indent-tabular))
+    (add-to-list 'font-latex-math-environments math-env)
+    (add-to-list 'LaTeX-label-alist `(,math-env . LaTeX-equation-label))
+    (add-to-list 'reftex-label-alist `(,math-env ?e "eq:" "~(\\ref{%s})" t nil))
+    (add-to-list 'texmathp-tex-commands `(,math-env env-on)))
+  (texmathp-compile)
 
-(defvar my-latex-class-completion-list
-  '("article"
-    "proc"
-    "minimal"
-    "report"
-    "book"
-    "slides"
-    "memoir"
-    "letter"
-    "beamer"))
+  (defvar my-latex-class-completion-list
+    '("article"
+      "proc"
+      "minimal"
+      "report"
+      "book"
+      "slides"
+      "memoir"
+      "letter"
+      "beamer"))
 
-(defvar my-latex-package-list
-  '(("amsmath" . ("centertags"
-                  "tbtags"
-                  "sumlimits"
-                  "nosumlimits"
-                  "intlimits"
-                  "nointlimits"
-                  "namelimits"
-                  "nonamelimits"
-                  "leqno"
-                  "reqno"
-                  "fleqno"))
-    ("amsfonts" . ())
-    ("amssymb" . ())
-    ("amsthm" . ())
-    ("IEEEtrantools" . ())
-    ("bm" . ())
-    ("natbib" . ("square"
-                 "super"
-                 "sort"
-                 "sort&compress"
-                 "compress"
-                 "comma"
-                 "numbers"))
-    ("tikz" . ())
-    ("natbib" . ("round"
-                 "square"
-                 "curly"
-                 "angle"
-                 "semicolon"
-                 "colon"
-                 "comma"
-                 "authoryear"
-                 "numbers"
-                 "super"
-                 "sort"
-                 "sort&compress"
-                 "compress"
-                 "longnamesfirst"
-                 "sectionbib"
-                 "nonamebreak"
-                 "merge"
-                 "elide"
-                 "mcite"))
-    ("geometry" . ("letterpaper"
-                   "a5paper"
-                   "b5paper"
-                   "executivepaper"
-                   "legalpaper"
-                   "landscape"
-                   "total="
-                   "margin="))
-    ("graphicx" . ())
-    ("hyperref" . ())
-    ("tabularx" . ())
-    ("booktabs" . ())))
+  (defvar my-latex-package-list
+    '(("amsmath" . ("centertags"
+                    "tbtags"
+                    "sumlimits"
+                    "nosumlimits"
+                    "intlimits"
+                    "nointlimits"
+                    "namelimits"
+                    "nonamelimits"
+                    "leqno"
+                    "reqno"
+                    "fleqno"))
+      ("amsfonts" . ())
+      ("amssymb" . ())
+      ("amsthm" . ())
+      ("IEEEtrantools" . ())
+      ("bm" . ())
+      ("natbib" . ("square"
+                   "super"
+                   "sort"
+                   "sort&compress"
+                   "compress"
+                   "comma"
+                   "numbers"))
+      ("tikz" . ())
+      ("natbib" . ("round"
+                   "square"
+                   "curly"
+                   "angle"
+                   "semicolon"
+                   "colon"
+                   "comma"
+                   "authoryear"
+                   "numbers"
+                   "super"
+                   "sort"
+                   "sort&compress"
+                   "compress"
+                   "longnamesfirst"
+                   "sectionbib"
+                   "nonamebreak"
+                   "merge"
+                   "elide"
+                   "mcite"))
+      ("geometry" . ("letterpaper"
+                     "a5paper"
+                     "b5paper"
+                     "executivepaper"
+                     "legalpaper"
+                     "landscape"
+                     "total="
+                     "margin="))
+      ("graphicx" . ())
+      ("hyperref" . ())
+      ("tabularx" . ())
+      ("booktabs" . ())))
 
-(defvar my-latex-option-completion-list
-  '("10pt"
-    "11pt"
-    "12pt"
-    "a4paper"
-    "letterpaper"
-    "a5paper"
-    "b5paper"
-    "executivepaper"
-    "legalpaper"
-    "draft"
-    "twocolumn"
-    "oneside"
-    "twoside"
-    "notitlepage"
-    "titlepage"))
+  (defvar my-latex-option-completion-list
+    '("10pt"
+      "11pt"
+      "12pt"
+      "a4paper"
+      "letterpaper"
+      "a5paper"
+      "b5paper"
+      "executivepaper"
+      "legalpaper"
+      "draft"
+      "twocolumn"
+      "oneside"
+      "twoside"
+      "notitlepage"
+      "titlepage"))
 
-(defvar my-temp)
+  (defvar my-temp)
 
-(setcdr (assoc 'latex-mode auto-insert-alist)
-        '("options, RET: "
-          "\\documentclass["
-          ((completing-read "options: " my-latex-option-completion-list) str & ", " | -2) & -2 & ?\] | -1
-          ?{ (completing-read "class: " my-latex-class-completion-list) "}\n"
-          ((completing-read "package: " (mapcar #'car my-latex-package-list))
-           '(progn
-              (setq my-temp (eval str))
-              nil)
-           "\\usepackage["
-           ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
-           ?{ str "}\n")
-          "\n"
-          "\\title{" (let ((title (read-string "title: ")))
-                       (setq v1 (not (string-empty-p title)))
-                       title) & "}\n" | -7
-                       "\\author{" (when v1
-                                     (read-string "author: " user-full-name)) & "}\n" | -8
-                                     _ "\n\\begin{document}\n\n"
-                                     (if v1
-                                         "\\maketitle\n\n"
-                                       "") _
-                                       -
-                                       "\n\n\\end{document}"))
+  (setcdr (assoc 'latex-mode auto-insert-alist)
+          '("options, RET: "
+            "\\documentclass["
+            ((completing-read "options: " my-latex-option-completion-list) str & ", " | -2) & -2 & ?\] | -1
+            ?{ (completing-read "class: " my-latex-class-completion-list) "}\n"
+            ((completing-read "package: " (mapcar #'car my-latex-package-list))
+             '(progn
+                (setq my-temp (eval str))
+                nil)
+             "\\usepackage["
+             ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
+             ?{ str "}\n")
+            "\n"
+            "\\title{" (let ((title (read-string "title: ")))
+                         (setq v1 (not (string-empty-p title)))
+                         title) & "}\n" | -7
+            "\\author{" (when v1
+                          (read-string "author: " user-full-name)) & "}\n" | -8
+            _ "\n\\begin{document}\n\n"
+            (if v1
+                "\\maketitle\n\n"
+              "") _
+            -
+            "\n\n\\end{document}"))
 
-(define-skeleton my-insert-latex-package
-  "Insert a latex package"
-  (completing-read "package: " (mapcar #'car my-latex-package-list))
-  '(progn
-     (setq my-temp (eval str))
-     nil)
-  "\\usepackage["
-  ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
-  ?{ str "}\n")
+  (define-skeleton my-insert-latex-package
+    "Insert a latex package"
+    (completing-read "package: " (mapcar #'car my-latex-package-list))
+    '(progn
+       (setq my-temp (eval str))
+       nil)
+    "\\usepackage["
+    ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
+    ?{ str "}\n")
 
-(define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package)
+  (define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package))
+
 
 (use-package helm
   :ensure t
