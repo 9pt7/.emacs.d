@@ -3,53 +3,66 @@
 ;;; Commentary:
 ;;; Code:
 
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
+
 (require 'cl)
 
 (setq-local lexical-binding t)
 
 (require 'package)
 (setf package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
+			 ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
-
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
-(let ((package-list (list 'magit
-                          'bash-completion
-                          'company
-                          'slime
-                          'slime-company
-                          'flycheck
-                          'rw-hunspell
-                          'auctex
-                          'diredful
-                          'helm
-                          'exec-path-from-shell
-                          'company-anaconda)))
+(unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+(require 'use-package)
 
-  (dolist (package package-list)
-    (unless (package-installed-p package)
-      (package-install package))))
-
-(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
-
-(require 'alect-themes)
-(alect-create-theme dark)
-(custom-theme-set-faces
- 'alect-dark
- '(flyspell-incorrect  ((t (:underline (:color "red" :style wave))))))
-
-(require 'exec-path-from-shell)
-(when (memq window-system '(mac ns))
+(use-package bash-completion
+  :ensure t)
+(use-package company
+  :ensure t
+  :config
+  (setf company-idle-delay 0.3
+        company-minimum-prefix-length 1
+        company-show-numbers t
+        company-require-match nil)
+  (add-hook 'prog-mode-hook 'company-mode-on))
+(use-package company-anaconda
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook #'company-mode)
+  (add-hook 'python-mode-hook #'anaconda-mode)
+  (add-to-list 'company-backends 'company-anaconda))
+(use-package flycheck
+  :ensure t)
+(use-package rw-hunspell
+  :ensure t)
+(use-package diredful
+  :ensure t)
+(use-package helm
+  :ensure t)
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns))
+  :ensure t
+  :config
   (setq exec-path-from-shell-variables '("PATH"
-                                         "MANPATH"
-                                         "DICTIONARY"))
+					 "MANPATH"
+					 "DICTIONARY"))
   ;; Need LANG for spell check (not initialized in launcher env)
   (setenv "LANG" "en_CA.UTF-8")
   (exec-path-from-shell-initialize))
-
-(global-set-key (kbd "s-s") #'dabbrev-expand)
+(use-package company-anaconda
+  :ensure t)
+(use-package alect-themes
+  :ensure t
+  :config
+  (alect-create-theme dark)
+  (custom-theme-set-faces
+   'alect-dark
+   '(flyspell-incorrect  ((t (:underline (:color "red" :style wave)))))))
 
 ;; Unbind suspend when in a separate window
 (when (or (eq window-system 'x)
@@ -72,23 +85,18 @@ Advise around ORIG-FUN called with ARGS."
     ret))
 (advice-add 'jump-to-register :around #'save-all-markers-advice)
 
-;; Display time on modeline
-(require 'time)
-(setq display-time-default-load-average nil
-      display-time-24hr-format t
-      display-time-day-and-date t)
-(display-time-mode t)
+(use-package man
+  :config
+  (setq Man-notify-method 'pushy))
 
-(require 'man)
-(setq Man-notify-method 'pushy)
+(use-package pdf-tools
+  :ensure t)
 
-(require 'pdf-tools)
-(require 'pdf-view)
-(add-to-list 'auto-mode-alist '("\\.\\(?:pdf\\|PDF\\)\\'" . pdf-view-mode))
-(add-hook #'pdf-view-mode-hook #'pdf-tools-enable-minor-modes)
+(use-package pdf-view
+  :config
+  (add-to-list 'auto-mode-alist '("\\.\\(?:pdf\\|PDF\\)\\'" . pdf-view-mode))
+  (add-hook #'pdf-view-mode-hook #'pdf-tools-enable-minor-modes))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; General
 (cl-flet ((disable (mode) (when (fboundp mode) (funcall mode -1))))
   (disable 'menu-bar-mode)
   (disable 'tool-bar-mode)
@@ -103,19 +111,21 @@ Advise around ORIG-FUN called with ARGS."
       mouse-wheel-progressive-speed nil
       mouse-wheel-follow-mouse t)
 
-(require 'face-remap)
-(setf text-scale-mode-step 1.1)
+(use-package face-remap
+  :config
+  (setf text-scale-mode-step 1.1))
 
 (setf user-full-name "Peter Thompson"
       user-mail-address "peter.thompson92@gmail.com")
 
-(set-face-attribute 'default nil :height 105)
+(set-face-attribute 'default nil :height 110)
 
 (setf ring-bell-function 'ignore)
 (setf set-mark-command-repeat-pop t)
 
-(require 'autoinsert)
-(auto-insert-mode 1)
+(use-package autoinsert
+  :config
+  (auto-insert-mode 1))
 
 (setq-default require-final-newline t)
 (setq-default fill-column 79)
@@ -124,8 +134,8 @@ Advise around ORIG-FUN called with ARGS."
 (setf kill-whole-line t)
 (show-paren-mode 1)
 (electric-pair-mode 1)
-(add-to-list 'revert-without-query ".+\\.pdf$")
-(setf sentence-end-double-space t)
+(add-to-list 'revert-without-query ".+\\.\\(?:pdf\\|PDF\\)$")
+(setf sentence-end-double-space nil)
 (setf gc-cons-threshold 20000000)       ;Makes GC faster
 (setq-default indent-tabs-mode nil)
 (setf comment-auto-fill-only-comments t
@@ -133,15 +143,18 @@ Advise around ORIG-FUN called with ARGS."
 (setq-default indent-tabs-mode nil
               align-default-spacing 2)
 (add-hook 'prog-mode-hook #'turn-on-auto-fill)
-(require 'eldoc)
-(add-hook 'c-mode-hook #'eldoc-mode)
+(use-package eldoc
+  :config
+  (add-hook 'c-mode-hook #'eldoc-mode))
 
-(require 'ediff)
-(setq-default ediff-window-setup-function #'ediff-setup-windows-plain)
+(use-package ediff
+  :config
+  (setq-default ediff-window-setup-function #'ediff-setup-windows-plain))
 
-(require 'gdb-mi)
-(setf gdb-show-main t)
-(setq gdb-many-windows t)
+(use-package gdb-mi
+  :config
+  (setf gdb-show-main t)
+  (setq gdb-many-windows t))
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
@@ -150,9 +163,10 @@ Advise around ORIG-FUN called with ARGS."
                      (select-window (window-at 0 0))
                      (other-window (- ,i 1)))))
 
-(setf backup-directory-alist (list (cons ".*"
-                                         (expand-file-name (concat user-emacs-directory
-                                                                   "backups")))))
+(setf backup-directory-alist
+      (list (cons ".*"
+                  (expand-file-name (concat user-emacs-directory
+                                            "backups")))))
 
 ;; Swap keys for regex and regular isearch/replace
 (global-set-key (kbd "\C-s") #'isearch-forward-regexp)
@@ -175,33 +189,39 @@ otherwise it is enabled."
 
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
 
-(require 'calc-units)
-(setf math-additional-units
-      '((GiB "1024 * MiB" "Giga Byte")
-        (MiB "1024 * KiB" "Mega Byte")
-        (KiB "1024 * B" "Kilo Byte")
-        (B nil "Byte")
-        (Gib "1024 * Mib" "Giga Bit")
-        (Mib "1024 * Kib" "Mega Bit")
-        (Kib "1024 * b" "Kilo Bit")
-        (b "B / 8" "Bit")))
+(use-package calc-units
+  :config
+  (setf math-additional-units
+        '((GiB "1024 * MiB" "Giga Byte")
+          (MiB "1024 * KiB" "Mega Byte")
+          (KiB "1024 * B" "Kilo Byte")
+          (B nil "Byte")
+          (Gib "1024 * Mib" "Giga Bit")
+          (Mib "1024 * Kib" "Mega Bit")
+          (Kib "1024 * b" "Kilo Bit")
+          (b "B / 8" "Bit"))))
 
-(require 'uniquify)
-(setf uniquify-buffer-name-style 'post-forward-angle-brackets)
+(use-package uniquify
+  :config
+  (setf uniquify-buffer-name-style 'post-forward-angle-brackets))
 
-(require 'doc-view)
-(require 'autorevert)
-(setf auto-revert-interval 1)
-(add-hook 'doc-view-mode-hook #'auto-revert-mode)
-(setf doc-view-resolution 300)
+(use-package autorevert
+  :config
+  (setf auto-revert-interval 1))
+(use-package doc-view
+  :config
+  (add-hook 'doc-view-mode-hook #'auto-revert-mode)
+  (setf doc-view-resolution 300))
 
-(require 'recentf)
-(recentf-mode t)
-(setf recentf-max-saved-items 1000)
+(use-package recentf
+  :config
+  (recentf-mode t)
+  (setf recentf-max-saved-items 1000))
 
-(require 'my-compile)
-(global-set-key (kbd "\C-cr") #'recompile)
-(global-set-key (kbd "\C-cx") #'my-compile)
+(use-package my-compile
+  :config
+  (global-set-key (kbd "\C-cr") #'recompile)
+  (global-set-key (kbd "\C-cx") #'my-compile))
 
 (require 'grep)
 (let ((ack-cmd (cond ((executable-find "ack-grep") "ack-grep")
@@ -221,8 +241,10 @@ otherwise it is enabled."
   (interactive)
   (grep-override "global --result grep -xi "))
 
-(require 'magit)
-(defvar magit-last-seen-setup-instructions "1.4.0")
+(use-package magit
+  :ensure t
+  :config
+  (defvar magit-last-seen-setup-instructions "1.4.0"))
 
 (require 'files)
 (defun my-revert-buffer()
@@ -240,164 +262,118 @@ otherwise it is enabled."
 (global-set-key (kbd "\C-cv") #'my-revert-buffer)
 
 
-(require 'org-bibtex)
-(defun my-org-bibtex-transfer ()
-  "Read Bibtex entry when in Bibtex mode, paste when in org mode."
-  (interactive)
-  (cond ((eq major-mode 'bibtex-mode) (org-bibtex-read))
-        ((eq major-mode 'org-mode) (org-bibtex-write))
-        (t (message "Need to be in bibtex-mode or org-mode."))))
-
-(defun my-in-org-table-p ()
-  (cl-labels ((context-in-table-p (context)
-                                  (let ((type (org-element-type context)))
-                                    (or (eq type 'table)
-                                        (eq type 'table-cell)
-                                        (eq type 'table-row)
-                                        (let ((parent (org-element-property :parent context)))
-                                          (when parent
-                                            (context-in-table-p parent)))))))
-    (context-in-table-p (org-element-context))))
-
-(defun my-highlight-org-table-line ()
-  (when (my-in-org-table-p) (hl-line-highlight)))
-
-(defun my-unhighlight-org-table-line ()
-  (when (my-in-org-table-p) (hl-line-unhighlight)))
-
-(require 'hl-line)
-
-(defun my-org-table-highlight ()
-  (setf hl-line-sticky-flag nil)
-  (hl-line-mode 1)
-  (remove-hook 'post-command-hook #'hl-line-highlight t)
-  (remove-hook 'pre-command-hook #'hl-line-unhighlight t)
-  (add-hook 'post-command-hook #'my-highlight-org-table-line nil t)
-  (add-hook 'pre-command-hook #'my-unhighlight-org-table-line nil t)
-  (hl-line-unhighlight)
-  (my-highlight-org-table-line))
-
-(add-hook 'org-mode-hook #'my-org-table-highlight)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Shell
 (setenv "PAGER" "cat")
 (setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name user-emacs-directory) "bin"))
 
 (defadvice pwd (before kill-pwd activate)
+  "Place working directory in kill ring when calling `pwd'."
   (kill-new default-directory))
 
-(require 'bash-completion)
-(bash-completion-setup)
+(use-package bash-completion
+  :ensure t
+  :config
+  (bash-completion-setup))
 
-;; Use bash as shell if it is in the path
-(require 'shell)
-(let ((shell (executable-find "bash")))
-  (when shell
-    (setf explicit-shell-file-name shell)))
+(use-package comint
+  :config
+  (defun my-comint-disable-echoing ()
+    (setq comint-process-echoes t))
+  (setf comint-completion-addsuffix t
+        comint-completion-autolist t
+        comint-input-ignoredups t
+        ;; Do not set to non-nil; breaks clisp
+        comint-process-echoes nil)
+  ;; Makes it slightly less slow
+  (setf comint-move-point-for-output nil
+        comint-scroll-show-maximum-output nil)
+  (setf comint-buffer-maximum-size 10000)
+  (add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
+  (defun close-comint-hook ()
+    "Automatically close the comint buffer."
+    (set-process-sentinel (get-buffer-process (current-buffer))
+                          (lambda (process event)
+                            (when (string= event "finished\n")
+                              (kill-buffer (current-buffer))))))
+  (add-hook 'comint-exec-hook #'close-comint-hook)
+  ;; Don't use yellow or white in comint. Use orange instead
+  (setf ansi-color-names-vector
+        ["black" "red" "DarkGreen" "DarkOrange3" "blue" "magenta" "DarkCyan" "dim gray"])
+  (setf ansi-color-map (ansi-color-make-color-map)))
 
-(defun my-comint-disable-echoing ()
-  (setq comint-process-echoes t))
+(use-package shell
+  :config
+  (let ((shell (executable-find "bash")))
+    (when shell
+      (setf explicit-shell-file-name shell)))
+  (add-hook 'shell-mode-hook #'my-comint-disable-echoing))
 
-(add-hook 'shell-mode-hook #'my-comint-disable-echoing)
+(use-package delsel
+  :config
+  (pending-delete-mode 1))
 
-(require 'company)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Comint
-(require 'comint)
-(setf comint-completion-addsuffix t
-      comint-completion-autolist t
-      comint-input-ignoredups t
-      ;; Do not set to non-nil; breaks clisp
-      comint-process-echoes nil)
+(use-package asm-mode
+  :config
+  (setq asm-comment-char ?\@))
 
-;; Makes it slightly less slow
-(setf comint-move-point-for-output nil
-      comint-scroll-show-maximum-output nil)
+(use-package sql
+  :config
+  (add-hook 'sql-interactive-mode-hook
+            (lambda ()
+              (toggle-truncate-lines t)))
+  (let ((sqlite (cond ((executable-find "sqlite3"))
+                      ((executable-find "sqlite")))))
+    (when sqlite
+      (setq-default sql-sqlite-program sqlite))))
 
-(setf comint-buffer-maximum-size 10000)
-(add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SLIME
-
-(require 'slime)
-(setf inferior-lisp-program "sbcl")
-(slime-setup '(slime-company))
-
-(defun slime-eval-region-dwim ()
-  "Evaluate region if it is active, otherwise evaluate the entire buffer."
-  (interactive)
-  (if (region-active-p)
-      (slime-eval-region (region-beginning) (region-end))
-    (slime-eval-buffer)))
-(define-key slime-mode-map (kbd "C-c C-r")  'slime-eval-region-dwim)
-
-(defun close-comint-hook ()
-  "Automatically close the comint buffer."
-  (set-process-sentinel (get-buffer-process (current-buffer))
-                        (lambda (process event)
-                          (when (string= event "finished\n")
-                            (kill-buffer (current-buffer))))))
-(add-hook 'comint-exec-hook #'close-comint-hook)
-
-;; Don't use yellow or white in comint. Use orange instead
-(setf ansi-color-names-vector
-      ["black" "red" "DarkGreen" "DarkOrange3" "blue" "magenta" "DarkCyan" "dim gray"])
-(setf ansi-color-map (ansi-color-make-color-map))
-
-(pending-delete-mode 1)
-
-(require 'asm-mode)
-(setq asm-comment-char ?\@)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; SQL
-(require 'sql)
-(add-hook 'sql-interactive-mode-hook
-          (lambda ()
-            (toggle-truncate-lines t)))
-
-(let ((sqlite (cond ((executable-find "sqlite3"))
-                    ((executable-find "sqlite")))))
-  (when sqlite
-    (setq-default sql-sqlite-program sqlite)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Lisp
 (eval-after-load 'lisp-mode
   '(define-key lisp-mode-map (kbd "C-c C-c") 'eval-buffer))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Python
-;; (require 'jedi)
-(require 'python)
-(setq-default python-shell-interpreter
-              (cl-flet ((exec-find (program)
-                                   (when (executable-find program) program)))
-                (cond ((exec-find "ipython3"))
-                      ((exec-find "ipython"))
-                      ((exec-find "python3"))
-                      ((exec-find "python")))))
+(use-package python
+  :config
+  (setq-default python-shell-interpreter
+                (cl-flet ((exec-find (program)
+                                     (when (executable-find program) program)))
+                  (cond ((exec-find "ipython3"))
+                        ((exec-find "ipython"))
+                        ((exec-find "python3"))
+                        ((exec-find "python")))))
 
-(when (or (string= python-shell-interpreter "ipython3")
-          (string= python-shell-interpreter "ipython"))
-  (setq-default python-shell-interpreter-args  "--matplotlib --classic"
-                python-shell-completion-setup-code
-                "from IPython.core.completerlib import module_completion"
-                python-shell-completion-string-code
-                "'                                   ;'.join(module_completion('''%s'''))\n"  ;
-                python-shell-completion-string-code
-                "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
+  (when (or (string= python-shell-interpreter "ipython3")
+            (string= python-shell-interpreter "ipython"))
+    (setq-default python-shell-interpreter-args  "--matplotlib --classic"
+                  python-shell-completion-setup-code
+                  "from IPython.core.completerlib import module_completion"
+                  python-shell-completion-string-code
+                  "'                                   ;'.join(module_completion('''%s'''))\n" ;
+                  python-shell-completion-string-code
+                  "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")))
 
-(setq-default comment-inline-offset 2)
-
-;; Flycheck
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 (require 'cc-mode)
+
+(defun transform-to-mock-methods ()
+  "Transform method declarations in active region to mocks."
+  (interactive)
+  (save-restriction
+    (narrow-to-region (point) (mark))
+    (goto-char (point-min))
+    (while (search-forward-regexp "virtual\s+\\(\\(?:\\sw\\|\\s_\\)+\\)\s+\\(\\(?:\\sw\\|\\s_\\)+\\)\\(([^\n]*)\\)\s*\\(const\\)?\\(?:\s*=\s*0\\)?;$" nil t)
+      (replace-match
+       (concat (if (match-string 4)
+                   "MOCK_CONST_METHOD"
+                 "MOCK_METHOD")
+               "("
+               (match-string 2)
+               ", "
+               (match-string 1)
+               (match-string 3)
+               ");")
+       nil
+       t))))
 
 (add-hook 'c++-mode-hook
           (defun my-c++-flycheck-hook ()
@@ -414,56 +390,35 @@ otherwise it is enabled."
             (setq-local flycheck-clang-language-standard "gnu11")
             (setq-local flycheck-gcc-language-standard "gnu11")))
 
-(require 'company-clang)
-(add-hook 'c++-mode-hook
-          (defun my-c++-company-hook ()
-            (setq-local company-clang-arguments '("-std=c++11")
-            (setq-local flycheck-clang-language-standard "c++14")
-            (setq-local flycheck-gcc-language-standard "c++14"))))
-(add-hook 'c-mode-hook
-          (defun my-c-company-hook ()
-            (setq-local company-clang-arguments '("-std=gnu11"))
-            (setq-local flycheck-clang-language-standard "c++14")
-            (setq-local flycheck-gcc-language-standard "c++14")))
-
-(require 'irony)
-(require 'flycheck-irony)
-(require 'company-irony)
-
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
-
-;; replace the `completion-at-point' and `complete-symbol' bindings in
-;; irony-mode's buffers by irony-mode's function
-(defun my-irony-mode-hook ()
-  (define-key irony-mode-map [remap completion-at-point]
-    'irony-completion-at-point-async)
-  (define-key irony-mode-map [remap complete-symbol]
-    'irony-completion-at-point-async))
-(add-hook 'irony-mode-hook 'my-irony-mode-hook)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-
-(eval-after-load 'flycheck
-  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-irony))
-
+(use-package irony
+  :ensure t
+  :config
+  (add-hook 'c++-mode-hook #'irony-mode)
+  (add-hook 'c-mode-hook #'irony-mode)
+  (add-hook 'objc-mode-hook #'irony-mode)
+  (defun my-irony-mode-hook ()
+    "Use irony mode's `completion-at-point' and `complete-symbol'."
+    (define-key irony-mode-map [remap completion-at-point]
+      'irony-completion-at-point-async)
+    (define-key irony-mode-map [remap complete-symbol]
+      'irony-completion-at-point-async))
+  (add-hook 'irony-mode-hook #'my-irony-mode-hook)
+  (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
+(use-package flycheck-irony
+  :ensure t
+  :config
+  (eval-after-load 'flycheck
+    '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
+(use-package company-irony
+  :ensure t
+  :config
+  (eval-after-load 'company
+    '(add-to-list 'company-backends 'company-irony)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
 
-(current-local-map)
-c++-mode-map
 (require 'cc-mode)
-(defun my-c-mode-hook ()
-  "My C mode hook."
-  (eldoc-mode -1)
-  ;; (define-key (current-local-map) (kbd "M-.") #'semantic-ia-fast-jump)
-  ;; (define-key (current-local-map) (kbd "C-M-.") #'semantic-symref)
-  )
-(add-hook 'c-mode-common-hook #'my-c-mode-hook)
 
 (defun my-check-header-guards ()
   "Make sure header guard defines match filename."
@@ -492,7 +447,7 @@ c++-mode-map
 ;; Fix c++ enum
 
 (defun inside-class-enum-p (pos)
-  "Checks if POS is within the braces of a C++ \"enum class\"."
+  "Check if POS is within the braces of a C++ enum class."
   (save-excursion
     (goto-char pos)
     (beginning-of-line)
@@ -524,9 +479,9 @@ c++-mode-map
   (add-to-list 'c-offsets-alist
                '(statement-cont . align-enum-class-closing-brace)))
 
-(add-hook 'c++-mode-hook 'fix-enum-class)
+(add-hook 'c++-mode-hook #'fix-enum-class)
 
-(defun my/update-gtags ()
+(defun my-update-gtags ()
   "Update gtags for the current buffer file."
   (interactive)
   (cl-flet ((call (prog &rest args)
@@ -539,16 +494,14 @@ c++-mode-map
       (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
       (call "global" "-u"))))
 
-(defun my/update-gtags-on-save-hook ()
-  "Update GTAGS for the current file."
+(defun my-update-gtags-on-save-hook ()
+  "Update gtags for the current file."
   (when (or (equal major-mode 'c++-mode)
             (equal major-mode 'c-mode))
-    (my/update-gtags)))
+    (my-update-gtags)))
 
-(add-hook 'after-save-hook #'my/update-gtags-on-save-hook)
+(add-hook 'after-save-hook #'my-update-gtags-on-save-hook)
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
-
-(require 'cc-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Org
@@ -556,12 +509,11 @@ c++-mode-map
 (require 'org-capture)
 (require 'org-agenda)
 
-(require 'flyspell)
+(use-package flyspell
+  :config
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+  (add-hook 'text-mode-hook #'flyspell-mode))
 
-(add-hook 'prog-mode-hook #'flyspell-prog-mode)
-
-
-(add-hook 'text-mode-hook #'flyspell-mode)
 (remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
 (defvar my-org-folder (file-name-as-directory (expand-file-name "~/org/")))
@@ -693,20 +645,22 @@ c++-mode-map
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Spelling
 (require 'ispell)
-(require 'rw-hunspell)
-(let ((hunspell (executable-find "hunspell")))
-  (when hunspell
-    (setenv "DICTIONARY" "en_US")
-    (add-to-list 'ispell-local-dictionary-alist '("en_US"
-                                                  "[[:alpha:]]"
-                                                  "[^[:alpha:]]"
-                                                  "[']"
-                                                  t
-                                                  ("-d" "en_US")
-                                                  nil
-                                                  iso-8859-1))
-    (setq ispell-program-name hunspell)
-    (ispell-change-dictionary "en_US" t)))
+(use-package rw-hunspell
+  :ensure t
+  :config
+  (let ((hunspell (executable-find "hunspell")))
+    (when hunspell
+      (setenv "DICTIONARY" "en_US")
+      (add-to-list 'ispell-local-dictionary-alist '("en_US"
+                                                    "[[:alpha:]]"
+                                                    "[^[:alpha:]]"
+                                                    "[']"
+                                                    t
+                                                    ("-d" "en_US")
+                                                    nil
+                                                    iso-8859-1))
+      (setq ispell-program-name hunspell)
+      (ispell-change-dictionary "en_US" t))))
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dired
@@ -731,20 +685,21 @@ c++-mode-map
 
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
-(require 'diredful)
-(diredful-mode 1)
+(use-package diredful
+  :ensure t
+  :config
+  (diredful-mode 1))
 
-
-(setq dired-omit-files (mapconcat #'identity
-                                  '("^\\.DS_Store$"
-                                    "^\\.localized$"
-                                    "^\\.com.apple.timemachine.supported$")
-                                  "\\|"))
-;; (add-hook 'dired-mode-hook #'dired-omit-mode)
+(use-package dired
+  :config
+  (setq dired-omit-files (mapconcat #'identity
+                                    '("^\\.DS_Store$"
+                                      "^\\.localized$"
+                                      "^\\.com.apple.timemachine.supported$")
+                                    "\\|")))
 
 ;; Macros
 (global-set-key "\C-x(" 'kmacro-start-macro-or-insert-counter)
-
 
 ;; Don't use emac's ls program
 (require 'ls-lisp)
@@ -781,254 +736,238 @@ The app is chosen from your OS's preference."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TeX
-(require 'preview)
-(require 'reftex)
-(require 'latex)
-(require 'font-latex)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-(add-hook 'LaTeX-mode-hook 'reftex-mode)
-(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+(use-package tex
+  :ensure auctex
+  :config
+  (require 'preview)
+  (require 'reftex)
+  (require 'latex)
+  (require 'font-latex)
+  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook #'reftex-mode)
+  (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
 
-(setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
-      preview-auto-cache-preamble t
-      preview-auto-reveal nil
-      preview-preserve-counters t
-      preview-image-type 'tiff
-      TeX-PDF-mode t
-      TeX-electric-math '("$" . "$")
-      TeX-electric-sub-and-superscript t
-      reftex-cite-format 'natbib
-      reftex-label-alist '(("IEEEeqnarray" ?e "eq:" "~(\\ref{%s})" nil nil)
-                           ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
-      font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
+  (setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
+        preview-auto-cache-preamble t
+        preview-auto-reveal nil
+        preview-preserve-counters t
+        preview-image-type 'tiff
+        TeX-PDF-mode t
+        TeX-electric-math '("$" . "$")
+        TeX-electric-sub-and-superscript t
+        reftex-cite-format 'natbib
+        reftex-label-alist '(("IEEEeqnarray" ?e "eq:" "~(\\ref{%s})" nil nil)
+                             ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
+        font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
 
-(setq LaTeX-font-list
-      '((?\C-a ""              ""  "\\mathcal{"    "}")
-        (?\C-b "\\textbf{"     "}" "\\bm{"     "}")  ;Use bm
-        (?\C-c "\\textsc{"     "}")
-        (?\C-e "\\emph{"       "}")
-        (?\C-f "\\textsf{"     "}" "\\mathsf{"     "}")
-        (?\C-i "\\textit{"     "}" "\\mathit{"     "}")
-        (?\C-m "\\textmd{"     "}")
-        (?\C-n "\\textnormal{" "}" "\\mathnormal{" "}")
-        (?\C-r "\\textrm{"     "}" "\\mathrm{"     "}")
-        (?\C-s "\\textsl{"     "}" "\\mathbb{"     "}")
-        (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
-        (?\C-u "\\textup{"     "}")
-        (?\C-d "" "" t)))
+  (setq LaTeX-font-list
+        '((?\C-a ""              ""  "\\mathcal{"    "}")
+          (?\C-b "\\textbf{"     "}" "\\bm{"     "}") ;Use bm
+          (?\C-c "\\textsc{"     "}")
+          (?\C-e "\\emph{"       "}")
+          (?\C-f "\\textsf{"     "}" "\\mathsf{"     "}")
+          (?\C-i "\\textit{"     "}" "\\mathit{"     "}")
+          (?\C-m "\\textmd{"     "}")
+          (?\C-n "\\textnormal{" "}" "\\mathnormal{" "}")
+          (?\C-r "\\textrm{"     "}" "\\mathrm{"     "}")
+          (?\C-s "\\textsl{"     "}" "\\mathbb{"     "}")
+          (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
+          (?\C-u "\\textup{"     "}")
+          (?\C-d "" "" t)))
 
-(defun my-env-frame (environment)
-  (let ((LaTeX-default-position nil)
-        (LaTeX-default-format "rCl"))
-    (LaTeX-env-label environment)))
+  (defun my-env-frame (environment)
+    (let ((LaTeX-default-position nil)
+          (LaTeX-default-format "rCl"))
+      (LaTeX-env-label environment)))
 
-(defun my-latex-frame-hook ()
-  (LaTeX-add-environments
-   '("frame" my-env-frame)))
+  (defun my-latex-frame-hook ()
+    (LaTeX-add-environments
+     '("frame" my-env-frame)))
 
-(defun my-env-IEEEeqnarray (environment)
-  (let ((LaTeX-default-position nil)
-        (LaTeX-default-format "rCl"))
-    (LaTeX-env-array environment)))
+  (defun my-env-IEEEeqnarray (environment)
+    (let ((LaTeX-default-position nil)
+          (LaTeX-default-format "rCl"))
+      (LaTeX-env-array environment)))
 
-(defun my-latex-IEEE-hook ()
-  (LaTeX-add-environments
-   '("IEEEeqnarray" my-env-IEEEeqnarray)
-   '("IEEEeqnarray*" my-env-IEEEeqnarray)
-   "matrix"
-   "bmatrix"
-   "Bmatrix"
-   "pmatrix"
-   "Pmatrix"
-   "vmatrix"
-   "Vmatrix"
-   "tikzpicture"
-   "smallmatrix"))
+  (defun my-latex-IEEE-hook ()
+    (LaTeX-add-environments
+     '("IEEEeqnarray" my-env-IEEEeqnarray)
+     '("IEEEeqnarray*" my-env-IEEEeqnarray)
+     "matrix"
+     "bmatrix"
+     "Bmatrix"
+     "pmatrix"
+     "Pmatrix"
+     "vmatrix"
+     "Vmatrix"
+     "tikzpicture"
+     "smallmatrix"))
 
-(add-to-list 'LaTeX-indent-environment-list '("matrix"))
-(add-to-list 'LaTeX-indent-environment-list '("bmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("Bmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("pmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("Pmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("vmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("Vmatrix"))
-(add-to-list 'LaTeX-indent-environment-list '("smallmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("matrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("bmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("Bmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("pmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("Pmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("vmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("Vmatrix"))
+  (add-to-list 'LaTeX-indent-environment-list '("smallmatrix"))
 
-(add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
+  (add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
 
-(require 'texmathp)
-(dolist (math-env '("IEEEeqnarray" "IEEEeqnarray*"))
-  (add-to-list 'LaTeX-indent-environment-list `(,math-env LaTeX-indent-tabular))
-  (add-to-list 'font-latex-math-environments math-env)
-  (add-to-list 'LaTeX-label-alist `(,math-env . LaTeX-equation-label))
-  (add-to-list 'reftex-label-alist `(,math-env ?e "eq:" "~(\\ref{%s})" t nil))
-  (add-to-list 'texmathp-tex-commands `(,math-env env-on)))
-(texmathp-compile)
+  (require 'texmathp)
+  (dolist (math-env '("IEEEeqnarray" "IEEEeqnarray*"))
+    (add-to-list 'LaTeX-indent-environment-list `(,math-env LaTeX-indent-tabular))
+    (add-to-list 'font-latex-math-environments math-env)
+    (add-to-list 'LaTeX-label-alist `(,math-env . LaTeX-equation-label))
+    (add-to-list 'reftex-label-alist `(,math-env ?e "eq:" "~(\\ref{%s})" t nil))
+    (add-to-list 'texmathp-tex-commands `(,math-env env-on)))
+  (texmathp-compile)
 
-(defvar my-latex-class-completion-list
-  '("article"
-    "proc"
-    "minimal"
-    "report"
-    "book"
-    "slides"
-    "memoir"
-    "letter"
-    "beamer"))
+  (defvar my-latex-class-completion-list
+    '("article"
+      "proc"
+      "minimal"
+      "report"
+      "book"
+      "slides"
+      "memoir"
+      "letter"
+      "beamer"))
 
-(defvar my-latex-package-list
-  '(("amsmath" . ("centertags"
-                  "tbtags"
-                  "sumlimits"
-                  "nosumlimits"
-                  "intlimits"
-                  "nointlimits"
-                  "namelimits"
-                  "nonamelimits"
-                  "leqno"
-                  "reqno"
-                  "fleqno"))
-    ("amsfonts" . ())
-    ("amssymb" . ())
-    ("amsthm" . ())
-    ("IEEEtrantools" . ())
-    ("bm" . ())
-    ("natbib" . ("square"
-                 "super"
-                 "sort"
-                 "sort&compress"
-                 "compress"
-                 "comma"
-                 "numbers"))
-    ("tikz" . ())
-    ("natbib" . ("round"
-                 "square"
-                 "curly"
-                 "angle"
-                 "semicolon"
-                 "colon"
-                 "comma"
-                 "authoryear"
-                 "numbers"
-                 "super"
-                 "sort"
-                 "sort&compress"
-                 "compress"
-                 "longnamesfirst"
-                 "sectionbib"
-                 "nonamebreak"
-                 "merge"
-                 "elide"
-                 "mcite"))
-    ("geometry" . ("letterpaper"
-                   "a5paper"
-                   "b5paper"
-                   "executivepaper"
-                   "legalpaper"
-                   "landscape"
-                   "total="
-                   "margin="))
-    ("graphicx" . ())
-    ("hyperref" . ())
-    ("tabularx" . ())
-    ("booktabs" . ())))
+  (defvar my-latex-package-list
+    '(("amsmath" . ("centertags"
+                    "tbtags"
+                    "sumlimits"
+                    "nosumlimits"
+                    "intlimits"
+                    "nointlimits"
+                    "namelimits"
+                    "nonamelimits"
+                    "leqno"
+                    "reqno"
+                    "fleqno"))
+      ("amsfonts" . ())
+      ("amssymb" . ())
+      ("amsthm" . ())
+      ("IEEEtrantools" . ())
+      ("bm" . ())
+      ("natbib" . ("square"
+                   "super"
+                   "sort"
+                   "sort&compress"
+                   "compress"
+                   "comma"
+                   "numbers"))
+      ("tikz" . ())
+      ("natbib" . ("round"
+                   "square"
+                   "curly"
+                   "angle"
+                   "semicolon"
+                   "colon"
+                   "comma"
+                   "authoryear"
+                   "numbers"
+                   "super"
+                   "sort"
+                   "sort&compress"
+                   "compress"
+                   "longnamesfirst"
+                   "sectionbib"
+                   "nonamebreak"
+                   "merge"
+                   "elide"
+                   "mcite"))
+      ("geometry" . ("letterpaper"
+                     "a5paper"
+                     "b5paper"
+                     "executivepaper"
+                     "legalpaper"
+                     "landscape"
+                     "total="
+                     "margin="))
+      ("graphicx" . ())
+      ("hyperref" . ())
+      ("tabularx" . ())
+      ("booktabs" . ())))
 
-(defvar my-latex-option-completion-list
-  '("10pt"
-    "11pt"
-    "12pt"
-    "a4paper"
-    "letterpaper"
-    "a5paper"
-    "b5paper"
-    "executivepaper"
-    "legalpaper"
-    "draft"
-    "twocolumn"
-    "oneside"
-    "twoside"
-    "notitlepage"
-    "titlepage"))
+  (defvar my-latex-option-completion-list
+    '("10pt"
+      "11pt"
+      "12pt"
+      "a4paper"
+      "letterpaper"
+      "a5paper"
+      "b5paper"
+      "executivepaper"
+      "legalpaper"
+      "draft"
+      "twocolumn"
+      "oneside"
+      "twoside"
+      "notitlepage"
+      "titlepage"))
 
-(defvar my-temp)
+  (defvar my-temp)
 
-(setcdr (assoc 'latex-mode auto-insert-alist)
-        '("options, RET: "
-          "\\documentclass["
-          ((completing-read "options: " my-latex-option-completion-list) str & ", " | -2) & -2 & ?\] | -1
-          ?{ (completing-read "class: " my-latex-class-completion-list) "}\n"
-          ((completing-read "package: " (mapcar #'car my-latex-package-list))
-           '(progn
-              (setq my-temp (eval str))
-              nil)
-           "\\usepackage["
-           ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
-           ?{ str "}\n")
-          "\n"
-          "\\title{" (let ((title (read-string "title: ")))
-                       (setq v1 (not (string-empty-p title)))
-                       title) & "}\n" | -7
-                       "\\author{" (when v1
-                                     (read-string "author: " user-full-name)) & "}\n" | -8
-                                     _ "\n\\begin{document}\n\n"
-                                     (if v1
-                                         "\\maketitle\n\n"
-                                       "") _
-                                       -
-                                       "\n\n\\end{document}"))
+  (setcdr (assoc 'latex-mode auto-insert-alist)
+          '("options, RET: "
+            "\\documentclass["
+            ((completing-read "options: " my-latex-option-completion-list) str & ", " | -2) & -2 & ?\] | -1
+            ?{ (completing-read "class: " my-latex-class-completion-list) "}\n"
+            ((completing-read "package: " (mapcar #'car my-latex-package-list))
+             '(progn
+                (setq my-temp (eval str))
+                nil)
+             "\\usepackage["
+             ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
+             ?{ str "}\n")
+            "\n"
+            "\\title{" (let ((title (read-string "title: ")))
+                         (setq v1 (not (string-empty-p title)))
+                         title) & "}\n" | -7
+            "\\author{" (when v1
+                          (read-string "author: " user-full-name)) & "}\n" | -8
+            _ "\n\\begin{document}\n\n"
+            (if v1
+                "\\maketitle\n\n"
+              "") _
+            -
+            "\n\n\\end{document}"))
 
-(define-skeleton my-insert-latex-package
-  "Insert a latex package"
-  (completing-read "package: " (mapcar #'car my-latex-package-list))
-  '(progn
-     (setq my-temp (eval str))
-     nil)
-  "\\usepackage["
-  ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
-  ?{ str "}\n")
+  (define-skeleton my-insert-latex-package
+    "Insert a latex package"
+    (completing-read "package: " (mapcar #'car my-latex-package-list))
+    '(progn
+       (setq my-temp (eval str))
+       nil)
+    "\\usepackage["
+    ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
+    ?{ str "}\n")
 
-(define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package)
+  (define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package))
 
-(require 'helm)
-(global-set-key (kbd "C-x C-w") #'write-file)
-(global-set-key (kbd "C-x C-f") #'helm-find-files)
-(global-set-key (kbd "C-c i") #'helm-mini)
-(global-set-key (kbd "M-x") #'helm-M-x)
-(require 'helm-mode)
-(setq helm-completing-read-handlers-alist
-      '((describe-function . helm-completing-read-symbols)
-        (describe-variable . helm-completing-read-symbols)
-        (completion-at-point . nil))
-      helm-mode-handle-completion-in-region nil)
-(helm-mode 1)
 
-(require 'projectile)
-(projectile-global-mode)
+(use-package helm
+  :ensure t
+  :config
+  (global-set-key (kbd "C-x C-w") #'write-file)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  (global-set-key (kbd "C-c i") #'helm-mini)
+  (global-set-key (kbd "M-x") #'helm-M-x))
+(use-package helm-mode
+  :config
+  (setq helm-completing-read-handlers-alist
+        '((describe-function . helm-completing-read-symbols)
+          (describe-variable . helm-completing-read-symbols)
+          (completion-at-point . nil))
+        helm-mode-handle-completion-in-region nil)
+  (helm-mode 1))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Irony
-(require 'irony)
-(require 'flycheck-irony)
-(require 'company-irony)
-
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
-
-;; replace the `completion-at-point' and `complete-symbol' bindings in
-;; irony-mode's buffers by irony-mode's function
-(defun my-irony-mode-hook ()
-  (define-key irony-mode-map [remap completion-at-point]
-    'irony-completion-at-point-async)
-  (define-key irony-mode-map [remap complete-symbol]
-    'irony-completion-at-point-async))
-(add-hook 'irony-mode-hook #'my-irony-mode-hook)
-(add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options)
-
-(eval-after-load 'flycheck
-  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-(eval-after-load 'company
-  '(add-to-list 'company-backends #'company-irony))
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
@@ -1036,30 +975,10 @@ The app is chosen from your OS's preference."
 (require 'tramp)
 (setf password-cache-expiry (* 60 60))
 
-(require 'company)
-(require 'company-anaconda)
-(require 'slime-company)
-(add-hook 'python-mode-hook 'company-mode)
-(add-hook 'python-mode-hook 'anaconda-mode)
-;; eldoc doesn't play well with flycheck
-;; (add-hook 'python-mode-hook 'eldoc-mode)
-(add-to-list 'company-backends 'company-anaconda)
-(setf company-idle-delay 0.3
-      company-minimum-prefix-length 1
-      company-show-numbers t
-      company-require-match nil)
-(add-hook 'prog-mode-hook 'company-mode-on)
-
-
 ;; Finally start emacs server
 (server-start)
 (setenv "EDITOR" "emacsclient")
 ;; (setenv "PAGER" "cat /dev/stdin > /tmp/epage; emacsclient -n /tmp/epage")
-
-(require 'semantic)
-;; Does not work well with flycheck
-;; (global-semantic-idle-summary-mode 1)
-(semantic-mode 1)
 
 (require 'cc-vars)
 
@@ -1092,40 +1011,6 @@ The app is chosen from your OS's preference."
                 scope-operator))
 
 (add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
-
-;; Fix redraw error in virtualbox
-;; (defun my-scroll-hook (window pos)
-;;   (redraw-display))
-
-;; (defun my-window-size-hook (frame)
-;;   (redraw-display))
-
-;; (add-to-list 'window-scroll-functions #'my-scroll-hook)
-;; (add-hook 'window-configuration-change-hook #'redraw-display)
-;; (remove-to-list 'window-size-change-functions #'my-window-size-hook)
-
-;; Needs to be done twice for some reason
-;; (dotimes (i 2)
-;;   (set-face-attribute 'default nil :font "Menlo Regular"
-;;                       :height 140))
-
-;; (diredful-apply (mapconcat (lambda (file-regexp)
-;;                              (concat "\\(?:" file-regexp "\\)"))
-;;                            (remove-if-not #'stringp
-;;                                           (mapcar #'car auto-mode-alist))
-;;                            "\\|")
-;;                 font-lock-comment-face nil t)
-
-;; (add-to-list 'dired-font-lock-keywords
-;;              (list
-;;               (concat "\\("
-;;                       (mapconcat (lambda (file-regexp)
-;;                                    (concat "\\(?:" file-regexp "\\)"))
-;;                                  (remove-if-not #'stringp
-;;                                                 (mapcar #'car auto-mode-alist))
-;;                                  "\\|")
-;;                       "\\)")
-;;               '(".+" (dired-move-to-filename) nil (0 dired-ignored-face))))
 
 (provide '.emacs)
 ;;; .emacs ends here
