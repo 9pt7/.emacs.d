@@ -19,11 +19,12 @@
 (unless (package-installed-p 'use-package)
     (package-install 'use-package))
 (require 'use-package)
-
-(use-package bash-completion
+(use-package diminish
   :ensure t)
+
 (use-package company
   :ensure t
+  :diminish company-mode
   :config
   (setf company-idle-delay 0.3
         company-minimum-prefix-length 1
@@ -33,17 +34,10 @@
 (use-package company-anaconda
   :ensure t
   :config
+  (require 'python)
   (add-hook 'python-mode-hook #'company-mode)
   (add-hook 'python-mode-hook #'anaconda-mode)
   (add-to-list 'company-backends 'company-anaconda))
-(use-package flycheck
-  :ensure t)
-(use-package rw-hunspell
-  :ensure t)
-(use-package diredful
-  :ensure t)
-(use-package helm
-  :ensure t)
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :ensure t
@@ -54,8 +48,14 @@
   ;; Need LANG for spell check (not initialized in launcher env)
   (setenv "LANG" "en_CA.UTF-8")
   (exec-path-from-shell-initialize))
-(use-package company-anaconda
-  :ensure t)
+
+(use-package flyspell
+  :config
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+  (add-hook 'text-mode-hook #'flyspell-mode)
+  (setq flyspell-issue-welcome-flag nil)
+  (setq flyspell-persistent-highlight t))
+
 (use-package alect-themes
   :ensure t
   :config
@@ -142,7 +142,11 @@ Advise around ORIG-FUN called with ARGS."
       auto-fill-function nil)
 (setq-default indent-tabs-mode nil
               align-default-spacing 2)
-(add-hook 'prog-mode-hook #'turn-on-auto-fill)
+
+(use-package simple
+  :diminish auto-fill-mode
+  :config
+  (add-hook 'prog-mode-hook #'turn-on-auto-fill))
 (use-package eldoc
   :config
   (add-hook 'c-mode-hook #'eldoc-mode))
@@ -206,6 +210,7 @@ otherwise it is enabled."
   (setf uniquify-buffer-name-style 'post-forward-angle-brackets))
 
 (use-package autorevert
+  :diminish auto-revert-mode
   :config
   (setf auto-revert-interval 1))
 (use-package doc-view
@@ -231,6 +236,7 @@ otherwise it is enabled."
     (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
 
 (defun grep-override (grep-cmd)
+  "Call grep using GREP-CMD."
   (let ((old-cmd grep-command))
     (grep-apply-setting 'grep-command grep-cmd)
     (unwind-protect
@@ -238,6 +244,7 @@ otherwise it is enabled."
       (grep-apply-setting 'grep-command old-cmd))))
 
 (defun grep-global ()
+  "Grep with GNU Global."
   (interactive)
   (grep-override "global --result grep -xi "))
 
@@ -508,11 +515,6 @@ otherwise it is enabled."
 (require 'org)
 (require 'org-capture)
 (require 'org-agenda)
-
-(use-package flyspell
-  :config
-  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-  (add-hook 'text-mode-hook #'flyspell-mode))
 
 (remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
@@ -1025,12 +1027,10 @@ The app is chosen from your OS's preference."
    (quote
     ("04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "a0feb1322de9e26a4d209d1cfa236deaf64662bb604fa513cca6a057ddf0ef64" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5dc0ae2d193460de979a463b907b4b2c6d2c9c4657b2e9e66b8898d2592e3de5" "790e74b900c074ac8f64fa0b610ad05bcfece9be44e8f5340d2d94c1e47538de" "a800120841da457aa2f86b98fb9fd8df8ba682cebde033d7dbf8077c1b7d677a" "32e3693cd7610599c59997fee36a68e7dd34f21db312a13ff8c7e738675b6dfc" "3fd0fda6c3842e59f3a307d01f105cce74e1981c6670bb17588557b4cebfe1a7" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "b747fb36e99bc7f497248eafd6e32b45613ee086da74d1d92a8da59d37b9a829" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" default)))
  '(ede-project-directories (quote ("/home/prt/workspace/tooling")))
- '(flyspell-issue-welcome-flag nil)
- '(flyspell-persistent-highlight t)
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (diminish cmake-mode slime-company rw-hunspell pdf-tools openwith monokai-theme magit llvm-mode helm-projectile flycheck-irony exec-path-from-shell diredful company-irony company-anaconda bash-completion auctex alect-themes))))
+    (use-package diminish cmake-mode slime-company rw-hunspell pdf-tools openwith monokai-theme magit llvm-mode helm-projectile flycheck-irony exec-path-from-shell diredful company-irony company-anaconda bash-completion auctex alect-themes))))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
@@ -1043,4 +1043,4 @@ The app is chosen from your OS's preference."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(flyspell-incorrect ((t (:underline (:color "red" :style wave))))))
+ )
