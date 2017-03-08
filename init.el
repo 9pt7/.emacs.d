@@ -24,6 +24,7 @@
   :ensure t)
 (use-package company
   :ensure t
+  :diminish company-mode
   :config
   (setf company-idle-delay 0.3
         company-minimum-prefix-length 1
@@ -36,13 +37,7 @@
   (add-hook 'python-mode-hook #'company-mode)
   (add-hook 'python-mode-hook #'anaconda-mode)
   (add-to-list 'company-backends 'company-anaconda))
-(use-package flycheck
-  :ensure t)
-(use-package rw-hunspell
-  :ensure t)
-(use-package diredful
-  :ensure t)
-(use-package helm
+(use-package cmake-mode
   :ensure t)
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -206,6 +201,7 @@ otherwise it is enabled."
   (setf uniquify-buffer-name-style 'post-forward-angle-brackets))
 
 (use-package autorevert
+  :diminish auto-revert-mode
   :config
   (setf auto-revert-interval 1))
 (use-package doc-view
@@ -231,6 +227,7 @@ otherwise it is enabled."
     (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
 
 (defun grep-override (grep-cmd)
+  "Run grep with GREP-CMD."
   (let ((old-cmd grep-command))
     (grep-apply-setting 'grep-command grep-cmd)
     (unwind-protect
@@ -238,6 +235,7 @@ otherwise it is enabled."
       (grep-apply-setting 'grep-command old-cmd))))
 
 (defun grep-global ()
+  "Run grep with GNU Global."
   (interactive)
   (grep-override "global --result grep -xi "))
 
@@ -350,6 +348,7 @@ otherwise it is enabled."
 
 (use-package flycheck
   :ensure t
+  :diminish flycheck-mode
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
@@ -510,6 +509,7 @@ otherwise it is enabled."
 (require 'org-agenda)
 
 (use-package flyspell
+  :diminish flyspell-mode
   :config
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
   (add-hook 'text-mode-hook #'flyspell-mode))
@@ -956,6 +956,7 @@ The app is chosen from your OS's preference."
   (global-set-key (kbd "C-c i") #'helm-mini)
   (global-set-key (kbd "M-x") #'helm-M-x))
 (use-package helm-mode
+  :diminish helm-mode
   :config
   (setq helm-completing-read-handlers-alist
         '((describe-function . helm-completing-read-symbols)
@@ -967,7 +968,9 @@ The app is chosen from your OS's preference."
 (use-package projectile
   :ensure t
   :config
-  (projectile-global-mode))
+  (projectile-mode))
+(use-package helm-projectile
+  :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
