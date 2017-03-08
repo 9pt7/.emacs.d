@@ -13,6 +13,10 @@ fi
 cp -nrT $template_dir $1
 cd $1
 git init
+mkdir include/$1
+touch include/$1/$1.hpp
+touch src/$1.cc
+touch src/$1-test.cc
 
 sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
 gtags
