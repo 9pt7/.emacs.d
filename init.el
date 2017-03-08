@@ -38,11 +38,8 @@
   (add-hook 'python-mode-hook #'company-mode)
   (add-hook 'python-mode-hook #'anaconda-mode)
   (add-to-list 'company-backends 'company-anaconda))
-<<<<<<< HEAD
 (use-package cmake-mode
   :ensure t)
-=======
->>>>>>> 0d5757bddc0fbf0dc59d3f94ada1bae2f3afa962
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :ensure t
@@ -241,11 +238,7 @@ otherwise it is enabled."
     (grep-apply-setting 'grep-command (concat ack-cmd ack-args))))
 
 (defun grep-override (grep-cmd)
-<<<<<<< HEAD
   "Run grep with GREP-CMD."
-=======
-  "Call grep using GREP-CMD."
->>>>>>> 0d5757bddc0fbf0dc59d3f94ada1bae2f3afa962
   (let ((old-cmd grep-command))
     (grep-apply-setting 'grep-command grep-cmd)
     (unwind-protect
@@ -253,11 +246,7 @@ otherwise it is enabled."
       (grep-apply-setting 'grep-command old-cmd))))
 
 (defun grep-global ()
-<<<<<<< HEAD
   "Run grep with GNU Global."
-=======
-  "Grep with GNU Global."
->>>>>>> 0d5757bddc0fbf0dc59d3f94ada1bae2f3afa962
   (interactive)
   (grep-override "global --result grep -xi "))
 
@@ -530,15 +519,6 @@ otherwise it is enabled."
 (require 'org-capture)
 (require 'org-agenda)
 
-<<<<<<< HEAD
-(use-package flyspell
-  :diminish flyspell-mode
-  :config
-  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-  (add-hook 'text-mode-hook #'flyspell-mode))
-
-=======
->>>>>>> 0d5757bddc0fbf0dc59d3f94ada1bae2f3afa962
 (remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
 
 (defvar my-org-folder (file-name-as-directory (expand-file-name "~/org/")))
