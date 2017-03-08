@@ -1,0 +1,5 @@
+#!/bin/bash
+
+git config --global core.excludesfile ~/.emacs.d/.gitignore-global
+git config --global user.name "Peter Thompson"
+git config --global user.email "peter.thompson92@gmail.com"
