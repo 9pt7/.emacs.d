@@ -159,8 +159,9 @@ Advise around ORIG-FUN called with ARGS."
 
 (use-package gdb-mi
   :config
-  (setf gdb-show-main t)
-  (setq gdb-many-windows t))
+  (setf gdb-show-main nil)
+  (setq gdb-many-windows nil)
+  (setq gdb-display-buffer-other-frame-action nil))
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
@@ -304,16 +305,16 @@ otherwise it is enabled."
                             (when (string= event "finished\n")
                               (kill-buffer (current-buffer))))))
   (add-hook 'comint-exec-hook #'close-comint-hook)
-  ;; Don't use yellow or white in comint. Use orange instead
-  (setf ansi-color-names-vector
-        ["black" "red" "DarkGreen" "DarkOrange3" "blue" "magenta" "DarkCyan" "dim gray"])
-  (setf ansi-color-map (ansi-color-make-color-map)))
+  (defun my-comint-scroll-hook ()
+    (setq scroll-conservatively 101))
+  (add-hook 'comint-mode-hook #'my-comint-scroll-hook))
 
 (use-package shell
   :config
   (let ((shell (executable-find "bash")))
     (when shell
       (setf explicit-shell-file-name shell)))
+  (add-hook 'shell-mode-hook #'compilation-shell-minor-mode)
   (add-hook 'shell-mode-hook #'my-comint-disable-echoing))
 
 (use-package delsel
