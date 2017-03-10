@@ -306,8 +306,8 @@ otherwise it is enabled."
                             (when (string= event "finished\n")
                               (kill-buffer (current-buffer))))))
   (add-hook 'comint-exec-hook #'close-comint-hook)
-  (defun my-comint-scroll-hook ()
-    (setq scroll-conservatively 101))
+  (defun my-comint-scroll-hook()
+    (setq-local scroll-conservatively 101))
   (add-hook 'comint-mode-hook #'my-comint-scroll-hook))
 
 (use-package shell
