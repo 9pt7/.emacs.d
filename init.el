@@ -120,7 +120,7 @@ Advise around ORIG-FUN called with ARGS."
 (setf user-full-name "Peter Thompson"
       user-mail-address "peter.thompson92@gmail.com")
 
-(set-face-attribute 'default nil :height 110)
+(set-face-attribute 'default nil :height 120)
 
 (setf ring-bell-function 'ignore)
 (setf set-mark-command-repeat-pop t)
