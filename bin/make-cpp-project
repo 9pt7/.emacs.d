@@ -12,7 +12,6 @@ fi
 
 cp -nrT $template_dir $1
 cd $1
-git init
 mkdir include/$1
 touch include/$1/$1.hpp
 touch src/$1.cc
@@ -20,14 +19,6 @@ touch src/$1-test.cc
 
 sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
 gtags
-
-ssh $server <<EOF
- git init --bare $1.git
-EOF
-
-git submodule add https://github.com/google/googletest
-
-git remote add origin $server:$1.git
 
 doxygen_set() {
     echo "s~\($1 *=\).*~\1 $2~g"
@@ -44,6 +35,15 @@ doxygen -g - | \
         -e "$(doxygen_set BUILTIN_STL_SUPPORT YES)" \
         > Doxyfile
 doxygen
+
+git init
+ssh $server <<EOF
+ git init --bare $1.git
+EOF
+
+git submodule add https://github.com/google/googletest
+
+git remote add origin $server:$1.git
 
 git add -A
 git commit -m "Initial commit"
