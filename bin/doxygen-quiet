@@ -1,0 +1,2 @@
+#!/bin/bash
+doxygen $@ 1>/dev/null
