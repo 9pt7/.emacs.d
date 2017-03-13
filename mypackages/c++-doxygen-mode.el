@@ -24,7 +24,9 @@
 
 ;;; Code:
 
+(require 'compile)
 (require 'cc-fonts)
+(require 'xwidget)
 
 (defun c++-doxygen-font-lock-match-data ()
   "Apply font lock faces to the region defined by match data."
@@ -76,6 +78,53 @@ Prefix ARG is forwarded to `comment-dwim'."
          (comment-start (if (string-match ".*[,;]\s*$" line) "///< " "///")))
     (comment-dwim arg)))
 
+
+(defun c++-doxygen-refresh-xwidgets ()
+  "Refresh xwidget buffer."
+  (let ((buf (find-if (lambda (buffer)
+                        ;; TODO: This should only return a buffer known to be
+                        ;; associated with a doxygen compile process
+                        (with-current-buffer buffer
+                          (equal #'xwidget-webkit-mode major-mode)))
+                      (buffer-list)))
+        (win-conf (current-window-configuration)))
+    (when buf
+      (save-current-buffer
+        (with-current-buffer buf
+          (xwidget-webkit-reload)))
+      (set-window-configuration win-conf))))
+
+(get-buffer-create "*foobar*")
+(find-if (lambda (buf)
+           (message (buffer-name buf))
+           (equal " *xwidget-log*" (buffer-name buf)))
+         (buffer-list))
+(switch-to-buffer " *xwidget-log*")
+(defadvice xwidget-webkit-callback (around c++-doxygen-save-windows activate)
+  "Prevent xwidget callback from changing the window layout."
+  (let ((win-conf (current-window-configuration)))
+    ad-do-it
+    (set-window-configuration win-conf)))
+
+(defun c++-doxygen-refresh-xwidgets-on-process-completion (proc)
+  "Refresh xwidget buffer when PROC finishes."
+  (let ((old-sent (process-sentinel proc)))
+    (set-process-sentinel proc (lambda (process event)
+                                 (c++-doxygen-refresh-xwidgets)
+                                 (when old-sent
+                                   (funcall old-sent process event))))))
+
+(defun c++-doxygen-compile-from-dominating-file ()
+  "Attempt to call doxygen is a Doxygen configuration file is found in a dominating directory."
+  (let ((doxy-dir (locate-dominating-file default-directory "Doxyfile")))
+    (when doxy-dir
+      (let ((compilation-buffer-name-function (lambda (mmode) (concat "*doxygen-" mmode "*")))
+            (compile-command nil)
+            (default-directory doxy-dir)
+            (win-conf (current-window-configuration)))
+        (compile "doxygen-quiet")
+        (set-window-configuration win-conf)))))
+
 (define-minor-mode c++-doxygen-mode
   "Toggle c++ doxygen mode."
   nil
@@ -87,7 +136,16 @@ Prefix ARG is forwarded to `comment-dwim'."
                             #'font-lock-add-keywords
                           #'font-lock-remove-keywords)))
     (funcall keyword-action nil '((c++-doxygen-font-lock . font-lock-warning-face)))
-    (font-lock-flush)))
+    (font-lock-flush))
+  (if c++-doxygen-mode
+      (add-to-list 'after-save-hook
+                   #'c++-doxygen-compile-from-dominating-file)
+    (setq after-save-hook (delete 'after-save-hook
+                                  #'c++-doxygen-compile-from-dominating-file)))
+  (if c++-doxygen-mode
+      (add-to-list 'compilation-start-hook #'c++-doxygen-refresh-xwidgets-on-process-completion)
+    (setq compilation-start-hook (delete 'compilation-start-hook
+                                         #'c++-doxygen-refresh-xwidgets-on-process-completion))))
 
 (provide 'c++-doxygen-mode)
 ;;; c++-doxygen-mode.el ends here
