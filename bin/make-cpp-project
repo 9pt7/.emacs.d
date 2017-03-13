@@ -29,7 +29,8 @@ doxygen -g - | \
         -e "$(dset OUTPUT_DIRECTORY doc)" \
         -e "$(dset INPUT .)" \
         -e "$(dset RECURSIVE YES)" \
-        -e "$(dset EXCLUDE_PATTERNS */test/*\ */build/*\ */doc/*\ */googletest/*)" \
+        -e
+"$(dset EXCLUDE_PATTERNS */test/*\ */build/*\ */doc/*\ */googletest/*\ *-test.cc)" \
         -e "$(dset EXCLUDE_SYMBOLS *::detail::* detail::*)" \
         -e "$(dset QT_AUTOBRIEF YES)" \
         -e "$(dset JAVADOC_AUTOBRIEF YES)" \
