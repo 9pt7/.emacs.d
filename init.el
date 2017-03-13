@@ -405,6 +405,7 @@ otherwise it is enabled."
 (use-package irony
   :ensure t
   :config
+  (setq irony-additional-clang-options (list "-Wdocumentation" "-Wall" "-Wextra"))
   (add-hook 'c++-mode-hook #'irony-mode)
   (add-hook 'c-mode-hook #'irony-mode)
   (add-hook 'objc-mode-hook #'irony-mode)
@@ -1021,6 +1022,15 @@ The app is chosen from your OS's preference."
                 scope-operator))
 
 (add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
+
+(defun get-doxygen-directory ()
+  "Set the directory from which doxygen is called."
+  (interactive)
+  (let* ((doxy-dir (locate-dominating-file default-directory "Doxyfile"))
+         (dir (read-directory-name
+               "Doxygen directory: "
+               (or (when doxy-dir (expand-file-name doxy-dir))
+                   default-directory))))))
 
 (provide '.emacs)
 ;;; .emacs ends here
