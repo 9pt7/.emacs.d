@@ -29,19 +29,20 @@ git submodule add https://github.com/google/googletest
 
 git remote add origin $server:$1.git
 
-doxygen_set() {
+dset() {
     echo "s~\($1 *=\).*~\1 $2~g"
 }
 
 doxygen -g - | \
-    sed -e "$(doxygen_set PROJECT_NAME \"$1\")" \
-        -e "$(doxygen_set OUTPUT_DIRECTORY doc)" \
-        -e "$(doxygen_set INPUT .)" \
-        -e "$(doxygen_set RECURSIVE YES)" \
-        -e "$(doxygen_set EXCLUDE_PATTERNS */test/*\ */build/*\ */doc/*\ */googletest/*)" \
-        -e "$(doxygen_set QT_AUTOBRIEF YES)" \
-        -e "$(doxygen_set JAVADOC_AUTOBRIEF YES)" \
-        -e "$(doxygen_set BUILTIN_STL_SUPPORT YES)" \
+    sed -e "$(dset PROJECT_NAME \"$1\")" \
+        -e "$(dset OUTPUT_DIRECTORY doc)" \
+        -e "$(dset INPUT .)" \
+        -e "$(dset RECURSIVE YES)" \
+        -e "$(dset EXCLUDE_PATTERNS */test/*\ */build/*\ */doc/*\ */googletest/*)" \
+        -e "$(dset EXCLUDE_SYMBOLS *::detail::* detail::*)" \
+        -e "$(dset QT_AUTOBRIEF YES)" \
+        -e "$(dset JAVADOC_AUTOBRIEF YES)" \
+        -e "$(dset BUILTIN_STL_SUPPORT YES)" \
         > Doxyfile
 doxygen
 
