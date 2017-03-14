@@ -94,12 +94,6 @@ Prefix ARG is forwarded to `comment-dwim'."
           (xwidget-webkit-reload)))
       (set-window-configuration win-conf))))
 
-(get-buffer-create "*foobar*")
-(find-if (lambda (buf)
-           (message (buffer-name buf))
-           (equal " *xwidget-log*" (buffer-name buf)))
-         (buffer-list))
-(switch-to-buffer " *xwidget-log*")
 (defadvice xwidget-webkit-callback (around c++-doxygen-save-windows activate)
   "Prevent xwidget callback from changing the window layout."
   (let ((win-conf (current-window-configuration)))
