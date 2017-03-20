@@ -228,8 +228,8 @@ otherwise it is enabled."
 
 (use-package my-compile
   :config
-  (global-set-key (kbd "\C-cr") #'recompile)
-  (global-set-key (kbd "\C-cx") #'my-compile))
+  (global-set-key (kbd "\C-cx") #'my-compile)
+  (global-set-key (kbd "\C-cr") #'my-compile-recompile))
 
 (require 'grep)
 (let ((ack-cmd (cond ((executable-find "ack-grep") "ack-grep")

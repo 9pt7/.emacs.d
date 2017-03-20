@@ -47,15 +47,28 @@ relative paths in `my-compile-build-dir-rel'."
    until (or build-dir (equal par "/"))
    finally return build-dir))
 
+(defvar-local my-compile-dir nil)
+
 (defun my-compile ()
   "Call `compile' interactively from a chosen directory."
   (interactive)
-  (let* ((dir
-          (read-directory-name
-           "Compilation directory: "
-           (or (my-compile-find-build-dir) default-directory)))
-         (default-directory dir))
+  (let* ((dir (read-directory-name
+               "Compilation directory: "
+               (or (my-compile-find-build-dir) default-directory)))
+         (compilation-directory dir))
+    (setq-local my-compile-dir dir)
     (call-interactively #'compile)))
+
+(defun my-compile-recompile ()
+  "Call `recompile' from a chosen directory."
+  (interactive)
+  (let* ((dir (or my-compile-dir
+                  (read-directory-name
+                   "Compilation directory: "
+                   (or (my-compile-find-build-dir) default-directory))))
+         (compilation-directory dir))
+    (setq-local my-compile-dir dir)
+    (call-interactively #'recompile)))
 
 (provide 'my-compile)
 ;;; my-compile.el ends here
