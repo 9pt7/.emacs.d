@@ -131,11 +131,11 @@ Prefix ARG is forwarded to `comment-dwim'."
                           #'font-lock-remove-keywords)))
     (funcall keyword-action nil '((c++-doxygen-font-lock . font-lock-warning-face)))
     (font-lock-flush))
-  (if c++-doxygen-mode
-      (add-to-list 'after-save-hook
-                   #'c++-doxygen-compile-from-dominating-file)
-    (setq after-save-hook (delete 'after-save-hook
-                                  #'c++-doxygen-compile-from-dominating-file)))
+  ;; (if c++-doxygen-mode
+  ;;     (add-to-list 'after-save-hook
+  ;;                  #'c++-doxygen-compile-from-dominating-file)
+  ;;   (setq after-save-hook (delete 'after-save-hook
+  ;;                                 #'c++-doxygen-compile-from-dominating-file)))
   (if c++-doxygen-mode
       (add-to-list 'compilation-start-hook #'c++-doxygen-refresh-xwidgets-on-process-completion)
     (setq compilation-start-hook (delete 'compilation-start-hook

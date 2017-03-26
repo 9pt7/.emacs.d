@@ -231,6 +231,12 @@ otherwise it is enabled."
   (global-set-key (kbd "\C-cx") #'my-compile)
   (global-set-key (kbd "\C-cr") #'my-compile-recompile))
 
+(use-package window-layout
+  :config
+  (global-set-key (kbd "M-\\") #'window-layout-push)
+  (global-set-key (kbd "M-[") #'window-layout-pop-backward)
+  (global-set-key (kbd "M-]") #'window-layout-pop-forward))
+
 (require 'grep)
 (let ((ack-cmd (cond ((executable-find "ack-grep") "ack-grep")
                      ((executable-find "ack") "ack")))

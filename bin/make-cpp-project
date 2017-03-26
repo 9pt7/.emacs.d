@@ -20,7 +20,7 @@ touch src/$1-test.cc
 sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
 gtags
 
-doxygen_set() {
+dset() {
     echo "s~\($1 *=\).*~\1 $2~g"
 }
 
@@ -29,8 +29,7 @@ doxygen -g - | \
         -e "$(dset OUTPUT_DIRECTORY doc)" \
         -e "$(dset INPUT .)" \
         -e "$(dset RECURSIVE YES)" \
-        -e
-"$(dset EXCLUDE_PATTERNS */test/*\ */build/*\ */doc/*\ */googletest/*\ *-test.cc)" \
+        -e "$(dset EXCLUDE_PATTERNS */test/*\ */build/*\ */doc/*\ */googletest/*\ *-test.cc)" \
         -e "$(dset EXCLUDE_SYMBOLS *::detail::* detail::*)" \
         -e "$(dset QT_AUTOBRIEF YES)" \
         -e "$(dset JAVADOC_AUTOBRIEF YES)" \
