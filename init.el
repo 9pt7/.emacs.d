@@ -159,8 +159,8 @@ Advise around ORIG-FUN called with ARGS."
 
 (use-package gdb-mi
   :config
-  (setf gdb-show-main nil)
-  (setq gdb-many-windows nil)
+  (setf gdb-show-main t)
+  (setq gdb-many-windows t)
   (setq gdb-display-buffer-other-frame-action nil))
 
 (dotimes (i 10)
