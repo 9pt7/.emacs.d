@@ -28,7 +28,7 @@
 (require 'compile)
 
 (defvar my-compile-makefile-regex "^[mM]akefile$")
-(defvar my-compile-build-dir-rel '("./" "build/"))
+(defvar my-compile-build-dir-rel '("./" "build/" "build/debug"))
 
 (defun my-compile-find-build-dir ()
   "Guess the build directory.
@@ -57,7 +57,8 @@ relative paths in `my-compile-build-dir-rel'."
                (or (my-compile-find-build-dir) default-directory)))
          (compilation-directory dir))
     (setq-local my-compile-dir dir)
-    (call-interactively #'compile)))
+    (let ((default-directory dir))
+         (call-interactively #'compile))))
 
 (defun my-compile-recompile ()
   "Call `recompile' from a chosen directory."
