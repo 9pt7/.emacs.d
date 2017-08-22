@@ -1011,8 +1011,8 @@ The app is chosen from your OS's preference."
 
 (setf c-default-style "my-c-style")
 
-(require 'c++-doxygen-mode)
-(add-hook 'c++-mode-hook #'c++-doxygen-mode)
+;; (require 'c++-doxygen-mode)
+;; (add-hook 'c++-mode-hook #'c++-doxygen-mode)
 
 (c-toggle-auto-newline 1)
 (c-toggle-electric-state 1)

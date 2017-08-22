@@ -31,7 +31,7 @@
   ((configuration :type window-configuration :initform (current-window-configuration))
    (window-marker :type marker :initform (set-marker (make-marker) (window-point) nil))))
 
-(defvar current-window-layout (window-layout))
+(defvar current-window-layout (make-instance window-layout))
 (defvar window-layout-vector (vector current-window-layout))
 (defvar window-idx 0)
 (defvar max-window-layouts 8)
