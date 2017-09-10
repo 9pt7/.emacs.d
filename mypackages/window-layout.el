@@ -63,7 +63,7 @@
   "Create a new layout and push in onto the queue."
   (interactive)
   (window-layout-set-at-head current-window-layout)
-  (let ((layout (window-layout)))
+  (let ((layout (make-instance window-layout)))
     (window-layout-set-at-head layout)
     (window-layout-set layout)))
 
