@@ -26,9 +26,12 @@
   :ensure t
   :diminish company-mode
   :config
+  (require 'company-clang)
   (setf company-idle-delay 0.3
         company-minimum-prefix-length 1
         company-show-numbers t
+        company-clang-executable (or (executable-find "clang-5.0")
+                                     (executable-find "clang"))
         company-require-match nil)
   (add-hook 'prog-mode-hook 'company-mode-on))
 (use-package company-anaconda
@@ -399,8 +402,8 @@ otherwise it is enabled."
             ;; (flycheck-select-checker (case system-type
             ;;                            ('darwin 'c/c++-clang)
             ;;                            (t 'c/c++-gcc)))
-            (setq-local flycheck-clang-language-standard "c++14")
-            (setq-local flycheck-gcc-language-standard "c++14")))
+            (setq-local flycheck-clang-language-standard "c++17")
+            (setq-local flycheck-gcc-language-standard "c++17")))
 
 (add-hook 'c-mode-hook
           (defun my-c-flycheck-hook()
@@ -408,31 +411,31 @@ otherwise it is enabled."
             (setq-local flycheck-clang-language-standard "gnu11")
             (setq-local flycheck-gcc-language-standard "gnu11")))
 
-(use-package irony
-  :ensure t
-  :config
-  (setq irony-additional-clang-options (list "-Wdocumentation" "-Wall" "-Wextra"))
-  (add-hook 'c++-mode-hook #'irony-mode)
-  (add-hook 'c-mode-hook #'irony-mode)
-  (add-hook 'objc-mode-hook #'irony-mode)
-  (defun my-irony-mode-hook ()
-    "Use irony mode's `completion-at-point' and `complete-symbol'."
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  (add-hook 'irony-mode-hook #'my-irony-mode-hook)
-  (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
-(use-package flycheck-irony
-  :ensure t
-  :config
-  (eval-after-load 'flycheck
-    '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
-(use-package company-irony
-  :ensure t
-  :config
-  (eval-after-load 'company
-    '(add-to-list 'company-backends 'company-irony)))
+;; (use-package irony
+;;   :ensure t
+;;   :config
+;;   (setq irony-additional-clang-options (list "-Wdocumentation" "-Wall" "-Wextra"))
+;;   (add-hook 'c++-mode-hook #'irony-mode)
+;;   (add-hook 'c-mode-hook #'irony-mode)
+;;   (add-hook 'objc-mode-hook #'irony-mode)
+;;   (defun my-irony-mode-hook ()
+;;     "Use irony mode's `completion-at-point' and `complete-symbol'."
+;;     (define-key irony-mode-map [remap completion-at-point]
+;;       'irony-completion-at-point-async)
+;;     (define-key irony-mode-map [remap complete-symbol]
+;;       'irony-completion-at-point-async))
+;;   (add-hook 'irony-mode-hook #'my-irony-mode-hook)
+;;   (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
+;; (use-package flycheck-irony
+;;   :ensure t
+;;   :config
+;;   (eval-after-load 'flycheck
+;;     '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
+;; (use-package company-irony
+;;   :ensure t
+;;   :config
+;;   (eval-after-load 'company
+;;     '(add-to-list 'company-backends 'company-irony)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
@@ -1054,7 +1057,7 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (protobuf-mode helm-gtags use-package diminish cmake-mode slime-company rw-hunspell pdf-tools openwith monokai-theme magit llvm-mode helm-projectile flycheck-irony exec-path-from-shell diredful company-irony company-anaconda bash-completion auctex alect-themes))))
+    (company-clang powerline pdf-tools package-build shut-up epl git commander f dash s cask flycheck protobuf-mode helm-gtags use-package diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
@@ -1067,4 +1070,4 @@ The app is chosen from your OS's preference."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(helm-top-columns ((t (:inherit helm-header :height 119)))))
