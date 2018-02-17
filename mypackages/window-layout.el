@@ -29,22 +29,24 @@
 
 (defclass window-layout ()
   ((configuration :type window-configuration :initform (current-window-configuration))
-   (window-marker :type marker :initform (set-marker (make-marker) (window-point) nil))))
+   (window-marker :type marker :initform (set-marker (make-marker) (window-point) nil)))
+  :documentation
+  "Save context for window layout.")
 
-(defvar current-window-layout (make-instance window-layout))
+(defvar current-window-layout (make-instance 'window-layout))
 (defvar window-layout-vector (vector current-window-layout))
 (defvar window-idx 0)
 (defvar max-window-layouts 8)
+(length window-layout-vector)
+(setf window-layout-vector (vconcat (vector (make-instance 'window-layout)) window-layout-vector))
 
 (defun window-layout-set (new-layout)
   "Set the current layout to NEW-LAYOUT."
-  (let ((current current-window-layout))
-    (unless (equal current new-layout)
-        (with-slots ((cur-config configuration)
-                     (cur-marker window-marker))
-            current
-          (setf cur-config (current-window-configuration))
-          (setf cur-marker (set-marker (make-marker) (window-point) nil)))))
+  (with-slots ((cur-config configuration)
+               (cur-marker window-marker))
+      current-window-layout
+    (setf cur-config (current-window-configuration))
+    (setf cur-marker (set-marker (make-marker) (window-point) nil)))
   (with-slots ((new-config configuration)
                (new-marker window-marker))
       new-layout
@@ -63,8 +65,9 @@
   "Create a new layout and push in onto the queue."
   (interactive)
   (window-layout-set-at-head current-window-layout)
-  (let ((layout (make-instance window-layout)))
-    (window-layout-set-at-head layout)
+  (let ((layout (make-instance 'window-layout)))
+    (setf window-layout-vector (vconcat (vector layout) window-layout-vector))
+    (setf window-idx 0)
     (window-layout-set layout)))
 
 (defun window-layout-pop (inc continue)
@@ -77,7 +80,7 @@ CONTINUE specifies if the queue pointer should be reset."
   (setf window-idx (mod (+ window-idx inc)
                             (length window-layout-vector)))
   (window-layout-set (aref window-layout-vector window-idx))
-  (message "%s" window-idx))
+  (message "Layout %s" window-idx))
 
 (defun window-layout-pop-should-continue ()
   "Check if the queue pointer should be reset."
