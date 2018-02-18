@@ -18,7 +18,6 @@ touch src/$1.cc
 touch src/$1-test.cc
 
 sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
-gtags
 
 dset() {
     echo "s~\($1 *=\).*~\1 $2~g"
@@ -40,18 +39,22 @@ doxygen -g - | \
 doxygen
 
 git init
-ssh $server <<EOF
- git init --bare $1.git
-EOF
 
 git submodule add https://github.com/google/googletest
 
-git remote add origin $server:$1.git
-
 git add -A
 git commit -m "Initial commit"
-git push --set-upstream origin master
 
 cd build
-cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
+cmake -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
+      -DENABLE_TESTS=ON \
+      -DENABLE_BENCHMARKS=ON \
+      ..
+make
+
+cd release
+cmake -DCMAKE_BUILD_TYPE=RELEASE \
+      -DENABLE_BENCHMARKS=ON \
+      ../..
 make
