@@ -58,7 +58,7 @@ relative paths in `my-compile-build-dir-rel'."
          (compilation-directory dir))
     (setq-local my-compile-dir dir)
     (let ((default-directory dir))
-         (call-interactively #'compile))))
+      (call-interactively #'compile))))
 
 (defun my-compile-recompile ()
   "Call `recompile' from a chosen directory."

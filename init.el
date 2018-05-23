@@ -229,6 +229,10 @@ otherwise it is enabled."
   (recentf-mode t)
   (setf recentf-max-saved-items 1000))
 
+(use-package compile
+  :config
+  (setf compile-command (purecopy "make -k -j")))
+
 (use-package my-compile
   :config
   (global-set-key (kbd "\C-cx") #'my-compile)
@@ -360,7 +364,10 @@ otherwise it is enabled."
 
   (when (or (string= python-shell-interpreter "ipython3")
             (string= python-shell-interpreter "ipython"))
-    (setq-default python-shell-interpreter-args  "--matplotlib --classic"
+    (setq-default python-shell-interpreter-args  (concat "--matplotlib"
+                                                         (when (or (equal python-shell-interpreter "ipython3")
+                                                                   (equal python-shell-interpreter "ipython"))
+                                                           " --simple-prompt"))
                   python-shell-completion-setup-code
                   "from IPython.core.completerlib import module_completion"
                   python-shell-completion-string-code
