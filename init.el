@@ -335,6 +335,15 @@ otherwise it is enabled."
   :config
   (pending-delete-mode 1))
 
+(use-package highlight-symbol
+  :config
+  (setq highlight-symbol-idle-delay 0))
+
+(use-package multiple-cursors
+  :config
+  (global-set-key (kbd "C-c u") #'mc/mark-all-symbols-like-this-in-defun)
+  (global-set-key (kbd "C-c l") #'mc/edit-lines))
+
 (use-package asm-mode
   :config
   (setq asm-comment-char ?\@))
@@ -1064,7 +1073,7 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (company-clang powerline pdf-tools package-build shut-up epl git commander f dash s cask flycheck protobuf-mode helm-gtags use-package diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))))
+    (highlight-symbol multiple-cursors company-clang powerline pdf-tools package-build shut-up epl git commander f dash s cask flycheck protobuf-mode helm-gtags use-package diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
