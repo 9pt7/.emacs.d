@@ -31,6 +31,7 @@
         company-minimum-prefix-length 1
         company-show-numbers t
         company-clang-executable (or (executable-find "clang-5.0")
+                                     (executable-find "clang-6.0")
                                      (executable-find "clang"))
         company-require-match nil)
   (add-hook 'prog-mode-hook 'company-mode-on))
@@ -43,8 +44,11 @@
   (add-to-list 'company-backends 'company-anaconda))
 (use-package cmake-mode
   :ensure t)
+
+(setenv "PAGER" "cat")
+(setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name user-emacs-directory) "bin"))
+
 (use-package exec-path-from-shell
-  :if (memq window-system '(mac ns))
   :ensure t
   :config
   (setq exec-path-from-shell-variables '("PATH"
@@ -53,6 +57,14 @@
   ;; Need LANG for spell check (not initialized in launcher env)
   (setenv "LANG" "en_CA.UTF-8")
   (exec-path-from-shell-initialize))
+
+(require 'cc-mode)
+(use-package clang-format
+  :ensure t
+  :config
+  (advice-add #'c-indent-region :override #'clang-format-region)
+  (define-key c++-mode-map (kbd "TAB")  #'clang-format-region))
+
 
 (use-package flyspell
   :config
@@ -284,10 +296,6 @@ otherwise it is enabled."
 (global-set-key (kbd "\C-cq") #'grep)
 (global-set-key (kbd "\C-cv") #'my-revert-buffer)
 
-
-(setenv "PAGER" "cat")
-(setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name user-emacs-directory) "bin"))
-
 (defadvice pwd (before kill-pwd activate)
   "Place working directory in kill ring when calling `pwd'."
   (kill-new default-directory))
@@ -337,10 +345,12 @@ otherwise it is enabled."
 
 (use-package highlight-symbol
   :config
-  (setq highlight-symbol-idle-delay 0))
+  (setq highlight-symbol-idle-delay 0.5))
 
 (use-package multiple-cursors
   :config
+  (define-key mc/keymap (kbd "<return>") nil)
+  (global-set-key (kbd "C-c j") #'mc/mark-all-like-this-dwim)
   (global-set-key (kbd "C-c u") #'mc/mark-all-symbols-like-this-in-defun)
   (global-set-key (kbd "C-c l") #'mc/edit-lines))
 
@@ -388,6 +398,9 @@ otherwise it is enabled."
   :ensure t
   :diminish flycheck-mode
   :config
+  (let ((fixed (executable-find "chktex-fixed")))
+    (when fixed
+      (setq flycheck-tex-chktex-executable fixed)))
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
 (require 'cc-mode)
@@ -538,6 +551,9 @@ otherwise it is enabled."
             (equal major-mode 'c-mode))
     (my-update-gtags)))
 
+(use-package modern-cpp-font-lock
+  :ensure t)
+
 (add-hook 'after-save-hook #'my-update-gtags-on-save-hook)
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
@@ -561,7 +577,7 @@ otherwise it is enabled."
 %?")))
     (ignore-errors (org-capture))))
 
-(global-set-key "\C-cl" 'org-store-link)
+;; (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
 
@@ -779,6 +795,7 @@ The app is chosen from your OS's preference."
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook #'reftex-mode)
   (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
 
   (setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
         preview-auto-cache-preamble t
@@ -1073,7 +1090,7 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (highlight-symbol multiple-cursors company-clang powerline pdf-tools package-build shut-up epl git commander f dash s cask flycheck protobuf-mode helm-gtags use-package diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))))
+    (clang-format modern-cpp-font-lock yasnippet-snippets yasnippet highlight-symbol multiple-cursors company-clang powerline pdf-tools package-build shut-up epl git commander f dash s cask flycheck protobuf-mode helm-gtags use-package diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)

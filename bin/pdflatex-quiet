@@ -1,0 +1,2 @@
+#!/bin/sh
+texfot --interactive --quiet --ignore "^This is pdfTeX" --ignore "^Output written on" pdflatex --shell-escape --synctex=-1 $@

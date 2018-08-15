@@ -12,12 +12,13 @@ fi
 
 cp -nrT $template_dir $1
 cd $1
-mkdir include/$1
-touch include/$1/$1.hpp
 touch src/$1.cc
-touch src/$1-test.cc
+touch test/$1-test.cc
 
 sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/CMakeLists.txt" > CMakeLists.txt
+sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/src/CMakeLists.txt" > src/CMakeLists.txt
+sed -e "s/__PROJECT_NAME__/$1/g" "$template_dir/test/CMakeLists.txt" > test/CMakeLists.txt
+
 
 dset() {
     echo "s~\($1 *=\).*~\1 $2~g"
@@ -46,15 +47,9 @@ git add -A
 git commit -m "Initial commit"
 
 cd build
-cmake -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-      -DENABLE_TESTS=ON \
-      -DENABLE_BENCHMARKS=ON \
-      ..
+cmake-dev ..
 make
 
 cd release
-cmake -DCMAKE_BUILD_TYPE=RELEASE \
-      -DENABLE_BENCHMARKS=ON \
-      ../..
+cmake -DCMAKE_BUILD_TYPE=RELEASE ../..
 make

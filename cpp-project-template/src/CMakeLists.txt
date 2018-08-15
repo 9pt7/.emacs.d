@@ -1,0 +1,2 @@
+add_library(__PROJECT_NAME__ __PROJECT_NAME__.cc)
+target_include_directories(__PROJECT_NAME__ PUBLIC include)

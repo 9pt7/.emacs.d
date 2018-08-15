@@ -4,9 +4,21 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        LaTeX-babel-insert-hyphen
+        LaTeX-insert-left-brace
+        TeX-insert-backslash
+        backward-sexp
         c-electric-delete-forward
+        c-electric-lt-gt
+        c-electric-paren
+        c-electric-semi&comma
         c-electric-slash
+        forward-sexp
+        gdb-delchar-or-quit
+        increment-number-at-point
+        kill-region
         mark-sexp
+        my-exchange-point-and-mark
         ))
 
 (setq mc/cmds-to-run-once

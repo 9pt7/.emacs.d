@@ -1,0 +1,12 @@
+#!/bin/bash
+
+OUT="$(chktex $@)"
+CODE=$?
+
+if [ -z "$OUT" ]
+then
+   exit 0
+else
+    echo "$OUT"
+    exit "$CODE"
+fi
