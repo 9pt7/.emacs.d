@@ -3,76 +3,81 @@
 ;;; Commentary:
 ;;; Code:
 
-(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
 
-(require 'cl)
-
-(setq-local lexical-binding t)
-
+
+;; Package configuration
+;;
+;; Make sure use-package is installed and loaded
 (require 'package)
 (setf package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-			 ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 (package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+(package-refresh-contents t)            ;async package refresh
 (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
+  (package-install 'use-package))
 (require 'use-package)
-(use-package diminish
-  :ensure t)
 
-(use-package company
-  :ensure t
-  :diminish company-mode
-  :config
-  (require 'company-clang)
-  (setf company-idle-delay 0.3
-        company-minimum-prefix-length 1
-        company-show-numbers t
-        company-clang-executable (or (executable-find "clang-5.0")
-                                     (executable-find "clang-6.0")
-                                     (executable-find "clang"))
-        company-require-match nil)
-  (add-hook 'prog-mode-hook 'company-mode-on))
-(use-package company-anaconda
-  :ensure t
-  :config
-  (require 'python)
-  (add-hook 'python-mode-hook #'company-mode)
-  (add-hook 'python-mode-hook #'anaconda-mode)
-  (add-to-list 'company-backends 'company-anaconda))
-(use-package cmake-mode
-  :ensure t)
+
+;; Environment variables
 
-(setenv "PAGER" "cat")
-(setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name user-emacs-directory) "bin"))
-
+;; Make sure environment variables are properly taken from shell (osx)
 (use-package exec-path-from-shell
   :ensure t
   :config
   (setq exec-path-from-shell-variables '("PATH"
 					 "MANPATH"
 					 "DICTIONARY"))
-  ;; Need LANG for spell check (not initialized in launcher env)
-  (setenv "LANG" "en_CA.UTF-8")
   (exec-path-from-shell-initialize))
 
-(require 'cc-mode)
-(use-package clang-format
+;; Need LANG for spell check (not initialized in launcher env)
+(setenv "DICTIONARY" "en_US")
+;; less breaks shell; use cat
+(setenv "PAGER" "cat")
+;; add my own binaries to PATH
+(setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name user-emacs-directory) "bin"))
+;; Make ipython prompt work in emacs
+(setenv "IPY_TEST_SIMPLE_PROMPT" "1")
+;; Use emacs client as editor
+(setenv "EDITOR" "emacsclient")
+
+;; direnv loads environment variables based on directory
+(use-package direnv
   :ensure t
   :config
-  (advice-add #'c-indent-region :override #'clang-format-region)
-  (define-key c++-mode-map (kbd "TAB")  #'clang-format-region))
+  (direnv-mode))
 
+
+;; Code completion
 
-(use-package flyspell
+(use-package company
+  :ensure t
+  :diminish company-mode
   :config
-  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-  (add-hook 'text-mode-hook #'flyspell-mode)
-  (setq flyspell-issue-welcome-flag nil)
-  (setq flyspell-persistent-highlight t))
+  (setf company-idle-delay 0.3
+        company-minimum-prefix-length 1
+        company-show-numbers t
+        company-require-match nil)
+  (global-company-mode 1))
 
+;; Python completion/jump to definition
+(use-package anaconda-mode
+  :config
+  (require 'python)
+  (add-hook 'python-mode-hook #'anaconda-mode))
+
+;; Python completion
+(use-package company-anaconda
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'company-anaconda))
+
+(use-package company-shell
+  :ensure t
+  :config
+  (add-to-list 'company-backends 'company-shell))
+
+
+;; Visuals
 (use-package alect-themes
   :ensure t
   :config
@@ -80,6 +85,78 @@
   (custom-theme-set-faces
    'alect-dark
    '(flyspell-incorrect  ((t (:underline (:color "red" :style wave)))))))
+(set-face-attribute 'default nil :height 120)
+
+
+;; Modeline documentation
+(use-package eldoc
+  :config
+  (add-hook 'c-mode-hook #'eldoc-mode))
+
+
+;; PDF
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
+
+
+;; Helm
+(use-package helm
+  :ensure t
+  :config
+  (global-set-key (kbd "C-x C-w") #'write-file)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  (global-set-key (kbd "C-c i") #'helm-mini)
+  (global-set-key (kbd "M-x") #'helm-M-x))
+(use-package helm-mode
+  :diminish helm-mode
+  :config
+  (setq helm-completing-read-handlers-alist
+        '((describe-function . helm-completing-read-symbols)
+          (describe-variable . helm-completing-read-symbols)
+          (completion-at-point . nil))
+        helm-mode-handle-completion-in-region nil)
+  (helm-mode 1))
+
+
+;; Projectile
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode))
+(use-package helm-projectile
+  :ensure t)
+
+
+(use-package diminish
+  :ensure t)
+
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "mypackages")))
+
+(require 'cl-lib)
+
+(setq-local lexical-binding t)
+
+(use-package abbrev
+  :config
+  (abbrev-mode -1))
+
+(use-package simple
+  :config
+  (auto-fill-mode -1))
+
+
+(use-package cmake-mode
+  :ensure t)
+
+
+(require 'cc-mode)
+(use-package clang-format
+  :ensure t
+  :config
+  (advice-add #'c-indent-region :override #'clang-format-region)
+  (define-key c++-mode-map (kbd "TAB")  #'clang-format-region))
 
 ;; Unbind suspend when in a separate window
 (when (or (eq window-system 'x)
@@ -106,14 +183,6 @@ Advise around ORIG-FUN called with ARGS."
   :config
   (setq Man-notify-method 'pushy))
 
-(use-package pdf-tools
-  :ensure t)
-
-(use-package pdf-view
-  :config
-  (add-to-list 'auto-mode-alist '("\\.\\(?:pdf\\|PDF\\)\\'" . pdf-view-mode))
-  (add-hook #'pdf-view-mode-hook #'pdf-tools-enable-minor-modes))
-
 (cl-flet ((disable (mode) (when (fboundp mode) (funcall mode -1))))
   (disable 'menu-bar-mode)
   (disable 'tool-bar-mode)
@@ -135,7 +204,23 @@ Advise around ORIG-FUN called with ARGS."
 (setf user-full-name "Peter Thompson"
       user-mail-address "peter.thompson92@gmail.com")
 
-(set-face-attribute 'default nil :height 120)
+(use-package gnus
+  :config
+  (setq gnus-select-method
+        '(nnimap "gmail"
+                 (nnimap-address "imap.gmail.com")
+                 (nnimap-server-port "imaps")
+                 (nnimap-stream ssl))))
+
+(use-package gnus-start
+  :config
+  (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
+
+(use-package smtpmail
+  :config
+  (setq smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587))
+
 
 (setf ring-bell-function 'ignore)
 (setf set-mark-command-repeat-pop t)
@@ -160,14 +245,6 @@ Advise around ORIG-FUN called with ARGS."
 (setq-default indent-tabs-mode nil
               align-default-spacing 2)
 
-(use-package simple
-  :diminish auto-fill-mode
-  :config
-  (add-hook 'prog-mode-hook #'turn-on-auto-fill))
-(use-package eldoc
-  :config
-  (add-hook 'c-mode-hook #'eldoc-mode))
-
 (use-package ediff
   :config
   (setq-default ediff-window-setup-function #'ediff-setup-windows-plain))
@@ -176,7 +253,16 @@ Advise around ORIG-FUN called with ARGS."
   :config
   (setf gdb-show-main t)
   (setq gdb-many-windows t)
-  (setq gdb-display-buffer-other-frame-action nil))
+  (setq gdb-display-buffer-other-frame-action '((display-buffer-reuse-window display-buffer-pop-up-frame)
+                                                (reusable-frames . visible)
+                                                (inhibit-same-window . t)
+                                                (pop-up-frame-parameters
+                                                 (height . 14)
+                                                 (width . 80)
+                                                 (unsplittable . t)
+                                                 (tool-bar-lines)
+                                                 (menu-bar-lines)
+                                                 (minibuffer)))))
 
 (dotimes (i 10)
   (global-set-key (kbd (format "M-%d" i))
@@ -227,15 +313,6 @@ otherwise it is enabled."
   :config
   (setf uniquify-buffer-name-style 'post-forward-angle-brackets))
 
-(use-package autorevert
-  :diminish auto-revert-mode
-  :config
-  (setf auto-revert-interval 1))
-(use-package doc-view
-  :config
-  (add-hook 'doc-view-mode-hook #'auto-revert-mode)
-  (setf doc-view-resolution 300))
-
 (use-package recentf
   :config
   (recentf-mode t)
@@ -243,18 +320,20 @@ otherwise it is enabled."
 
 (use-package compile
   :config
-  (setf compile-command (purecopy "make -k -j")))
+  (setf compile-command "make -k -j4")
+  (setf compilation-read-command nil)
+  (setf compilation-save-buffers-predicate t))
 
 (use-package my-compile
   :config
   (global-set-key (kbd "\C-cx") #'my-compile)
-  (global-set-key (kbd "\C-cr") #'my-compile-recompile))
+  (global-set-key (kbd "\C-cw") #'my-compile-setup-windows))
 
-(use-package window-layout
+(use-package elscreen
   :config
-  (global-set-key (kbd "M-\\") #'window-layout-push)
-  (global-set-key (kbd "M-[") #'window-layout-pop-backward)
-  (global-set-key (kbd "M-]") #'window-layout-pop-forward))
+  (setq elscreen-tab-display-control nil)
+  (setq elscreen-display-screen-number nil)
+  (elscreen-start))
 
 (require 'grep)
 (let ((ack-cmd (cond ((executable-find "ack-grep") "ack-grep")
@@ -281,35 +360,20 @@ otherwise it is enabled."
   :config
   (defvar magit-last-seen-setup-instructions "1.4.0"))
 
-(require 'files)
-(defun my-revert-buffer()
-  "Call `revert-buffer' without query."
-  (interactive)
-  (revert-buffer nil t))
-
 (global-set-key (kbd "\C-cs") #'shell)
 (global-set-key (kbd "\C-cd") #'gdb)
-(global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "\C-cf") #'recentf-open-files)
 (global-set-key (kbd "\C-cg") #'magit-status)
 (global-set-key (kbd "\C-cb") #'grep-global)
 (global-set-key (kbd "\C-cq") #'grep)
-(global-set-key (kbd "\C-cv") #'my-revert-buffer)
 
 (defadvice pwd (before kill-pwd activate)
   "Place working directory in kill ring when calling `pwd'."
   (kill-new default-directory))
 
-(use-package bash-completion
-  :ensure t
-  :config
-  (bash-completion-setup)
-  (setq bash-completion-nospace t))
-
 (use-package comint
   :config
-  (defun my-comint-disable-echoing ()
-    (setq comint-process-echoes t))
+  (setq comint-process-echoes t)
   (setf comint-completion-addsuffix t
         comint-completion-autolist t
         comint-input-ignoredups t
@@ -336,8 +400,7 @@ otherwise it is enabled."
   (let ((shell (executable-find "bash")))
     (when shell
       (setf explicit-shell-file-name shell)))
-  (add-hook 'shell-mode-hook #'compilation-shell-minor-mode)
-  (add-hook 'shell-mode-hook #'my-comint-disable-echoing))
+  (add-hook 'shell-mode-hook #'compilation-shell-minor-mode))
 
 (use-package delsel
   :config
@@ -377,22 +440,22 @@ otherwise it is enabled."
                 (cl-flet ((exec-find (program)
                                      (when (executable-find program) program)))
                   (cond ((exec-find "ipython3"))
-                        ((exec-find "ipython"))
                         ((exec-find "python3"))
+                        ((exec-find "ipython"))
                         ((exec-find "python")))))
 
   (when (or (string= python-shell-interpreter "ipython3")
             (string= python-shell-interpreter "ipython"))
-    (setq-default python-shell-interpreter-args  (concat "--matplotlib"
-                                                         (when (or (equal python-shell-interpreter "ipython3")
-                                                                   (equal python-shell-interpreter "ipython"))
-                                                           " --simple-prompt"))
-                  python-shell-completion-setup-code
-                  "from IPython.core.completerlib import module_completion"
-                  python-shell-completion-string-code
-                  "'                                   ;'.join(module_completion('''%s'''))\n" ;
-                  python-shell-completion-string-code
-                  "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")))
+    (setq-default python-shell-interpreter-args
+                  (when (or (equal python-shell-interpreter "ipython3")
+                            (equal python-shell-interpreter "ipython"))
+                    "--matplotlib"))
+    python-shell-completion-setup-code
+    "from IPython.core.completerlib import module_completion"
+    python-shell-completion-string-code
+    "'                                   ;'.join(module_completion('''%s'''))\n" ;
+    python-shell-completion-string-code
+    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
 
 (use-package flycheck
   :ensure t
@@ -405,32 +468,8 @@ otherwise it is enabled."
 
 (require 'cc-mode)
 
-(defun transform-to-mock-methods ()
-  "Transform method declarations in active region to mocks."
-  (interactive)
-  (save-restriction
-    (narrow-to-region (point) (mark))
-    (goto-char (point-min))
-    (while (search-forward-regexp "virtual\s+\\(\\(?:\\sw\\|\\s_\\)+\\)\s+\\(\\(?:\\sw\\|\\s_\\)+\\)\\(([^\n]*)\\)\s*\\(const\\)?\\(?:\s*=\s*0\\)?;$" nil t)
-      (replace-match
-       (concat (if (match-string 4)
-                   "MOCK_CONST_METHOD"
-                 "MOCK_METHOD")
-               "("
-               (match-string 2)
-               ", "
-               (match-string 1)
-               (match-string 3)
-               ");")
-       nil
-       t))))
-
 (add-hook 'c++-mode-hook
           (defun my-c++-flycheck-hook ()
-            ;; Use clang checker on OS-X
-            ;; (flycheck-select-checker (case system-type
-            ;;                            ('darwin 'c/c++-clang)
-            ;;                            (t 'c/c++-gcc)))
             (setq-local flycheck-clang-language-standard "c++17")
             (setq-local flycheck-gcc-language-standard "c++17")))
 
@@ -439,32 +478,6 @@ otherwise it is enabled."
             ;; (flycheck-select-checker 'c/c++-gcc)
             (setq-local flycheck-clang-language-standard "gnu11")
             (setq-local flycheck-gcc-language-standard "gnu11")))
-
-;; (use-package irony
-;;   :ensure t
-;;   :config
-;;   (setq irony-additional-clang-options (list "-Wdocumentation" "-Wall" "-Wextra"))
-;;   (add-hook 'c++-mode-hook #'irony-mode)
-;;   (add-hook 'c-mode-hook #'irony-mode)
-;;   (add-hook 'objc-mode-hook #'irony-mode)
-;;   (defun my-irony-mode-hook ()
-;;     "Use irony mode's `completion-at-point' and `complete-symbol'."
-;;     (define-key irony-mode-map [remap completion-at-point]
-;;       'irony-completion-at-point-async)
-;;     (define-key irony-mode-map [remap complete-symbol]
-;;       'irony-completion-at-point-async))
-;;   (add-hook 'irony-mode-hook #'my-irony-mode-hook)
-;;   (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
-;; (use-package flycheck-irony
-;;   :ensure t
-;;   :config
-;;   (eval-after-load 'flycheck
-;;     '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
-;; (use-package company-irony
-;;   :ensure t
-;;   :config
-;;   (eval-after-load 'company
-;;     '(add-to-list 'company-backends 'company-irony)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
@@ -497,64 +510,11 @@ otherwise it is enabled."
 
 ;; Fix c++ enum
 
-(defun inside-class-enum-p (pos)
-  "Check if POS is within the braces of a C++ enum class."
-  (save-excursion
-    (goto-char pos)
-    (beginning-of-line)
-    (up-list -1)
-    (or (looking-back "enum[ \t]+class[ \t]+\\_<.+?\\_>[ \t]*")
-        (looking-back "enum[ \t]+\\(?:class[ \t]+\\)?[ \t]*\\_<.*?\\_>[ \t]*:[ \t]*\\_<.*?\\_>[ \t]*"))))
-
-(defun align-enum-class (langelem)
-  (if (inside-class-enum-p (c-langelem-pos langelem))
-      (if (save-excursion
-            (beginning-of-line)
-            (looking-at "[ \t]*}"))
-          '-
-        0)
-    (c-lineup-topmost-intro-cont langelem)))
-
-(defun align-enum-class-closing-brace (langelem)
-  (if (inside-class-enum-p (c-langelem-pos langelem))
-      (if (save-excursion
-            (beginning-of-line)
-            (looking-at "[ \t]*}"))
-          '-
-        0)
-    '+))
-
-(defun fix-enum-class ()
-  "Setup `c++-mode' to better handle \"class enum\"."
-  (add-to-list 'c-offsets-alist '(topmost-intro-cont . align-enum-class))
-  (add-to-list 'c-offsets-alist
-               '(statement-cont . align-enum-class-closing-brace)))
-
-(add-hook 'c++-mode-hook #'fix-enum-class)
-
-(defun my-update-gtags ()
-  "Update gtags for the current buffer file."
-  (interactive)
-  (cl-flet ((call (prog &rest args)
-                  (with-temp-buffer
-                    (unless (zerop (apply #'call-process prog nil t nil args))
-                      (error (replace-regexp-in-string "\n+$"
-                                                       ""
-                                                       (buffer-string)))))))
-    (when (buffer-file-name)
-      (call "global" "--print-dbpath")	; Make sure we are in a gtags project.
-      (call "global" "-u"))))
-
-(defun my-update-gtags-on-save-hook ()
-  "Update gtags for the current file."
-  (when (or (equal major-mode 'c++-mode)
-            (equal major-mode 'c-mode))
-    (my-update-gtags)))
-
 (use-package modern-cpp-font-lock
-  :ensure t)
+  :ensure t
+  :config
+  (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode))
 
-(add-hook 'after-save-hook #'my-update-gtags-on-save-hook)
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -718,7 +678,8 @@ otherwise it is enabled."
       dired-dwim-target t
       dired-isearch-filenames 'dwim
       dired-recursive-copies 'always
-      dired-recursive-deletes 'always)
+      dired-recursive-deletes 'always
+      delete-by-moving-to-trash t)
 (require 'ibuffer)
 ;; Use Dired x
 (require 'dired-x)
@@ -768,7 +729,7 @@ The app is chosen from your OS's preference."
             ((system-p "gnu/linux")
              (let ((process-connection-type nil))
                (start-process "" nil "xdg-open" fname)))
-            ((t (error "Unknown system type: %s" system-type))))
+            (t (error "Unknown system type: %s" system-type)))
       (recentf-add-file fname))))
 
 (global-set-key "\C-co" 'open-in-external-app)
@@ -796,6 +757,8 @@ The app is chosen from your OS's preference."
   (add-hook 'LaTeX-mode-hook #'reftex-mode)
   (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
   (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+  (push '("Latexmk" "latexmk %s" TeX-run-TeX nil t :help "Run latexmk") TeX-command-list)
+
 
   (setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
         preview-auto-cache-preamble t
@@ -998,30 +961,6 @@ The app is chosen from your OS's preference."
   (define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package))
 
 
-(use-package helm
-  :ensure t
-  :config
-  (global-set-key (kbd "C-x C-w") #'write-file)
-  (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  (global-set-key (kbd "C-c i") #'helm-mini)
-  (global-set-key (kbd "M-x") #'helm-M-x))
-(use-package helm-mode
-  :diminish helm-mode
-  :config
-  (setq helm-completing-read-handlers-alist
-        '((describe-function . helm-completing-read-symbols)
-          (describe-variable . helm-completing-read-symbols)
-          (completion-at-point . nil))
-        helm-mode-handle-completion-in-region nil)
-  (helm-mode 1))
-
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-mode))
-(use-package helm-projectile
-  :ensure t)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
 
@@ -1030,8 +969,6 @@ The app is chosen from your OS's preference."
 
 ;; Finally start emacs server
 (server-start)
-(setenv "EDITOR" "emacsclient")
-;; (setenv "PAGER" "cat /dev/stdin > /tmp/epage; emacsclient -n /tmp/epage")
 
 (require 'cc-vars)
 
@@ -1065,15 +1002,6 @@ The app is chosen from your OS's preference."
 
 (add-to-list 'auto-mode-alist '("Sconstruct\\'" . python-mode))
 
-(defun get-doxygen-directory ()
-  "Set the directory from which doxygen is called."
-  (interactive)
-  (let* ((doxy-dir (locate-dominating-file default-directory "Doxyfile"))
-         (dir (read-directory-name
-               "Doxygen directory: "
-               (or (when doxy-dir (expand-file-name doxy-dir))
-                   default-directory))))))
-
 (provide '.emacs)
 ;;; .emacs ends here
 
@@ -1090,7 +1018,11 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (clang-format modern-cpp-font-lock yasnippet-snippets yasnippet highlight-symbol multiple-cursors company-clang powerline pdf-tools package-build shut-up epl git commander f dash s cask flycheck protobuf-mode helm-gtags use-package diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))))
+    (use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
+ '(safe-local-variable-values
+   (quote
+    ((projectile-project-compilation-cmd . "make -k -j4")
+     (projectile-project-compilation-dir . "build")))))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
