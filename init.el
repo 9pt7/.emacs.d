@@ -129,6 +129,113 @@
   :ensure t)
 
 
+
+
+;; e-mail
+;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+
+
+(setq user-full-name  "Peter Thompson")
+
+(use-package mu4e
+  :config
+  (require 'mu4e-vars)
+  (require 'mu4e-context)
+  (require 'mu4e-compose)
+
+  ;; use mu4e for e-mail in emacs
+  (setq mail-user-agent 'mu4e-user-agent)
+
+  ;; This is better with mbsync
+  (setq mu4e-change-filenames-when-moving t)
+  (setq mu4e-maildir (expand-file-name "~/Maildir"))
+
+
+  ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+  (setq mu4e-sent-messages-behavior 'delete)
+
+  ;; setup some handy shortcuts
+  ;; you can quickly switch to your Inbox -- press ``ji''
+  ;; then, when you want archive some messages, move them to
+  ;; the 'All Mail' folder by pressing ``ma''.
+
+  ;; (setq mu4e-maildir-shortcuts
+  ;;       `(("/gmail/Inbox" . ?i)
+  ;;         (,mu4e-sent-folder . ?s)
+  ;;         (,mu4e-trash-folder . ?t)
+  ;;         (,mu4e-refile-folder . ?a)))
+
+  (setq mu4e-contexts
+        (list
+         (make-mu4e-context
+          :name "gmail"
+          :match-func (lambda (msg) t
+                        (cond ((null msg))
+                              ((string-match-p "^/gmail/" (mu4e-message-field msg :maildir)))))
+          :vars '((user-mail-address . "peter.thompson92@gmail.com")
+                  (mu4e-drafts-folder . "/gmail/Drafts")
+                  (mu4e-sent-folder . "/gmail/Sent Mail")
+                  (mu4e-trash-folder . "/gmail/Trash")
+                  (mu4e-refile-folder . "/gmail/All Mail")
+                  (mu4e-sent-messages-behavior . delete)
+                  (smtpmail-smtp-server . "smtp.gmail.com")
+                  (smtpmail-smtp-service . 587)
+                  (smtpmail-smtp-user . "peter.thompson92@gmail.com")))
+         (make-mu4e-context
+          :name "motryx"
+          :match-func (lambda (msg)
+                        (when msg (string-match-p "^/motryx/" (mu4e-message-field msg :maildir))))
+          :vars '((user-mail-address . "p.thompson@motryx.com")
+                  (mu4e-drafts-folder . "/motryx/Drafts")
+                  (mu4e-sent-folder . "/motryx/Sent Items")
+                  (mu4e-trash-folder . "/motryx/Deleted Items")
+                  (mu4e-refile-folder . "/motryx/Archive")
+                  (mu4e-sent-messages-behavior . delete)
+                  (smtpmail-smtp-server . "smtp.office365.com")
+                  (smtpmail-smtp-service . 587)
+                  (smtpmail-smtp-user . "p.thompson@motryx.com")))))
+  (setq mu4e-completing-read-function #'completing-read)
+  (setq mu4e-context-policy 'ask-if-none)
+  (setq mu4e-compose-context-policy 'always-ask)
+  (setq mu4e-hide-index-messages t)
+  (setq mu4e-use-fancy-chars t)
+
+  (add-to-list 'mu4e-bookmarks
+               (make-mu4e-bookmark
+                :name "All Inboxes"
+                :query "maildir:/gmail/Inbox OR maildir:/motryx/Inbox"
+                :key ?i))
+  (add-to-list 'mu4e-bookmarks
+               (make-mu4e-bookmark
+                :name "All Sent"
+                :query "maildir:\"/gmail/Sent Mail\" OR maildir:\"/motryx/Sent Items\""
+                :key ?s))
+
+
+  ;; allow for updating mail using 'U' in the main view:
+  (setq mu4e-get-mail-command "mbsync -a"
+        mu4e-update-interval 90)
+
+  ;; start mu4e
+  (mu4e t))
+
+(use-package helm-mu
+  :ensure t)
+
+
+(use-package mu4e-alert
+  :ensure t
+  :config
+  (mu4e-alert-set-default-style 'libnotify)
+  (mu4e-alert-enable-notifications)
+  (mu4e-alert-enable-mode-line-display)
+  (defun my-mu4e-mode-line-formatter (num-messages)
+    (when (> num-messages 0)
+      (format " %s✉" 1)))
+  (setq mu4e-alert-modeline-formatter #'my-mu4e-mode-line-formatter)
+  (setq mu4e-alert-interesting-mail-query
+        "flag:unread AND NOT flag:trashed AND (maildir:/gmail/Inbox OR maildir:/motryx/Inbox)"))
+
 (use-package diminish
   :ensure t)
 
@@ -200,26 +307,6 @@ Advise around ORIG-FUN called with ARGS."
 (use-package face-remap
   :config
   (setf text-scale-mode-step 1.1))
-
-(setf user-full-name "Peter Thompson"
-      user-mail-address "peter.thompson92@gmail.com")
-
-(use-package gnus
-  :config
-  (setq gnus-select-method
-        '(nnimap "gmail"
-                 (nnimap-address "imap.gmail.com")
-                 (nnimap-server-port "imaps")
-                 (nnimap-stream ssl))))
-
-(use-package gnus-start
-  :config
-  (setq gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
-
-(use-package smtpmail
-  :config
-  (setq smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 587))
 
 
 (setf ring-bell-function 'ignore)
@@ -1018,11 +1105,12 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
+    (mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
  '(safe-local-variable-values
    (quote
     ((projectile-project-compilation-cmd . "make -k -j4")
-     (projectile-project-compilation-dir . "build")))))
+     (projectile-project-compilation-dir . "build"))))
+ '(send-mail-function (quote smtpmail-send-it)))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
