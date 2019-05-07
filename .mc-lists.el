@@ -16,6 +16,7 @@
         forward-sexp
         gdb-delchar-or-quit
         increment-number-at-point
+        indent-for-tab-command
         isearch-forward-regexp
         isearch-printing-char
         kill-region

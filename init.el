@@ -1,4 +1,3 @@
-
 ;;; .emacs -- My emacs config file
 ;;; Commentary:
 ;;; Code:
@@ -211,17 +210,12 @@
                 :query "maildir:\"/gmail/Sent Mail\" OR maildir:\"/motryx/Sent Items\""
                 :key ?s))
 
-
-  ;; allow for updating mail using 'U' in the main view:
   (setq mu4e-get-mail-command "mbsync -a"
-        mu4e-update-interval 90)
-
-  ;; start mu4e
+        mu4e-update-interval 180)
   (mu4e t))
 
 (use-package helm-mu
   :ensure t)
-
 
 (use-package mu4e-alert
   :ensure t
@@ -235,6 +229,72 @@
   (setq mu4e-alert-modeline-formatter #'my-mu4e-mode-line-formatter)
   (setq mu4e-alert-interesting-mail-query
         "flag:unread AND NOT flag:trashed AND (maildir:/gmail/Inbox OR maildir:/motryx/Inbox)"))
+
+
+;; Spelling
+(use-package ispell
+  :config
+  (let ((hunspell-exec (executable-find "hunspell")))
+    (when hunspell-exec
+
+      ;; Work around for Hunspell 1.7.0
+      (defun manage-hunspell-1.7 (old-function-ispell &rest arguments)
+        "Add a null device when calling \"hunspell -D\"."
+        (if  (equal "-D"  (nth 4 arguments))
+            (funcall old-function-ispell hunspell-exec null-device t nil "-D" null-device)
+          (apply old-function-ispell arguments)))
+      (advice-add 'ispell-call-process :around #'manage-hunspell-1.7)
+
+      (setq ispell-program-name hunspell-exec)
+      (setq ispell-local-dictionary-alist '(("en_US"
+                                             "[[:alpha:]]"
+                                             "[^[:alpha:]]"
+                                             "[']"
+                                             t
+                                             ("-d" "en_US")
+                                             nil
+                                             iso-8859-1)))
+      (ispell-change-dictionary "en_US" t))))
+
+
+;; Comint
+
+(use-package comint
+  :config
+  (setq
+   ;; We get completion from company
+   comint-completion-autolist nil
+   comint-completion-addsuffix t
+   comint-input-ignoredups t
+   ;; Do not set to non-nil; breaks clisp
+   comint-process-echoes nil
+   comint-move-point-for-output nil
+   comint-scroll-show-maximum-output nil
+   comint-buffer-maximum-size 10000)
+  (add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
+  (defun close-comint-hook ()
+    "Automatically close the comint buffer."
+    (set-process-sentinel (get-buffer-process (current-buffer))
+                          (lambda (process event)
+                            (when (string= event "finished\n")
+                              (kill-buffer (current-buffer))))))
+  (add-hook 'comint-exec-hook #'close-comint-hook)
+  (defun my-comint-scroll-hook()
+    (setq-local scroll-conservatively 101))
+  (add-hook 'comint-mode-hook #'my-comint-scroll-hook))
+
+
+;; Shell
+
+(use-package shell
+  :config
+  (let ((shell (executable-find "bash")))
+    (when shell
+      (setq explicit-shell-file-name shell)))
+  (add-hook 'shell-mode-hook #'compilation-shell-minor-mode))
+
+
+
 
 (use-package diminish
   :ensure t)
@@ -457,37 +517,6 @@ otherwise it is enabled."
 (defadvice pwd (before kill-pwd activate)
   "Place working directory in kill ring when calling `pwd'."
   (kill-new default-directory))
-
-(use-package comint
-  :config
-  (setq comint-process-echoes t)
-  (setf comint-completion-addsuffix t
-        comint-completion-autolist t
-        comint-input-ignoredups t
-        ;; Do not set to non-nil; breaks clisp
-        comint-process-echoes nil)
-  ;; Makes it slightly less slow
-  (setf comint-move-point-for-output nil
-        comint-scroll-show-maximum-output nil)
-  (setf comint-buffer-maximum-size 10000)
-  (add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
-  (defun close-comint-hook ()
-    "Automatically close the comint buffer."
-    (set-process-sentinel (get-buffer-process (current-buffer))
-                          (lambda (process event)
-                            (when (string= event "finished\n")
-                              (kill-buffer (current-buffer))))))
-  (add-hook 'comint-exec-hook #'close-comint-hook)
-  (defun my-comint-scroll-hook()
-    (setq-local scroll-conservatively 101))
-  (add-hook 'comint-mode-hook #'my-comint-scroll-hook))
-
-(use-package shell
-  :config
-  (let ((shell (executable-find "bash")))
-    (when shell
-      (setf explicit-shell-file-name shell)))
-  (add-hook 'shell-mode-hook #'compilation-shell-minor-mode))
 
 (use-package delsel
   :config
@@ -738,25 +767,7 @@ otherwise it is enabled."
 
 %?")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Spelling
-(require 'ispell)
-(use-package rw-hunspell
-  :ensure t
-  :config
-  (let ((hunspell (executable-find "hunspell")))
-    (when hunspell
-      (setenv "DICTIONARY" "en_US")
-      (add-to-list 'ispell-local-dictionary-alist '("en_US"
-                                                    "[[:alpha:]]"
-                                                    "[^[:alpha:]]"
-                                                    "[']"
-                                                    t
-                                                    ("-d" "en_US")
-                                                    nil
-                                                    iso-8859-1))
-      (setq ispell-program-name hunspell)
-      (ispell-change-dictionary "en_US" t))))
+
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dired
@@ -1105,7 +1116,7 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company rw-hunspell openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
+    (mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
  '(safe-local-variable-values
    (quote
     ((projectile-project-compilation-cmd . "make -k -j4")

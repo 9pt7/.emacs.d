@@ -2,18 +2,13 @@
 ;; Automatically generated file!!! DO NOT EDIT!!!
 
 (setq url-cookie-storage
- '((".reddit.com"
-  [url-cookie "HttpOnly" nil "29 Mar 16 03:13:55 [GMT]" "/" ".reddit.com" nil]
-  [url-cookie "__cfduid" "db172b81a45029692dea4a5530e9b74c31427685235" "29 Mar 16 03:13:55 [GMT]" "/" ".reddit.com" nil])
- (".google.com"
-  [url-cookie "PREF" "ID=1111111111111111:FF=0:TM=1449760813:LM=1449760813:V=1:S=surzGVdvGWlTmANU" "31-Dec-2015 16:02:17.00 GMT" "/" ".google.com" nil]
-  [url-cookie "NID" "74=qt69roILSyLc2iTuKtnd022se1kVpVK83R1wOWEdd_Pv5zPTYpEMeAwd-VI7_rfHfdCT7pvewlUkl9zCKYWnYXJF5uynWQu9jHZzXWUrTB3XOub9Kk0KaAno2o898tyS" "10-Jun-2016 15:20:13.00 GMT" "/" ".google.com" nil]
-  [url-cookie "HttpOnly" nil "10-Jun-2016 15:20:13.00 GMT" "/" ".google.com" nil])
- (".google.ca"
-  [url-cookie "PREF" "ID=352acc7b0f9ed6bd:U=27487e3fe7efc1bd:FF=0:TM=1427685193:LM=1427685197:S=0vrHR3RxrS3LPtQZ" "29-Mar-2017 03:13:17.00 GMT" "/" ".google.ca" nil]))
+ '((".google.com"
+  [url-cookie "NID" "181=yRw8vnQJdXAey1O27b-m9vzc36x69ew2Lhp_Uf-a8kW0hT-3P0wQCKdxztktVQgwE9B1yjgU2W2uHhsvsn1OyIerWDevrn4Hm7thPrqPfLxnDxEZda_4GBr1TIN_J2Kl5rzXER-kJINnx9HyW59WJNt3PDEj7uLfc9HA1o0fTWY" "Tue, 22-Oct-2019 12:46:50 GMT" "/" ".google.com" nil]))
 )
 (setq url-cookie-secure-storage
- 'nil)
+ '((".docs.google.com"
+  [url-cookie "S" "spreadsheet_forms=TPemVeSqF2E4Nr_3_pSq3KVAH_cvXkug" "Mon, 22-Apr-2019 13:46:50 GMT" "/forms/d/e/1FAIpQLSegIyPTLLX8VnFvOevu3_elcJrjpBT6bJzqeTJn8Fv1xJMUFg" ".docs.google.com" t]))
+)
 
 ;; Local Variables:
 ;; version-control: never
