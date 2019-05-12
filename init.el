@@ -131,10 +131,26 @@
 
 
 ;; e-mail
-;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-
 
 (setq user-full-name  "Peter Thompson")
+
+;; May need to add homebrew installed mu4e path for osx
+(require 'json)
+(when (string-equal system-type "darwin")
+  (add-to-list
+   'load-path
+   (let* ((mu-cellar (file-name-as-directory
+                      (string-trim (with-temp-buffer
+                                     (call-process "brew" nil t nil "--cellar" "mu")
+                                     (buffer-string)))))
+          (mu-info-json (with-temp-buffer
+                          (call-process "brew" nil t nil "info" "--json" "mu")
+                          (goto-char (point-min))
+                          (json-read)))
+          (installed-version (cdr (assoc 'version (aref (cdr (assoc 'installed (aref mu-info-json 0) #'eq)) 0)))))
+     (concat mu-cellar
+             (file-name-as-directory installed-version)
+             "share/emacs/site-lisp/mu/mu4e/"))))
 
 (use-package mu4e
   :config
@@ -220,12 +236,10 @@
 (use-package mu4e-alert
   :ensure t
   :config
-  (mu4e-alert-set-default-style 'libnotify)
-  (mu4e-alert-enable-notifications)
   (mu4e-alert-enable-mode-line-display)
   (defun my-mu4e-mode-line-formatter (num-messages)
     (when (> num-messages 0)
-      (format " %s✉" 1)))
+      (format " %s✉" num-messages)))
   (setq mu4e-alert-modeline-formatter #'my-mu4e-mode-line-formatter)
   (setq mu4e-alert-interesting-mail-query
         "flag:unread AND NOT flag:trashed AND (maildir:/gmail/Inbox OR maildir:/motryx/Inbox)"))
@@ -293,8 +307,12 @@
       (setq explicit-shell-file-name shell)))
   (add-hook 'shell-mode-hook #'compilation-shell-minor-mode))
 
-
-
+
+;; Mac-specific key bindings
+(setq mac-right-command-modifier 'meta
+      mac-command-modifier 'meta
+      mac-right-option-modifier 'super
+      mac-option-modifier 'super)
 
 (use-package diminish
   :ensure t)
@@ -477,6 +495,7 @@ otherwise it is enabled."
   (global-set-key (kbd "\C-cw") #'my-compile-setup-windows))
 
 (use-package elscreen
+  :ensure t
   :config
   (setq elscreen-tab-display-control nil)
   (setq elscreen-display-screen-number nil)
@@ -523,10 +542,12 @@ otherwise it is enabled."
   (pending-delete-mode 1))
 
 (use-package highlight-symbol
+  :ensure t
   :config
   (setq highlight-symbol-idle-delay 0.5))
 
 (use-package multiple-cursors
+  :ensure t
   :config
   (define-key mc/keymap (kbd "<return>") nil)
   (global-set-key (kbd "C-c j") #'mc/mark-all-like-this-dwim)
@@ -560,18 +581,15 @@ otherwise it is enabled."
                         ((exec-find "ipython"))
                         ((exec-find "python")))))
 
-  (when (or (string= python-shell-interpreter "ipython3")
-            (string= python-shell-interpreter "ipython"))
-    (setq-default python-shell-interpreter-args
-                  (when (or (equal python-shell-interpreter "ipython3")
-                            (equal python-shell-interpreter "ipython"))
-                    "--matplotlib"))
-    python-shell-completion-setup-code
-    "from IPython.core.completerlib import module_completion"
-    python-shell-completion-string-code
-    "'                                   ;'.join(module_completion('''%s'''))\n" ;
-    python-shell-completion-string-code
-    "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
+  (let ((ipython-p (or (equal python-shell-interpreter "ipython3")
+                       (equal python-shell-interpreter "ipython"))))
+    (when ipython-p
+      (setq python-shell-interpreter-args "--matplotlib"))))
+
+(use-package blacken
+  :ensure t
+  :config
+  (add-hook 'python-mode #'blacken-mode))
 
 (use-package flycheck
   :ensure t
@@ -594,6 +612,9 @@ otherwise it is enabled."
             ;; (flycheck-select-checker 'c/c++-gcc)
             (setq-local flycheck-clang-language-standard "gnu11")
             (setq-local flycheck-gcc-language-standard "gnu11")))
+
+;; arduino...
+(add-to-list 'auto-mode-alist '("\\.ino\\'" . c++-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; C
@@ -1116,7 +1137,7 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
+    (blacken mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
  '(safe-local-variable-values
    (quote
     ((projectile-project-compilation-cmd . "make -k -j4")
