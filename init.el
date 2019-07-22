@@ -70,6 +70,8 @@
   :config
   (add-to-list 'company-backends 'company-anaconda))
 
+
+
 (use-package company-shell
   :ensure t
   :config
@@ -284,7 +286,7 @@
    comint-process-echoes nil
    comint-move-point-for-output nil
    comint-scroll-show-maximum-output nil
-   comint-buffer-maximum-size 10000)
+   comint-buffer-maximum-size 1024)
   (add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
   (defun close-comint-hook ()
     "Automatically close the comint buffer."
@@ -300,18 +302,22 @@
 
 ;; Shell
 
+(defun set-comint-process-echoes ()
+  (setq comint-process-echoes t))
+
 (use-package shell
   :config
   (let ((shell (executable-find "bash")))
     (when shell
       (setq explicit-shell-file-name shell)))
-  (add-hook 'shell-mode-hook #'compilation-shell-minor-mode))
+  (add-hook 'shell-mode-hook #'compilation-shell-minor-mode)
+  (add-hook 'shell-mode-hook #'set-comint-process-echoes))
 
 
 ;; Mac-specific key bindings
 (setq mac-right-command-modifier 'meta
       mac-command-modifier 'meta
-      mac-right-option-modifier 'super
+      mac-right-option-modifier 'meta
       mac-option-modifier 'super)
 
 (use-package diminish
@@ -571,8 +577,11 @@ otherwise it is enabled."
 (eval-after-load 'lisp-mode
   '(define-key lisp-mode-map (kbd "C-c C-c") 'eval-buffer))
 
+
 (use-package python
   :config
+  (add-hook 'python-mode-hook
+   (lambda () (setq-local comment-inline-offset 2)))
   (setq-default python-shell-interpreter
                 (cl-flet ((exec-find (program)
                                      (when (executable-find program) program)))
@@ -586,10 +595,17 @@ otherwise it is enabled."
     (when ipython-p
       (setq python-shell-interpreter-args "--matplotlib"))))
 
+(use-package rjsx-mode
+  :config
+  (setq js2-mode-show-parse-errors nil)
+  (setq js2-mode-show-strict-warnings nil)
+  (setq js-switch-indent-offset 2)
+  (setq js-indent-level 2))
+
 (use-package blacken
   :ensure t
   :config
-  (add-hook 'python-mode #'blacken-mode))
+  (add-hook 'python-mode-hook #'blacken-mode))
 
 (use-package flycheck
   :ensure t
@@ -620,6 +636,8 @@ otherwise it is enabled."
 ;; C
 
 (require 'cc-mode)
+
+(setq tab-width 4)
 
 (defun my-check-header-guards ()
   "Make sure header guard defines match filename."
@@ -1137,7 +1155,7 @@ The app is chosen from your OS's preference."
  '(initial-buffer-choice t)
  '(package-selected-packages
    (quote
-    (blacken mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up epl git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
+    (docker eslintd-fix eslint-fix rjsx-mode blacken mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
  '(safe-local-variable-values
    (quote
     ((projectile-project-compilation-cmd . "make -k -j4")

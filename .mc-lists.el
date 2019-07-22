@@ -7,21 +7,26 @@
         LaTeX-insert-left-brace
         TeX-insert-backslash
         backward-sexp
+        c-electric-brace
         c-electric-colon
         c-electric-delete-forward
         c-electric-lt-gt
         c-electric-paren
         c-electric-semi&comma
         c-electric-slash
+        comint-delchar-or-maybe-eof
         forward-sexp
         gdb-delchar-or-quit
         increment-number-at-point
         indent-for-tab-command
+        isearch-exit
         isearch-forward-regexp
         isearch-printing-char
         kill-region
         mark-sexp
         my-exchange-point-and-mark
+        rjsx-delete-creates-full-tag
+        rjsx-electric-gt
         ))
 
 (setq mc/cmds-to-run-once
