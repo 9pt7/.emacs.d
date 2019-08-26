@@ -14,6 +14,7 @@
         c-electric-paren
         c-electric-semi&comma
         c-electric-slash
+        c-electric-star
         comint-delchar-or-maybe-eof
         forward-sexp
         gdb-delchar-or-quit

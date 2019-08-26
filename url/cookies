@@ -3,12 +3,13 @@
 
 (setq url-cookie-storage
  '((".google.com"
-  [url-cookie "NID" "181=yRw8vnQJdXAey1O27b-m9vzc36x69ew2Lhp_Uf-a8kW0hT-3P0wQCKdxztktVQgwE9B1yjgU2W2uHhsvsn1OyIerWDevrn4Hm7thPrqPfLxnDxEZda_4GBr1TIN_J2Kl5rzXER-kJINnx9HyW59WJNt3PDEj7uLfc9HA1o0fTWY" "Tue, 22-Oct-2019 12:46:50 GMT" "/" ".google.com" nil]))
+  [url-cookie "NID" "186=B4x6ZUDA798AqfKfE-0ERC8qedlsVJF8j8rZ_bSqpY6s3m7C4M57_Ch4khjPO4v3s3q1J3VOa7AKsMDWZNxq40oW7CkVumDE83RVvKBkckWG0Qiatbmpjj0Hn9-JKRqoA3heqm2Ru9I-v258UhLaxbtPi5DQPKg2hVHA1aevCeM" "Sat, 21-Dec-2019 20:19:18 GMT" "/" ".google.com" nil]
+  [url-cookie "1P_JAR" "2019-06-21-20" "Sun, 21-Jul-2019 20:20:27 GMT" "/" ".google.com" nil]
+  [url-cookie "CGIC" "IgMqLyo" "Wed, 18-Dec-2019 20:19:18 GMT" "/complete/search" ".google.com" nil]
+  [url-cookie "CGIC" "IgMqLyo" "Wed, 18-Dec-2019 20:19:18 GMT" "/search" ".google.com" nil]))
 )
 (setq url-cookie-secure-storage
- '((".docs.google.com"
-  [url-cookie "S" "spreadsheet_forms=TPemVeSqF2E4Nr_3_pSq3KVAH_cvXkug" "Mon, 22-Apr-2019 13:46:50 GMT" "/forms/d/e/1FAIpQLSegIyPTLLX8VnFvOevu3_elcJrjpBT6bJzqeTJn8Fv1xJMUFg" ".docs.google.com" t]))
-)
+ 'nil)
 
 ;; Local Variables:
 ;; version-control: never

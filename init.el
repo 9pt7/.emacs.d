@@ -125,7 +125,8 @@
 (use-package projectile
   :ensure t
   :config
-  (projectile-mode))
+  (projectile-mode)
+  (global-set-key (kbd "\C-cx") #'projectile-compile-project))
 (use-package helm-projectile
   :ensure t)
 
@@ -497,7 +498,6 @@ otherwise it is enabled."
 
 (use-package my-compile
   :config
-  (global-set-key (kbd "\C-cx") #'my-compile)
   (global-set-key (kbd "\C-cw") #'my-compile-setup-windows))
 
 (use-package elscreen
@@ -637,7 +637,7 @@ otherwise it is enabled."
 
 (require 'cc-mode)
 
-(setq tab-width 4)
+(setq-default tab-width 4)
 
 (defun my-check-header-guards ()
   "Make sure header guard defines match filename."
@@ -1158,7 +1158,8 @@ The app is chosen from your OS's preference."
     (docker eslintd-fix eslint-fix rjsx-mode blacken mu4e-alert helm-mu use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
  '(safe-local-variable-values
    (quote
-    ((projectile-project-compilation-cmd . "make -k -j4")
+    ((gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/m")
+     (projectile-project-compilation-cmd . "make -k -j4")
      (projectile-project-compilation-dir . "build"))))
  '(send-mail-function (quote smtpmail-send-it)))
 (put 'narrow-to-region 'disabled nil)
