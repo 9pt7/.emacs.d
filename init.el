@@ -472,7 +472,8 @@ otherwise it is enabled."
   :config
   (setq-default web-mode-markup-indent-offset 2)
   (setq-default web-mode-css-indent-offset 2)
-  (setq-default web-mode-code-indent-offset 2))
+  (setq-default web-mode-code-indent-offset 2)
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . web-mode)))
 
 (use-package python
   :config
