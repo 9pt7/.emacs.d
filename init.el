@@ -8,8 +8,7 @@
 ;;
 ;; Make sure use-package is installed and loaded
 (require 'package)
-(setf package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 (package-refresh-contents t)            ;async package refresh
 (unless (package-installed-p 'use-package)
@@ -60,6 +59,7 @@
 
 
 (use-package rtags
+  :ensure t
   :config
   (setq rtags-path (concat (rtags-package-install-path)
                            "rtags-"
@@ -230,7 +230,8 @@
 
 (require 'cl-lib)
 
-(use-package yaml-mode)
+(use-package yaml-mode
+  :ensure t)
 
 (setq-local lexical-binding t)
 
@@ -483,6 +484,7 @@ otherwise it is enabled."
 
 
 (use-package web-mode
+  :ensure t
   :config
   (setq-default web-mode-markup-indent-offset 2)
   (setq-default web-mode-css-indent-offset 2)
@@ -490,6 +492,7 @@ otherwise it is enabled."
   (add-to-list 'auto-mode-alist '("\\.[jt]sx?\\'" . web-mode)))
 
 (use-package tide
+  :ensure t
   :config
   (defun my-tide-setup ()
     (when (string-match "^tsx?$" (file-name-extension buffer-file-name))
@@ -521,6 +524,7 @@ otherwise it is enabled."
       (setq python-shell-interpreter-args "--matplotlib"))))
 
 (use-package rjsx-mode
+  :ensure t
   :config
   (setq js2-mode-show-parse-errors nil)
   (setq js2-mode-show-strict-warnings nil)
