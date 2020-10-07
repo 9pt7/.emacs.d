@@ -64,11 +64,12 @@
   (setq rtags-path (concat (rtags-package-install-path)
                            "rtags-"
                            rtags-package-version
-                           "/bin/"))
+                           "/bin"))
   (rtags-start-process-unless-running)
   (add-hook 'c-mode-common-hook
             (lambda ()
-              (local-set-key (kbd "M-.") #'rtags-find-symbol-at-point))))
+              (local-set-key (kbd "M-.") #'rtags-find-symbol-at-point)))
+  (setenv "PATH" (concat (getenv "PATH") ":" rtags-path)))
 
 ;; Python completion/jump to definition
 (use-package anaconda-mode
