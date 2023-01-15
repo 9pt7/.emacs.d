@@ -386,13 +386,6 @@ otherwise it is enabled."
   :config
   (global-set-key (kbd "\C-cw") #'my-compile-setup-windows))
 
-(use-package elscreen
-  :ensure t
-  :config
-  (setq elscreen-tab-display-control nil)
-  (setq elscreen-display-screen-number nil)
-  (elscreen-start))
-
 (require 'grep)
 (let ((ack-cmd (cond ((executable-find "ack-grep") "ack-grep")
                      ((executable-find "ack") "ack")))
