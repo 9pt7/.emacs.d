@@ -83,36 +83,16 @@
   :config
   (add-to-list 'company-backends 'company-anaconda))
 
-
-
 (use-package company-shell
   :ensure t
   :config
   (add-to-list 'company-backends 'company-shell))
 
 
-;; Visuals
-(use-package alect-themes
-  :ensure t
-  :config
-  (alect-create-theme dark)
-  (custom-theme-set-faces
-   'alect-dark
-   '(flyspell-incorrect  ((t (:underline (:color "red" :style wave)))))))
-(set-face-attribute 'default nil :height 120)
-
-
 ;; Modeline documentation
 (use-package eldoc
   :config
   (add-hook 'c-mode-hook #'eldoc-mode))
-
-
-;; PDF
-(use-package pdf-tools
-  :ensure t
-  :config
-  (pdf-tools-install))
 
 
 ;; Helm
@@ -602,142 +582,6 @@ otherwise it is enabled."
 
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Org
-(require 'org)
-(require 'org-capture)
-(require 'org-agenda)
-
-(remove-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
-
-(defvar my-org-folder (file-name-as-directory (expand-file-name "~/org/")))
-(defvar my-org-doc-file (expand-file-name "~/doc/doc.org"))
-
-(defun my-org-capture ()
-  "Store a note in the agenda file."
-  (interactive)
-  (let* ((agenda-file (concat my-org-folder "agenda.org"))
-         (org-capture-entry `("t" "task" entry (file ,agenda-file) "* %^{Task Name}
-/Entered on %U/
-%?")))
-    (ignore-errors (org-capture))))
-
-;; (global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cc" 'org-capture)
-
-(defvar my-capture-temp nil)
-
-(defun my-parse-bibtex (bibtex-string)
-  (string-match "\\@\\(.*\\){\\(.*\\),\\(\\(?:.\\|\n\\)*\\)}" bibtex-string)
-  (let* ((doc-type (match-string 1 bibtex-string))
-         (doc-ref (match-string 2 bibtex-string))
-         (doc-params (match-string 3 bibtex-string))
-         (doc-param-alist ())
-         (param-remain doc-params)
-         (properties))
-    (while (string-match
-            "\\(?:.\\|\n\\)*?\\([a-zA-Z]+\\)={\\(.*?\\)}\\(\\(?:.\\|\n\\)*\\)"
-            param-remain)
-      (let ((key (match-string 1 param-remain))
-            (val (match-string 2 param-remain)))
-        (push (cons key val) doc-param-alist)
-        (setq param-remain (match-string 3 param-remain))))
-    (setq doc-param-alist (nreverse doc-param-alist))
-    (list doc-type doc-ref doc-param-alist)))
-
-(defun my-make-property-string (property-alist)
-  (with-temp-buffer
-    (insert (apply #'concat
-                   (mapcar #'(lambda (key-val)
-                               (concat ":" (upcase (car key-val)) ": " (cdr key-val) "\n"))
-                           property-alist)))
-    (org-indent-region (point-min) (point-max))
-    (org-indent-remove-properties-from-string (buffer-string))))
-
-(defvar my-property-string nil)
-(defvar my-doc-folder (expand-file-name "~/doc/"))
-(defvar my-bibtex-string nil)
-
-(defun my-get-doc-info ()
-  (let* ((file-name (expand-file-name (read-file-name "File Name: "
-                                                      nil
-                                                      nil
-                                                      t)))
-         (bibtex-string (read-string "BibTeX: "))
-         (parse-result (my-parse-bibtex bibtex-string))
-         (doc-type (first parse-result))
-         (doc-ref (second parse-result))
-         (doc-param-alist (third parse-result))
-         (title (or (cdr (assoc "title" doc-param-alist))
-                    (read-string "Title: "
-                                 (file-name-base file-name))))
-         ;; (new-file-name (expand-file-name (concat my-doc-folder
-         ;;                                          doc-ref
-         ;;                                          (file-name-extension file-name t))))
-         )
-    ;; (copy-file file-name new-file-name)
-    ;; (push (cons "file_link" (concat "file:" new-file-name)) doc-param-alist)
-    (push (cons "file_link" (concat "file:" file-name)) doc-param-alist)
-    (setq my-property-string (my-make-property-string doc-param-alist))
-    (setq my-bibtex-string
-          (replace-regexp-in-string "\\`\[ \t\n\]*"
-                                    ""
-                                    (replace-regexp-in-string "\[ \t\n\]*\\'"
-                                                              "\n"
-                                                              bibtex-string)))
-    title))
-
-(setf
- ;; Files
- org-default-notes-file (concat my-org-folder "notes.org")
-
- ;; Go to link on RET
- org-return-follows-link t
-
- ;; Indent text based on outline
- org-startup-indented t
-
- ;; Start agenda on current day
- org-agenda-start-on-weekday nil
-
- org-log-done 'note
-
- ;; Show \alpha, \beta, \gamma... as UTF-8
- org-pretty-entities t
- ;; Only enable super/subscripts within {}
- org-use-sub-superscripts '{}
-
- ;; Show items with dates in the TODO buffer
- org-agenda-todo-ignore-scheduled nil
- org-agenda-todo-ignore-deadlines nil
-
- org-todo-keywords '((type "TODO(t)" "WAIT(w@/!)""|" "DONE(d@/!)"))
-
- org-todo-keyword-faces '(("TODO" :foreground "red" :weight bold)
-                          ("WAIT" :foreground "dark orange" :weight bold)
-                          ("DONE" :foreground "forest green" :weight bold))
-
- org-agenda-files (list (concat my-org-folder "agenda.org"))
-
-
-
- ;; Capture templates
- org-capture-templates
- `(("t" "task" entry (file ,(concat my-org-folder "agenda.org"))
-    "* TODO %^{Task Name} %^G\n/Entered on %U/\n%?")
-   ("d" "document" entry (file ,my-org-doc-file)
-    "* %(my-get-doc-info) %^G
-:PROPERTIES:
-:DATE_ADDED: %U
-%(eval my-property-string):END:
-:BIBTEX:
-%(eval my-bibtex-string):END:
-
-%?")))
-
-
-
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dired
 (require 'dired-aux)
@@ -812,223 +656,6 @@ The app is chosen from your OS's preference."
 (override-mode 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TeX
-(use-package tex
-  :ensure auctex
-  :config
-  (require 'preview)
-  (require 'reftex)
-  (require 'latex)
-  (require 'font-latex)
-  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook #'reftex-mode)
-  (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
-  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-  (push '("Latexmk" "latexmk %s" TeX-run-TeX nil t :help "Run latexmk") TeX-command-list)
-
-
-  (setf preview-default-option-list '("displaymath" "floats" "graphics" "textmath")
-        preview-auto-cache-preamble t
-        preview-auto-reveal nil
-        preview-preserve-counters t
-        preview-image-type 'tiff
-        TeX-PDF-mode t
-        TeX-electric-math '("$" . "$")
-        TeX-electric-sub-and-superscript t
-        reftex-cite-format 'natbib
-        reftex-label-alist '(("IEEEeqnarray" ?e "eq:" "~(\\ref{%s})" nil nil)
-                             ("IEEEeqnarray*" ?e "eq:" "~(\\ref{%s})" nil nil))
-        font-latex-match-reference-keywords '(("citep" "*[{") ("citet" "*[{")))
-
-  (setq LaTeX-font-list
-        '((?\C-a ""              ""  "\\mathcal{"    "}")
-          (?\C-b "\\textbf{"     "}" "\\bm{"     "}") ;Use bm
-          (?\C-c "\\textsc{"     "}")
-          (?\C-e "\\emph{"       "}")
-          (?\C-f "\\textsf{"     "}" "\\mathsf{"     "}")
-          (?\C-i "\\textit{"     "}" "\\mathit{"     "}")
-          (?\C-m "\\textmd{"     "}")
-          (?\C-n "\\textnormal{" "}" "\\mathnormal{" "}")
-          (?\C-r "\\textrm{"     "}" "\\mathrm{"     "}")
-          (?\C-s "\\textsl{"     "}" "\\mathbb{"     "}")
-          (?\C-t "\\texttt{"     "}" "\\mathtt{"     "}")
-          (?\C-u "\\textup{"     "}")
-          (?\C-d "" "" t)))
-
-  (defun my-env-frame (environment)
-    (let ((LaTeX-default-position nil)
-          (LaTeX-default-format "rCl"))
-      (LaTeX-env-label environment)))
-
-  (defun my-latex-frame-hook ()
-    (LaTeX-add-environments
-     '("frame" my-env-frame)))
-
-  (defun my-env-IEEEeqnarray (environment)
-    (let ((LaTeX-default-position nil)
-          (LaTeX-default-format "rCl"))
-      (LaTeX-env-array environment)))
-
-  (defun my-latex-IEEE-hook ()
-    (LaTeX-add-environments
-     '("IEEEeqnarray" my-env-IEEEeqnarray)
-     '("IEEEeqnarray*" my-env-IEEEeqnarray)
-     "matrix"
-     "bmatrix"
-     "Bmatrix"
-     "pmatrix"
-     "Pmatrix"
-     "vmatrix"
-     "Vmatrix"
-     "tikzpicture"
-     "smallmatrix"))
-
-  (add-to-list 'LaTeX-indent-environment-list '("matrix"))
-  (add-to-list 'LaTeX-indent-environment-list '("bmatrix"))
-  (add-to-list 'LaTeX-indent-environment-list '("Bmatrix"))
-  (add-to-list 'LaTeX-indent-environment-list '("pmatrix"))
-  (add-to-list 'LaTeX-indent-environment-list '("Pmatrix"))
-  (add-to-list 'LaTeX-indent-environment-list '("vmatrix"))
-  (add-to-list 'LaTeX-indent-environment-list '("Vmatrix"))
-  (add-to-list 'LaTeX-indent-environment-list '("smallmatrix"))
-
-  (add-hook 'LaTeX-mode-hook #'my-latex-IEEE-hook)
-
-  (require 'texmathp)
-  (dolist (math-env '("IEEEeqnarray" "IEEEeqnarray*"))
-    (add-to-list 'LaTeX-indent-environment-list `(,math-env LaTeX-indent-tabular))
-    (add-to-list 'font-latex-math-environments math-env)
-    (add-to-list 'LaTeX-label-alist `(,math-env . LaTeX-equation-label))
-    (add-to-list 'reftex-label-alist `(,math-env ?e "eq:" "~(\\ref{%s})" t nil))
-    (add-to-list 'texmathp-tex-commands `(,math-env env-on)))
-  (texmathp-compile)
-
-  (defvar my-latex-class-completion-list
-    '("article"
-      "proc"
-      "minimal"
-      "report"
-      "book"
-      "slides"
-      "memoir"
-      "letter"
-      "beamer"))
-
-  (defvar my-latex-package-list
-    '(("amsmath" . ("centertags"
-                    "tbtags"
-                    "sumlimits"
-                    "nosumlimits"
-                    "intlimits"
-                    "nointlimits"
-                    "namelimits"
-                    "nonamelimits"
-                    "leqno"
-                    "reqno"
-                    "fleqno"))
-      ("amsfonts" . ())
-      ("amssymb" . ())
-      ("amsthm" . ())
-      ("IEEEtrantools" . ())
-      ("bm" . ())
-      ("natbib" . ("square"
-                   "super"
-                   "sort"
-                   "sort&compress"
-                   "compress"
-                   "comma"
-                   "numbers"))
-      ("tikz" . ())
-      ("natbib" . ("round"
-                   "square"
-                   "curly"
-                   "angle"
-                   "semicolon"
-                   "colon"
-                   "comma"
-                   "authoryear"
-                   "numbers"
-                   "super"
-                   "sort"
-                   "sort&compress"
-                   "compress"
-                   "longnamesfirst"
-                   "sectionbib"
-                   "nonamebreak"
-                   "merge"
-                   "elide"
-                   "mcite"))
-      ("geometry" . ("letterpaper"
-                     "a5paper"
-                     "b5paper"
-                     "executivepaper"
-                     "legalpaper"
-                     "landscape"
-                     "total="
-                     "margin="))
-      ("graphicx" . ())
-      ("hyperref" . ())
-      ("tabularx" . ())
-      ("booktabs" . ())))
-
-  (defvar my-latex-option-completion-list
-    '("10pt"
-      "11pt"
-      "12pt"
-      "a4paper"
-      "letterpaper"
-      "a5paper"
-      "b5paper"
-      "executivepaper"
-      "legalpaper"
-      "draft"
-      "twocolumn"
-      "oneside"
-      "twoside"
-      "notitlepage"
-      "titlepage"))
-
-  (defvar my-temp)
-
-  (setcdr (assoc 'latex-mode auto-insert-alist)
-          '("options, RET: "
-            "\\documentclass["
-            ((completing-read "options: " my-latex-option-completion-list) str & ", " | -2) & -2 & ?\] | -1
-            ?{ (completing-read "class: " my-latex-class-completion-list) "}\n"
-            ((completing-read "package: " (mapcar #'car my-latex-package-list))
-             '(progn
-                (setq my-temp (eval str))
-                nil)
-             "\\usepackage["
-             ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
-             ?{ str "}\n")
-            "\n"
-            "\\title{" (let ((title (read-string "title: ")))
-                         (setq v1 (not (string-empty-p title)))
-                         title) & "}\n" | -7
-            "\\author{" (when v1
-                          (read-string "author: " user-full-name)) & "}\n" | -8
-            _ "\n\\begin{document}\n\n"
-            (if v1
-                "\\maketitle\n\n"
-              "") _
-            -
-            "\n\n\\end{document}"))
-
-  (define-skeleton my-insert-latex-package
-    "Insert a latex package"
-    (completing-read "package: " (mapcar #'car my-latex-package-list))
-    '(progn
-       (setq my-temp (eval str))
-       nil)
-    "\\usepackage["
-    ((completing-read "options: " (cdr-safe (assoc my-temp my-latex-package-list))) str & ", " | -2) & -2 & ?\] | -1
-    ?{ str "}\n")
-
-  (define-key TeX-mode-map (kbd "C-c k")  #'my-insert-latex-package))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tramp
 
 (require 'tramp)
@@ -1079,20 +706,17 @@ The app is chosen from your OS's preference."
  ;; If there is more than one, they won't work right.
  '(TeX-command-extra-options "-shell-escape")
  '(custom-safe-themes
-   (quote
-    ("04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "a0feb1322de9e26a4d209d1cfa236deaf64662bb604fa513cca6a057ddf0ef64" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5dc0ae2d193460de979a463b907b4b2c6d2c9c4657b2e9e66b8898d2592e3de5" "790e74b900c074ac8f64fa0b610ad05bcfece9be44e8f5340d2d94c1e47538de" "a800120841da457aa2f86b98fb9fd8df8ba682cebde033d7dbf8077c1b7d677a" "32e3693cd7610599c59997fee36a68e7dd34f21db312a13ff8c7e738675b6dfc" "3fd0fda6c3842e59f3a307d01f105cce74e1981c6670bb17588557b4cebfe1a7" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "b747fb36e99bc7f497248eafd6e32b45613ee086da74d1d92a8da59d37b9a829" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" default)))
- '(ede-project-directories (quote ("/home/prt/workspace/tooling")))
+   '("04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "a0feb1322de9e26a4d209d1cfa236deaf64662bb604fa513cca6a057ddf0ef64" "98cc377af705c0f2133bb6d340bf0becd08944a588804ee655809da5d8140de6" "5dc0ae2d193460de979a463b907b4b2c6d2c9c4657b2e9e66b8898d2592e3de5" "790e74b900c074ac8f64fa0b610ad05bcfece9be44e8f5340d2d94c1e47538de" "a800120841da457aa2f86b98fb9fd8df8ba682cebde033d7dbf8077c1b7d677a" "32e3693cd7610599c59997fee36a68e7dd34f21db312a13ff8c7e738675b6dfc" "3fd0fda6c3842e59f3a307d01f105cce74e1981c6670bb17588557b4cebfe1a7" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "b747fb36e99bc7f497248eafd6e32b45613ee086da74d1d92a8da59d37b9a829" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" default))
+ '(ede-project-directories '("/home/prt/workspace/tooling"))
  '(initial-buffer-choice t)
  '(package-selected-packages
-   (quote
-    (helm-rtags rtags yaml-mode tide web-mode docker eslintd-fix eslint-fix rjsx-mode blacken use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes)))
+   '(helm-rtags rtags yaml-mode tide web-mode docker eslintd-fix eslint-fix rjsx-mode blacken use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))
  '(safe-local-variable-values
-   (quote
-    ((gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/application")
+   '((gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/application")
      (gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/m")
      (projectile-project-compilation-cmd . "make -k -j4")
-     (projectile-project-compilation-dir . "build"))))
- '(send-mail-function (quote smtpmail-send-it)))
+     (projectile-project-compilation-dir . "build")))
+ '(send-mail-function 'smtpmail-send-it))
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
