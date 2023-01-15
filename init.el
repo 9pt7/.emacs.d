@@ -355,18 +355,6 @@ otherwise it is enabled."
 
 (global-set-key (kbd "C-x C-x") 'my-exchange-point-and-mark)
 
-(use-package calc-units
-  :config
-  (setf math-additional-units
-        '((GiB "1024 * MiB" "Giga Byte")
-          (MiB "1024 * KiB" "Mega Byte")
-          (KiB "1024 * B" "Kilo Byte")
-          (B nil "Byte")
-          (Gib "1024 * Mib" "Giga Bit")
-          (Mib "1024 * Kib" "Mega Bit")
-          (Kib "1024 * b" "Kilo Bit")
-          (b "B / 8" "Bit"))))
-
 (use-package uniquify
   :config
   (setf uniquify-buffer-name-style 'post-forward-angle-brackets))
