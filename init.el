@@ -191,9 +191,6 @@
 
 (use-package shell
   :config
-  (let ((shell (executable-find "bash")))
-    (when shell
-      (setq explicit-shell-file-name shell)))
   (add-hook 'shell-mode-hook #'compilation-shell-minor-mode)
   (add-hook 'shell-mode-hook #'set-comint-process-echoes))
 
