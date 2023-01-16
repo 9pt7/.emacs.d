@@ -490,11 +490,6 @@ otherwise it is enabled."
   (setq js-switch-indent-offset 2)
   (setq js-indent-level 2))
 
-(use-package blacken
-  :ensure t
-  :config
-  (add-hook 'python-mode-hook #'blacken-mode))
-
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
