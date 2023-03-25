@@ -64,7 +64,8 @@
 
 (use-package lsp-mode
   :ensure t
-  :config
+  :commands lsp
+  :init
   (add-hook 'c-mode-common-hook #'lsp))
 
 ;; Python completion/jump to definition
@@ -389,13 +390,13 @@ otherwise it is enabled."
 
 (use-package magit
   :ensure t
+  :bind ("C-c g" . magit-status)
   :config
   (defvar magit-last-seen-setup-instructions "1.4.0"))
 
 (global-set-key (kbd "\C-cs") #'shell)
 (global-set-key (kbd "\C-cd") #'gdb)
 (global-set-key (kbd "\C-cf") #'recentf-open-files)
-(global-set-key (kbd "\C-cg") #'magit-status)
 (global-set-key (kbd "\C-cb") #'grep-global)
 (global-set-key (kbd "\C-cq") #'grep)
 
