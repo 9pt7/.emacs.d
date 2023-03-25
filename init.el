@@ -479,14 +479,6 @@ otherwise it is enabled."
     (when ipython-p
       (setq python-shell-interpreter-args "--matplotlib"))))
 
-(use-package rjsx-mode
-  :ensure t
-  :config
-  (setq js2-mode-show-parse-errors nil)
-  (setq js2-mode-show-strict-warnings nil)
-  (setq js-switch-indent-offset 2)
-  (setq js-indent-level 2))
-
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
