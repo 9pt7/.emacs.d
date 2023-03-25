@@ -62,18 +62,10 @@
   (global-company-mode 1))
 
 
-(use-package rtags
+(use-package lsp-mode
   :ensure t
   :config
-  (setq rtags-path (concat (rtags-package-install-path)
-                           "rtags-"
-                           rtags-package-version
-                           "/bin"))
-  (rtags-start-process-unless-running)
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (local-set-key (kbd "M-.") #'rtags-find-symbol-at-point)))
-  (setenv "PATH" (concat (getenv "PATH") ":" rtags-path)))
+  (add-hook 'c-mode-common-hook #'lsp))
 
 ;; Python completion/jump to definition
 (use-package anaconda-mode
@@ -687,7 +679,7 @@ The app is chosen from your OS's preference."
  '(ede-project-directories '("/home/prt/workspace/tooling"))
  '(initial-buffer-choice t)
  '(package-selected-packages
-   '(lsp-mode dockerfile-mode ini-mode helm-rtags rtags yaml-mode tide web-mode docker eslintd-fix eslint-fix rjsx-mode blacken use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))
+   '(lsp lsp-mode dockerfile-mode ini-mode yaml-mode tide web-mode docker eslintd-fix eslint-fix rjsx-mode blacken use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))
  '(safe-local-variable-values
    '((gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/application")
      (gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/m")

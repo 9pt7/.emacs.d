@@ -24,3 +24,5 @@ url
 .cask
 network-security.data
 transient/
+.cache/
+.lsp-session*
