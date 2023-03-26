@@ -66,19 +66,8 @@
   :ensure t
   :commands lsp
   :init
-  (add-hook 'c-mode-common-hook #'lsp))
-
-;; Python completion/jump to definition
-(use-package anaconda-mode
-  :config
-  (require 'python)
-  (add-hook 'python-mode-hook #'anaconda-mode))
-
-;; Python completion
-(use-package company-anaconda
-  :ensure t
-  :config
-  (add-to-list 'company-backends 'company-anaconda))
+  (add-hook 'c-mode-common-hook #'lsp)
+  (add-hook 'python-mode-hook #'lsp))
 
 (use-package company-shell
   :ensure t
@@ -672,7 +661,7 @@ The app is chosen from your OS's preference."
  '(ede-project-directories '("/home/prt/workspace/tooling"))
  '(initial-buffer-choice t)
  '(package-selected-packages
-   '(lsp lsp-mode dockerfile-mode ini-mode yaml-mode tide web-mode docker eslintd-fix eslint-fix rjsx-mode blacken use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful company-anaconda bash-completion auctex alect-themes))
+   '(lsp lsp-mode dockerfile-mode ini-mode yaml-mode tide web-mode docker eslintd-fix eslint-fix rjsx-mode blacken use-package pdf-tools company-shell direnv helm helm-core company projectile elscreen clang-format modern-cpp-font-lock highlight-symbol multiple-cursors company-clang powerline package-build shut-up git commander f cask flycheck protobuf-mode helm-gtags diminish cmake-mode slime-company openwith monokai-theme magit llvm-mode helm-projectile exec-path-from-shell diredful bash-completion auctex alect-themes))
  '(safe-local-variable-values
    '((gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/application")
      (gud-gdb-command-name . "gdb-multiarch -i=mi -x gdb build/m")
