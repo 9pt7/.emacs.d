@@ -42,12 +42,6 @@
 ;; Use emacs client as editor
 (setenv "EDITOR" "emacsclient")
 
-;; direnv loads environment variables based on directory
-(use-package direnv
-  :ensure t
-  :config
-  (direnv-mode))
-
 
 ;; Code completion
 
